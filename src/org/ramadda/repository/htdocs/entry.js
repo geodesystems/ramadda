@@ -492,34 +492,34 @@ function RamaddaRepository(repositoryRoot) {
 		if(Utils.stringDefined(value))
 		    url = HU.url(url,name,value);
 	    }
-	    addAttr("text", settings.text);
-	    addAttr("name", settings.name);
-	    addAttr("description", settings.description);	    
-	    addAttr("datadate.from",settings.startDate);
-	    addAttr("datadate.to",settings.endDate);
-	    addAttr("createdate.from",settings.createstartDate);
-	    addAttr("createdate.to",settings.createendDate);
-	    addAttr("changedate.from",settings.changestartDate);
-	    addAttr("changedate.to",settings.changeendDate);	    	    
+	    addAttr(ARG_TEXT, settings.text);
+	    addAttr(ARG_NAME, settings.name);
+	    addAttr(ARG_DESCRIPTION, settings.description);	    
+	    addAttr('datadate.from',settings.startDate);
+	    addAttr('datadate.to',settings.endDate);
+	    addAttr('createdate.from',settings.createstartDate);
+	    addAttr('createdate.to',settings.createendDate);
+	    addAttr('changedate.from',settings.changestartDate);
+	    addAttr('changedate.to',settings.changeendDate);	    	    
             if (settings.entries && settings.entries.length > 0) {
-                url += "&entries=" + settings.entries;
+                url = HU.url(url,ARG_ENTRIES,settings.entries);
             }
             if (settings.orderBy) {
-                url += "&orderby=" + settings.orderBy;
+                url = HU.url(url,ARG_ORDERBY,settings.orderBy);
 		if(Utils.isDefined(settings.ascending)) 
-		    url +="&ascending=" + (settings.ascending?"true":"false");
+		    url =HU.url(url,ARG_ASCENDING,(settings.ascending?'true':'false'));
             }
             if (settings.getAreaContains()) {
-                url += "&areamode=contains";
+                url = HU.url(url,ARG_AREAMODE,'contains');
             }
             if (!isNaN(settings.getNorth()))
-                url += "&maxlatitude=" + settings.getNorth();
+                url = HU.url(url,ARG_MAXLATITUDE,settings.getNorth());
             if (!isNaN(settings.getWest()))
-                url += "&minlongitude=" + settings.getWest();
+                url = HU.url(url, ARG_MINLONGITUDE,settings.getWest());
             if (!isNaN(settings.getSouth()))
-                url += "&minlatitude=" + settings.getSouth();
+                url = HU.url(url, ARG_MINLATITUDE,settings.getSouth());
             if (!isNaN(settings.getEast()))
-                url += "&maxlongitude=" + settings.getEast();
+                url = HU.url(url,ARG_MAXLONGITUDE,settings.getEast());
 
 	    if(settings.ancestor) 
 		url = HU.url(url,ARG_ANCESTOR,settings.ancestor);
@@ -528,11 +528,12 @@ function RamaddaRepository(repositoryRoot) {
                 let metadata = settings.metadata[i];
 		let index = metadata.index;
 		if(!Utils.isDefined(index)) index=1;
-                url = HU.url(url,"metadata_attr" + index+"_" + metadata.type,metadata.value);
+                url = HU.url(url,'metadata_attr' + index+'_' + metadata.type,metadata.value);
             }
-            url = HU.url(url,"max",settings.getMax(),"skip", settings.getSkip());
+            url = HU.url(url,ARG_MAX,settings.getMax(),
+			 ARG_SKIP, settings.getSkip());
 	    if(settings.rootEntry)
-		url = HU.url(url, "rootEntry",settings.rootEntry);
+		url = HU.url(url, 'rootEntry',settings.rootEntry);
             url += settings.getExtra();
             return url;
         },
@@ -544,7 +545,7 @@ function RamaddaRepository(repositoryRoot) {
             this.entryCache[entry.getId()] = entry;
         },
         getEntry: async function(id, callback,errorCallback) {
-	    //	    console.log("getEntry");
+	    //	    console.log('getEntry');
 	    let debug = false;
 	    if(id == null) {
 		console.log("Error in getEntry: entry id is null");
