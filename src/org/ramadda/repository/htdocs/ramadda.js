@@ -413,15 +413,17 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let nameCbx = HU.checkbox('',[ATTR_ID,getId('_name')],true,'By name');
 	let topLine = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN_TOP,HU.px(8),
 						CSS_MARGIN_BOTTOM,HU.px(8))],nameCbx+SPACE2+resultsButton);
-        let input = topLine+HU.input('','',[ATTR_ID,getId('_input'),
-					    ATTR_CLASS,'input',
-					    ATTR_PLACEHOLDER,'Search',
-					    ATTR_STYLE, HU.css(CSS_WIDTH,HU.px(250))]);
-
-	input+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
-			      ATTR_TITLE,'Submit search',
-			      ATTR_ID,getId('button')],
-			     HU.getIconImage('fas fa-magnifying-glass'));
+        let input = HU.div([ATTR_STYLE,
+			    'display:inline-flex;align-items:center;gap:8px;'],
+			   HU.input('','',[ATTR_ID,getId('_input'),
+					   ATTR_CLASS,'input',
+					   ATTR_PLACEHOLDER,'Search',
+					   ATTR_STYLE, HU.css(CSS_WIDTH,HU.px(250))]) +
+			   HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+				    ATTR_TITLE,'Submit search',
+				    ATTR_ID,getId('button')],
+				   HU.getIconImage('fas fa-magnifying-glass')));
+	input = topLine + input;
 	let addTypesSelector = !Utils.stringDefined(entryType);
 	if(!addTypesSelector && showTypeSelector) addTypesSelector = true;
 	//If no entry types then get the list of types
@@ -488,6 +490,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(HU.isChecked(nameWidget)) {
 		value = 'name:'+ value;
 	    }
+
             let searchLink =  HU.url(RamaddaUtil.getUrl(URL_SEARCH_DO),
 				     [ARG_ORDERBY,'createdate',
 				      ARG_ASCENDING,'false',
@@ -585,7 +588,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 
 
-	jqid(getId('button')).click(doSearch);
+	jqid(getId('button')).button().click(doSearch);
         let results =jqid(id +'_results');
         inputWidget.keyup(function(event){
             let value =  $(this).val();
