@@ -119,6 +119,15 @@ Access to this media file is restricted
 Access to this audio file is restricted
 -callout
 -if
+
+
+:heading Information
+{{information  showBase="true"  showDetails="true" 
+#showAttachments="false" 
+#showMetadata="false" 
+#menus="file,edit,view,feeds,other,service" 
+#menusTitle="Services"  }} 
+
 -section
 ]]>
 </wiki>
