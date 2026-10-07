@@ -2280,6 +2280,17 @@ public class MetadataManager extends RepositoryManager {
         }
 	String uid =  HU.getUniqueId("types");
 	sb.append("<center style='margin-top:5px;'>");
+	if(getAccessManager().canDoEdit(request, entry)) {
+	    String props = getWikiManager().getNewPropertyLinks(request, entry,Utils.makeHashtable("class","ramadda-button-small",
+												   "fromEntry","true"));
+	    if(stringDefined(props)) {
+		sb.append("<div style='margin-top:1em;'></div>");
+		sb.append(HU.div(props));
+		//		sb.append("<div class=ramadda-thin-hr>");
+		sb.append("<div style='margin-top:1em;'></div>");
+	    }
+	} 
+	
 	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-add','.ramadda-metadata-group','Find Property',false,{focus:true})");
 	sb.append(HU.space(2));
 	HU.href(sb, request.entryUrl(URL_METADATA_UPLOAD,
