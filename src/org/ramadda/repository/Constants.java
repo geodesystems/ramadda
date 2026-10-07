@@ -590,6 +590,7 @@ public interface Constants {
     public static final String PROP_ENABLE_HOSTNAME_MAPPING =
         "ramadda.enable_hostname_mapping";
     public static final String PROP_SHOW_HELP = "ramadda.html.show.help";
+    public static final String PROP_SHOW_ENTRY_EDIT = "ramadda.show.entry.edit";    
     public static final String PROP_SHOW_CART = "ramadda.html.show.cart";
     public static final String SNAPSHOT_ENTRY = "snapshotentry";
     public static final String SNAPSHOT_FILE = "snapshotfile";

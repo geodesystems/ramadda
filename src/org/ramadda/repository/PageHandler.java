@@ -147,6 +147,7 @@ public class PageHandler extends RepositoryManager {
     private String footer;
     private boolean cacheTemplates;
     private boolean showHelp = true;
+    private boolean showEntryEdit = true;    
     private boolean noStyle = false;
     private String logoUrl = "";
     private String bootstrapVersion = "bootstrap-5.1.3";
@@ -203,6 +204,7 @@ public class PageHandler extends RepositoryManager {
         myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
         noStyle     = getRepository().getProperty(PROP_NOSTYLE, false);
         showHelp    = getRepository().getProperty(PROP_SHOW_HELP, true);
+        showEntryEdit    = getRepository().getProperty(PROP_SHOW_ENTRY_EDIT, true);
         cacheTemplates =
             getRepository().getProperty("ramadda.cachetemplates", true);
 
@@ -654,7 +656,7 @@ public class PageHandler extends RepositoryManager {
 	StringBuilder recentContents = new StringBuilder();
 	if(Utils.listNotEmpty(recent)) {
 	    HU.div(recentContents,"Recent","class=ramadda-favorites-header");
-	    HU.open(recentContents,"div",HU.style("max-height:300px;overflow-y:auto;"));
+	    HU.open(recentContents,"div",HU.style("max-height:200px;overflow-y:auto;"));
 	    for(Entry entry: recent) {
 		HU.div(recentContents,getEntryManager().getEntryLink(request, entry,true,""),
 		       HU.attrs("class","ramadda-recent-link ramadda-fulllink ramadda-clickable ramadda-hoverable"));
@@ -665,7 +667,7 @@ public class PageHandler extends RepositoryManager {
 	List<FavoriteEntry> favs = getUserManager().getFavorites(request);
 	if(favs.size()>0) {
 	    HU.div(recentContents,"Favorites","class=ramadda-favorites-header");
-	    HU.open(recentContents,"div",HU.style("max-height:300px;overflow-y:auto;"));
+	    HU.open(recentContents,"div",HU.style("max-height:200px;overflow-y:auto;"));
 	    for(FavoriteEntry fav: favs) {
 		HU.div(recentContents,  getEntryManager().getEntryLink(request, fav.getEntry(),true,""),
 		       HU.attrs("class","ramadda-recent-link ramadda-fulllink ramadda-clickable ramadda-hoverable"));
@@ -674,15 +676,44 @@ public class PageHandler extends RepositoryManager {
 	    HU.close(recentContents,"div");
 	}
 
+
+	if(thisEntry!=null) {
+	    List<Entry> children = getEntryManager().getChildren(request, thisEntry);
+	    if(children.size()>0) {
+		HU.div(recentContents,"Children","class=ramadda-favorites-header");
+		HU.open(recentContents,"div",HU.style("max-height:250px;overflow-y:auto;"));
+		children = getEntryUtil().sortEntriesOn(children, ORDERBY_NAME,false);
+		for(Entry child: children) {
+		    HU.div(recentContents,  getEntryManager().getEntryLink(request, child,true,""),
+			   HU.attrs("class","ramadda-recent-link ramadda-fulllink ramadda-clickable ramadda-hoverable"));
+		    
+		}
+		HU.close(recentContents,"div");
+	    }
+
+	}
+
+	if(showEntryEdit && thisEntry!=null) {
+            boolean canEdit = getAccessManager().canDoEdit(request, thisEntry);
+	    if(canEdit) {
+		pageLinks.add(wrapPageLink(HU.href(request.entryUrl(
+								    getRepository().URL_ENTRY_FORM, thisEntry),
+						   HU.faIcon("fas fa-edit"))));
+	    }
+	}
+
 	if(recentContents.length()>0) {
 	    String link  = HU.span(HU.faIcon("fa fa-list"),
 				   HU.attrs("title","Entries"));
 	    String popup = HU.makePopup(null, link,recentContents.toString(),
+					arg("closeOnClick", "true"),
+					arg("draggable", "true"),
 					arg("my", "right top"),
 					arg("at", "right bottom"),
 					arg("animate", true));
 	    pageLinks.add(wrapPageLink(popup));
 	}
+
 
 
 
