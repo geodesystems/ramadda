@@ -225,7 +225,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 </type>
 
 
-<type name="type_archive_file"  description="Archive File" super="type_archive_root"
+<type name="type_archive_file"  description="Archive Box" super="type_archive_root"
       childtypes="type_archive_item"
       newfields="name,description,_default"
       editfields="name,description,_default">
