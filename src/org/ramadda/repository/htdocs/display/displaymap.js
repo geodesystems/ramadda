@@ -2296,6 +2296,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
 
+	    //DEBUG
+//	    if(point && !(point.x == -68.71 && point.y == -16.44)) return;
 
 	    if(!this.records) {
 		if(debug)    console.log("\tclick: no records")

@@ -3361,6 +3361,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=HU.close(TAG_TABLE);
 	    html = HU.div([ATTR_CLASS,'imdv-form',
 			   ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,HU.px(450),
+					     CSS_BORDER_TOP,CSS_BASIC_BORDER,
 					     CSS_OVERFLOW_Y,"scroll",
 					     CSS_MARGIN_BOTTOM,HU.px(5))], html);
 	    return {props:props,html:html};
@@ -3377,7 +3378,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let visibleCbx =
 		HU.checkbox(this.domId(PROP_LEVELRANGE_SHOWMARKER),
 			    [ATTR_ID,this.domId(PROP_LEVELRANGE_SHOWMARKER)],
-			    showMarkerToo,'Show marker instead');
+			    showMarkerToo,'Show marker when not visible');
 	    let min = level.min??this.minLevel;
 	    let max = level.max??this.maxLevel;	    
 	    let current = this.getCurrentLevel();
@@ -4492,7 +4493,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(this.jq(ID_LEVEL_RANGE_CHANGED).val()=='cleared') {
 		    this.setMapProperty(PROP_LEVELRANGE_RANGE, null);
 		}
-		this.setMapProperty(PROP_LEVELRANGE_SHOWMARKER, HU.isChecked(this.jq(PROP_LEVELRANGE_SHOWMARKER)));
+		this.setMapProperty(PROP_LEVELRANGE_SHOWMARKER,
+				    HU.isChecked(this.jq(PROP_LEVELRANGE_SHOWMARKER)));
 		this.checkMapProperties();
 		this.makeLegend();
 		this.featureChanged(true);

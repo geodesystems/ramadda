@@ -400,6 +400,11 @@ table.dataTable {
 .display-header-block {
 }
 
+.display-header-block .ramadda-button{
+    font-size: 80% !important;
+}
+
+
 .display-header {
      text-align:left;
 }

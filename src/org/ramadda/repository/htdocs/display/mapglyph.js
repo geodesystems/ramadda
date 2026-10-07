@@ -6553,6 +6553,9 @@ MapGlyph.prototype = {
 	this.attrs.showMarkerWhenNotVisible = v;
 	return this;
     },
+    getShowMarkerWhenNotVisible:function() {
+	return this.attrs.showMarkerWhenNotVisible;
+    },
     getZoomOnChange:function() {
 	return this.attrs.zoomOnChange;
     },
@@ -6575,9 +6578,7 @@ MapGlyph.prototype = {
 	return this;
     },	   
 
-    getShowMarkerWhenNotVisible:function() {
-	return this.attrs.showMarkerWhenNotVisible;
-    },
+
     getVisibleLevelRange:function(skipParent) {
 	let r =this.attrs.visibleLevelRange;
 	if(!skipParent && (!r || !Utils.isDefined(r.min)) && this.getParentGlyph()) {
@@ -6702,11 +6703,19 @@ MapGlyph.prototype = {
 		featuresToUse = this.mapLayer?.features
 	    }		
 
-	    let bounds = this.display.getMap().getFeaturesBounds(featuresToUse,true);
+	    //TODO - saving the initial bounds isn't working
+	    this.attrs.fullBounds = null;
+	    let bounds = this.attrs.fullBounds ?? this.display.getMap().getFeaturesBounds(featuresToUse,true);
+	    if(featuresToUse?.length && bounds && !this.attrs.fullBounds) {
+		this.attrs.fullBounds = bounds;
+	    }
+//	    console.log('bounds',this.attrs.fullBounds);
+
 	    if(bounds) {
 		let center = MapUtils.getCenter(bounds);
 		this.showMarkerMarker = this.display.getMap().createMarker('', center, this.getIcon(), '',
-									   null,null,16,null,null,{});
+									   null,null,
+									   16,null,null,{});
 		this.display.addFeatures([this.showMarkerMarker]);
 		this.showMarkerMarker.mapGlyph = this;
 	    }
