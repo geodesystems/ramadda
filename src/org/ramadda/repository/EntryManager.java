@@ -5900,8 +5900,10 @@ public class EntryManager extends RepositoryManager {
 	}
 
         if (importTypes.size() > 0) {
+	    
             importTypes.add(
 			    0, new TwoFacedObject("RAMADDA will figure it out", ""));
+	    
             sb.append(HU.formEntry(msgLabel("Type"),
 				   HU.select(ARG_IMPORT_TYPE,
 					     importTypes)));
@@ -7238,6 +7240,7 @@ public class EntryManager extends RepositoryManager {
 	finisher.accept(exportSB,"Links");
 	finisher.accept(otherSB,"Actions");	
 
+	/* For now don't include the list of children in the popup menu
         if (typeMask!=OutputType.TYPE_ALL && (typeMask & OutputType.TYPE_CHILDREN) != 0) {
             List<Entry> children = getChildrenSafe(request, entry);
             if (children.size() > 0) {
@@ -7259,7 +7262,8 @@ public class EntryManager extends RepositoryManager {
 				HU.clazz("ramadda-menugroup ramadda-menugroup-ext")));
             }
         }
-
+	*/
+	
         menu.append(HU.close(HU.TAG_TR));
         menu.append(HU.close(HU.TAG_TABLE));
 
