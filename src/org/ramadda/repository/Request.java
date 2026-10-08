@@ -542,7 +542,7 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    public String getUrl(String except) {
+    public String getUrl(String... except) {
         return getRequestPath() + "?" + getUrlArgs(except);
     }
 
@@ -550,9 +550,11 @@ public class Request implements Constants, Cloneable {
         return getUrlArgs((HashSet) null);
     }
 
-    public String getUrlArgs(String except) {
+    public String getUrlArgs(String... except) {
         HashSet<String> tmp = new HashSet<String>();
-        tmp.add(except);
+	for(String e:except) {
+	    tmp.add(e);
+	}
 
         return getUrlArgs(tmp);
     }
