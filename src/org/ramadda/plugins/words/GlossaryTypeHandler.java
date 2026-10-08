@@ -177,7 +177,7 @@ public class GlossaryTypeHandler extends LetterTypeHandler {
             new Hashtable<String, StringBuffer>();
 
         sb.append(HtmlUtils.p());
-	sb.append(makeHeader(request,group));
+	sb.append(makeHeader(request,group,null));
 	List<Entry> entries = children.get();
         if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(
