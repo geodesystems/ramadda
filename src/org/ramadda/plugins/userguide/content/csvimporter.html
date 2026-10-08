@@ -23,7 +23,10 @@ The upload can either be an XLSX or a CSV. Here is an example
 :p
 <ul>
 <li> Any line in the spreadsheet that starts with "#" is ignored.
-<li> The header must have a "type" and a "name" column.
+<li> The header must have a "name" column. This is the new entry name.
+<li> The header must either have a "type" column or in some cases there is a default entry
+  type associated with the parent entry type (e.g. Dictionary entries create
+  Dictionary Words by default).
 <li> The header may have a "description" column.
 </ul>
 Here is an example:

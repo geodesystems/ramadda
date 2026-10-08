@@ -45,7 +45,7 @@ The steps are:
 <li> Press Submit
 </ul>
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=646"><img  src="images/csvimporter.png?version=646"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=769"><img  src="images/csvimporter.png?version=769"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
 :p
 
 :heading The Spreadsheet
@@ -54,7 +54,10 @@ The upload can either be an XLSX or a CSV. Here is an example
 :p
 <ul>
 <li> Any line in the spreadsheet that starts with "#" is ignored.
-<li> The header must have a "type" and a "name" column.
+<li> The header must have a "name" column. This is the new entry name.
+<li> The header must either have a "type" column or in some cases there is a default entry
+  type associated with the parent entry type (e.g. Dictionary entries create
+  Dictionary Words by default).
 <li> The header may have a "description" column.
 </ul>
 Here is an example:
