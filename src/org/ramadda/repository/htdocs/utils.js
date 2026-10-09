@@ -529,34 +529,41 @@ var Utils =  {
         return b3;
     },
     addCopyLink:function(id) {
-	let contents=jqid(id).html();
+	let source = jqid(id);
+	let target = source;
+	let contents=source.html();
 	contents = contents.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&").trim();
-	let div = jqid(id);
-	div.css(CSS_POSITION,POSITION_RELATIVE);
+	if(source.attr('add-to-parent')=='true') {
+	    target = target.parent();
+	}
+	target.css(CSS_POSITION,POSITION_RELATIVE);
 	let copyId = id+"_copy";
 	let downloadId = id+"_download";	
 	let pos = 10;
-	if(div.attr('add-copy')=='true') {
-	    let copy = HU.div([ATTR_ID,copyId,
+	let style = source.attr('link-style');
+	if(source.attr('add-copy')=='true') {
+	    let copy = HU.span([ATTR_ID,copyId,
 			       ATTR_TITLE,"Copy to clipboard",
 			       ATTR_CLASS,CLASS_CLICKABLE,
-			       ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+			       ATTR_STYLE,style??HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						 CSS_RIGHT,HU.px(pos),
 						 CSS_TOP,HU.px(5))], HU.getIconImage(ICON_CLIPBOARD));
 	    pos+=20;
-	    jqid(id).append(copy);
+	    target.append(copy);
 	}
-	if(div.attr('add-download')=='true') {
-	    let download = HU.div([ATTR_ID,downloadId,
+	
+	if(source.attr('add-download')=='true') {
+	    let download = HU.span([ATTR_ID,downloadId,
 				   ATTR_TITLE,"Download",
 				   ATTR_CLASS,CLASS_CLICKABLE,
-				   ATTR_STYLE,HU.css(CSS_POSITION,POSITION_ABSOLUTE,
+				   ATTR_STYLE,style??HU.css(CSS_POSITION,POSITION_ABSOLUTE,
 						     CSS_RIGHT,HU.px(pos),
-						     CSS_TOP,HU.px(5))],
+						     CSS_TOP,HU.px(5)
+						    )],
 				  HU.getIconImage("fas fa-download"));
 
-	    jqid(id).append(download);
-	}	
+	    target.append(download);
+	}
 	jqid(copyId).click(function(){
 	    Utils.copyToClipboard(contents);
 	    let html = HU.div([ATTR_STYLE,HU.css(CSS_BACKGROUND,COLOR_MELLOW_YELLOW,CSS_PADDING,HU.px(5))],
@@ -569,7 +576,7 @@ var Utils =  {
 	    },1000)
 	});
 	jqid(downloadId).click(()=>{
-	    Utils.makeDownloadFile(div.attr('download-file')??'download.txt',contents);
+	    Utils.makeDownloadFile(source.attr('download-file')??'download.txt',contents);
 	});	
     },
     copyToClipboardOld:function(text) {
