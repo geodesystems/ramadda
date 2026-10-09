@@ -1196,7 +1196,6 @@ public class EntryManager extends RepositoryManager {
 		}
 
 		HU.formEntry(sb,"Priority:", ""+typeHandler.getPriority());
-
 		List<TypeHandler> ancestors = new ArrayList<TypeHandler>();
 		typeHandler.getAncestorTypes(ancestors);
 		if(ancestors.size()!=0) {
@@ -1211,7 +1210,12 @@ public class EntryManager extends RepositoryManager {
 		    sb.append(HU.formEntry("Parent Types:",tmp.toString()));
 		}
 
+		StringBuilder importHeader = new StringBuilder("type,name,id,parent");
+		StringBuilder extraLines = new StringBuilder(typeHandler.getType());		
+		extraLines.append(",Some entry name,some id,");
+		StringBuilder extraLines2 = new StringBuilder(",Some other entry name,some other id,");
 		List<Column> columns = typeHandler.getColumns();
+		int colCnt = 0;
 		if (Utils.listNotEmpty(columns)) {
 		    StringBuilder tmp = new StringBuilder();
 		    tmp.append("<table width=100%><tr><td width=20% ><b>Column ID</b></td><td width=20% ><b>Label</b></td><td width=20% ><b>Type</b></td><td width=20% ><b>Searchable</b></td><td width=20% ></td></tr>");
@@ -1225,6 +1229,11 @@ public class EntryManager extends RepositoryManager {
 			    extra = getWikiManager().wikify(request,
 							    HU.div(extra,HU.cssClass("")));
 			}
+			colCnt++;
+			importHeader.append(",");			
+			importHeader.append(column.getName());			
+			extraLines.append(",");
+			extraLines2.append(",");						
 			tmp.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;","width=20%") +
 					 HU.td(column.getLabel()+"&nbsp;&nbsp;","width=20%") +
 					 HU.td(column.getType(),"width=20%") +
@@ -1235,6 +1244,32 @@ public class EntryManager extends RepositoryManager {
 		    sb.append(HU.formEntry("Columns:",tmp.toString()));
 		}
 
+		importHeader.append("\n");
+		importHeader.append("#add entries one per line\n");
+		importHeader.append("#no need to change the type unless the entry type changes\n");		
+		if(colCnt==0) {
+		    importHeader.append("#the id and parent id are optional\n");
+		} else {
+		    importHeader.append("#the id  parent id and columns are optional\n");
+		}
+		extraLines.append("\n");
+		extraLines2.append("\n");		
+		importHeader.append(extraLines);
+		importHeader.append(extraLines2);				    
+		String fileName = Utils.makeID(typeHandler.getLabel())+"_import.csv";
+		String importHelp = HU.href(getRepository().getUrlBase()+
+				      "/userguide/csvimporter.html", "Help",
+				      HU.attrs("target","_help","class","ramadda-clickable"));
+
+		sb.append(HU.formEntry("Import Header:",
+				       HU.textArea("", importHeader.toString(), 4,80,
+						   HU.attrs("id","importheader","add-to-parent","true",
+							    "link-style","margin-left:5px;",
+							    "download-file",fileName,
+							    "add-download","true"))+HU.space(1) + importHelp));
+		
+		sb.append(HU.script("Utils.addCopyLink('importheader');"));
+		
 		StringBuilder subTypes = new StringBuilder();
 		List<TypeHandler> children = typeHandler.getChildrenTypes();
 		getTypeList(subTypes,children);
