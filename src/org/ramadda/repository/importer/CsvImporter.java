@@ -113,6 +113,7 @@ public class CsvImporter extends ImportHandler {
 		Hashtable<String,Integer> columnIdx= new Hashtable<String,Integer>();		
 		String currentType="";
 		String currentParent = "";
+		String defaultType=null;
 		TypeHandler  currentTypeHandler=null;
 		int cnt=0;
 		@Override
@@ -130,6 +131,11 @@ public class CsvImporter extends ImportHandler {
 			}
 			//get the indices
 			if(headerRow==null) {
+			    //maybe only do this if there is just one child type
+			    List<String> parentTypes= parent.getTypeHandler().getDefaultChildrenTypes();
+			    if(parentTypes.size()>0) {
+				defaultType=parentTypes.get(0);
+			    }
 			    headerRow = row;
 			    for(int i=0;i<row.size();i++) {
 				String field = row.getString(i);
@@ -185,12 +191,14 @@ public class CsvImporter extends ImportHandler {
 
 				}
 			    }
-			    if(typeIdx==-1) makeError("Input data must have a \"type\" column",headerRow);
+			    if(typeIdx==-1 && defaultType==null) {
+				makeError("Input data must have a \"type\" column",headerRow);
+			    }
 			    if(nameIdx==-1) makeError("Input data must have a \"name\" column",headerRow);
 			    return row;
 			}	
 
-			if(!row.indexOk(typeIdx)) {
+			if(defaultType==null && !row.indexOk(typeIdx)) {
 			    if(!hadBadType) {
 				hadBadType=true;
 				String msg = "Bad type index:" + typeIdx+" for row:";
@@ -201,8 +209,10 @@ public class CsvImporter extends ImportHandler {
 			    }
 			    return row;
 			}
-
-			String tmpType = row.getString(typeIdx,"");
+			String tmpType=defaultType;
+			if(typeIdx>=0) {
+			    tmpType = row.getString(typeIdx,"");
+			}
 			if(Utils.stringDefined(tmpType)) {
 			    currentType = tmpType;
 			    currentTypeHandler = getRepository().getTypeHandler(currentType);
