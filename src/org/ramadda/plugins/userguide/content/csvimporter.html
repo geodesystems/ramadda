@@ -20,14 +20,16 @@ The steps are:
 :heading The Spreadsheet
 The upload can either be an XLSX or a CSV. Here is an example 
 <a href="examples/collections2.xlsx">collections2.xlsx</a> spreadsheeet.
-:p
+
 <ul>
 <li> Any line in the spreadsheet that starts with "#" is ignored.
 <li> The header must have a "name" column. This is the new entry name.
 <li> The header must either have a "type" column or in some cases there is a default entry
   type associated with the parent entry type (e.g. Dictionary entries create
   Dictionary Words by default).
+<li> The type does not have to be repeated. If there is no value specified then the previous type is used.
 <li> The header may have a "description" column.
+
 </ul>
 Here is an example:
 +css
@@ -54,13 +56,17 @@ color:#000;
 <tr><td></td><td>file 2</td><td></td></tr>
 </table>
 
+:p
++callout-info
+RAMADDA provides CSV template files 
+-callout-info
 
 You can view and search for entry types at the
-<a target=_other href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page. Clicking on the type ID
-will copy the ID to the clipboard where you can paste it into your spreadsheet.
+<a target=_other href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page.
+When viewing the details of an entry type, e.g.
+<a target=_other href="{{root}}/entry/types.html?type=type_dictionary_word">Dictionary Word</a> an
+example template CSV file is provided that can be downloaded.
 :p
-The type does not have to be repeated. If there is no value specified then the previous
-type is used.
 
 
 :heading Parent/Child Entries
