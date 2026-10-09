@@ -1210,10 +1210,10 @@ public class EntryManager extends RepositoryManager {
 		    sb.append(HU.formEntry("Parent Types:",tmp.toString()));
 		}
 
-		StringBuilder importHeader = new StringBuilder("type,name,id,parent");
+		StringBuilder importHeader = new StringBuilder("type,name,id,parent,description");
 		StringBuilder extraLines = new StringBuilder(typeHandler.getType());		
-		extraLines.append(",Some entry name,some id,");
-		StringBuilder extraLines2 = new StringBuilder(",Some other entry name,some other id,");
+		extraLines.append(",Some entry name,some id,,");
+		StringBuilder extraLines2 = new StringBuilder(",Some other entry name,some other id,,");
 		List<Column> columns = typeHandler.getColumns();
 		int colCnt = 0;
 		if (Utils.listNotEmpty(columns)) {
