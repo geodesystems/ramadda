@@ -3257,14 +3257,15 @@ public class TypeHandler extends RepositoryManager {
 
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	String icon = getPageHandler().getEntryIconImage(request,entry);
-	String label =icon + HU.space(1)+ 
-	    getFileTypeDescription(request,  entry);
 	String typeLink="";
-	if(request.getExtraProperty("isinfo")!=null) 
-	    typeLink = HU.href(getRepository().getUrlPath("/entry/types.html?type=" + entry.getTypeHandler().getType()),
-			       HU.getIconImage("fas fa-database"),HU.attrs("title","View data type"));
+	if(request.getExtraProperty("isinfo")!=null ||!request.isAnonymous())  {
+	    typeLink = HU.space(2)+
+		HU.href(getRepository().getUrlPath("/entry/types.html?type=" + entry.getTypeHandler().getType()),
+			HU.getIconImage("fas fa-database"),HU.attrs("title","View data type"));
+	}
+	String label =icon + typeLink + HU.space(2)+ 
+	    getFileTypeDescription(request,  entry);
 
-	label+=HU.space(2) + typeLink;
 	addEntryProperty(request, sb,"Kind",label);
     }
 
