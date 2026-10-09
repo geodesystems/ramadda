@@ -45,7 +45,7 @@
     <wiki><![CDATA[
 +section  title="{{name}}"
 {{description wikify="true"}}
-{{dictionary}}
+{{dictionary wikify=false}}
 -section
 ]]>
 </wiki>

@@ -128,6 +128,7 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
 
     public String getDictionary(Request request, Entry group,WikiUtil wikiUtil,Hashtable props) throws Exception {
         StringBuffer sb = new StringBuffer();
+        String       theSource = request.getString(ARG_SOURCE, null);
 	String headerLabel = (String)group.getValue(request,IDX_LANGUAGE);
 	String to  =getTargetLabel(group);
 	if(stringDefined(to))  headerLabel += HU.space(1) +"-&gt;"+ HU.space(1) + to;
@@ -142,31 +143,31 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
 	}
 
         List<String> letters = new ArrayList<String>();
+        List<String> sources = new ArrayList<String>();
+	HashSet<String> seenSources = new HashSet<String>();
         Hashtable<String, StringBuffer> letterToBuffer =
             new Hashtable<String, StringBuffer>();
 
-        sb.append(HU.hr());
-	sb.append(makeHeader(request,group));
+
 
 
 	List<Entry> entries = new ArrayList<Entry>();
 	getEntryManager().getChildrenEntries(request, getRepository().getHtmlOutputHandler(), group, entries);
-        sb.append(
-            "<style type=\"text/css\">.dictionary_word {margin:0px;margin-bottom:5px;}\n");
-        sb.append(
-            ".dictionary_words {margin:0px;margin-bottom:5px;}\n</style>");
-        sb.append(getWikiManager().wikifyEntry(request, group,
-					       ":vspace 0.5em\n+center\n+hbox\n{{display_simplesearch  inputSize=200 width=200 ancestor=this }}\n-hbox\n"
-					       +
-					       "+hbox\n&nbsp;&nbsp;<a href='{{root}}/search/type/type_dictionary_word?ancestor={{this}}' title='Go to search form'><i class='fas fa-magnifying-glass-arrow-right'></i></a>\n-hbox\n-center\n")); 
 
-        if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
-            sb.append(
-                getPageHandler().showDialogNote(
-                    msg("No dictionary words found")));
-        }
+
 
         for (Entry child : entries) {
+	    String source = child.getStringValue(request,"source",null);
+	    //	    System.err.println("SOURCE:" + source);
+	    if(source!=null) {
+		if(!seenSources.contains(source)) {
+		    seenSources.add(source);
+		    sources.add(source);
+		}
+	    }
+	    if(theSource!=null) {
+		if(!Misc.equals(theSource, source)) continue;
+	    }
             String name   = child.getName();
 	    if(child.getTypeHandler().isType("type_dictionary_word")) {
 		name += HU.space(1) +"-&gt;" + HU.space(1) +child.getValue(request,DictionaryWordTypeHandler.IDX_OTHER_WORD);
@@ -183,8 +184,28 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
             }
             String href = getEntryManager().getAjaxLink(request, child, name).toString();
             letterBuffer.append(
-                HU.li(href, HU.cssClass("dictionary_word")));
+				HU.div(href, HU.cssClass("dictionary_word")));
         }
+	
+
+        sb.append(
+            "<style type=\"text/css\">.dictionary_word {margin:0px;margin-bottom:5px;}\n");
+        sb.append(
+            ".dictionary_words {margin:0px;margin-bottom:5px;}\n</style>");
+        sb.append(getWikiManager().wikifyEntry(request, group,
+					       ":vspace 0.5em\n+center\n+hbox\n{{display_simplesearch  inputSize=200 width=200 ancestor=this }}\n-hbox\n"
+					       +
+					       "+hbox\n&nbsp;&nbsp;<a href='{{root}}/search/type/type_dictionary_word?ancestor={{this}}' title='Go to search form'><i class='fas fa-magnifying-glass-arrow-right'></i></a>\n-hbox\n-center\n")); 
+
+        if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
+            sb.append(
+                getPageHandler().showDialogNote(
+                    msg("No dictionary words found")));
+        }
+
+
+        sb.append(HU.hr());
+	sb.append(makeHeader(request,group,sources));
 
         letters = (List<String>) Misc.sort(letters);
 
@@ -199,19 +220,6 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
 	return sb.toString();
     }
 
-
-    /**
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,

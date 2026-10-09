@@ -49,36 +49,18 @@ public class LetterTypeHandler extends ExtensibleGroupTypeHandler {
     private TTLCache<String, List<String>> letterCache =
 	new TTLCache<String,List<String>>(5*60*1000);
 
-    /** _more_ */
+
     public static final String ARG_LETTER = "letter";
-
-
-
-    /** _more_ */
+    public static final String ARG_SOURCE="source";
     public static String ALL = "all";
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
+
     public LetterTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public int getDefaultQueryLimit(Request request, Entry entry) {
         if (request.defined(ARG_OUTPUT)) {
             return super.getDefaultQueryLimit(request, entry);
@@ -88,22 +70,66 @@ public class LetterTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    public String makeHeader(Request request,Entry group) throws Exception {
+    public String makeHeader(Request request,Entry group,List<String> sources) throws Exception {
+	String delimiter = "&nbsp;|&nbsp;";
 	StringBuilder sb = new StringBuilder();
-        sb.append("<center>");
         List<String> header    = new ArrayList<String>();
-        String       theLetter = request.getString(ARG_LETTER, "");
-        String url = request.getUrl(ARG_LETTER);
+        String url = request.getUrl(ARG_LETTER,ARG_SOURCE);
+        String       theSource = request.getString(ARG_SOURCE, null);
+        String       theLetter = request.getString(ARG_LETTER, null);
+	boolean haveSources = sources!=null && sources.size()>1;
+	if(haveSources) {
+	    StringBuilder sourceSB = new StringBuilder();
+	    String argSource = request.getString(ARG_SOURCE,"");
+	    //	    sourceSB.append(HU.bold("Sources:&nbsp;" ));
+	    int cnt=0;
+	    for(String source: sources) {
+		if(cnt>0) {
+		    sourceSB.append(delimiter);
+		}
+		if(source.equals(argSource)) {
+		    sourceSB.append(HU.b(source));
+		} else {
+		    String theUrl = HU.url(url,ARG_SOURCE,source);
+		    if(theLetter!=null) {
+			theUrl = HU.url(theUrl,ARG_LETTER, theLetter);
+		    }
+		    sourceSB.append(HU.href(theUrl, source));
+		}
+		cnt++;
+	    }
+	    String theUrl = HU.url(url);
+	    if(theLetter!=null) {
+		theUrl = HU.url(theUrl,ARG_LETTER, theLetter);
+	    }
+	    sourceSB.append(delimiter);
+	    sourceSB.append(HU.href(theUrl, ALL));
+	    sb.append(HU.makeShowHideBlock("By Source",sourceSB.toString(),theSource!=null));
+	}
+
+
+	//        sb.append("<center>");
+
         for (String letter : getLetters(group)) {
-            if (letter.equals(theLetter)) {
+            if (Misc.equals(letter,theLetter)) {
                 header.add(HU.b(letter));
             } else {
-                header.add(HU.href(url + "&" + ARG_LETTER + "="
-                                          + letter, letter));
+		String theUrl = HU.url(url,ARG_LETTER, letter);
+		if(theSource!=null) {
+		    theUrl = HU.url(theUrl,ARG_SOURCE, theSource);
+		}
+                header.add(HU.href(theUrl,letter));
             }
         }
-        sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
-        sb.append("</center>");
+	
+	String letterHeader = StringUtil.join("&nbsp;|&nbsp;", header);
+	if(haveSources) {
+	    sb.append(HU.makeShowHideBlock("By Letter",letterHeader,true));
+	} else {
+	    sb.append(letterHeader);
+	}
+
+	//        sb.append("</center>");
 	return sb.toString();
     }
 
