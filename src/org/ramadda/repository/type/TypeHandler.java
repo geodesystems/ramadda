@@ -2852,7 +2852,7 @@ public class TypeHandler extends RepositoryManager {
             if (metadataTypes.size() > 0) {
                 links.add(makeHRLink(OutputType.TYPE_EDIT));
                 for (String metadataType : metadataTypes) {
-		    String []pair = getMetadataManager().getMetadataAddLink(request, entry, metadataType);
+		    String []pair = getMetadataManager().getMetadataAddLink(request, entry, metadataType,"Add");
 		    if(pair==null) continue;
                     links.add(new Link(pair[0],ICON_METADATA_ADD, pair[1], OutputType.TYPE_EDIT));
                 }
