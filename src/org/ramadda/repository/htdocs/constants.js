@@ -182,7 +182,7 @@ var CLASS_SLIDER = 'ramadda-slider';
 var CLASS_SEARCH_COMPONENT = 'search-component';
 var CLASS_SEARCH_INPUT = 'ramadda-search-input';
 var CLASS_SEARCH_DIV = 'ramadda-search-div';
-
+var CLASS_SELECT_POPUP = 'ramadda-select-popup';
 var CLASS_TABLE='ramadda-table';
 var CLASS_TABLE_CELLBORDER='cell-border';
 var CLASS_TABLE_HOVER='hover';

@@ -6375,6 +6375,10 @@ a.toggleblocklabellink:visited {
     text-align:left;
 }
 
+.ramadda-property-add .ramadda-button {
+    margin-bottom:4px;
+}
+
 .ramadda-entry-property-label {
     max-width:300px;
     width:1px;
