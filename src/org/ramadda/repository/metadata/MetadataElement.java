@@ -723,7 +723,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return theFile;
     }
 
-    private static String popupArgs = "{label:'Select page template',makeButtons:false,after:true,single:true,icon:true}";
+    private static String popupArgs = "{label:'${label}',makeButtons:false,after:true,single:true,icon:true}";
 
     public String getForm(Request request, Entry entry, FormInfo formInfo,
                           Metadata metadata, String suffix, String value,
@@ -820,7 +820,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    String select=  HU.select(arg, values, value);
 	    select +=HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
 				       HU.squote("select[name=\"" + arg+"\"]"),
-				       popupArgs));
+				       popupArgs.replace("${label}","Select " + getLabel())
+				       ));
 
 	    return select;
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
@@ -839,13 +840,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		}
 	    }
             boolean contains = HtmlUtils.Selector.contains(valuesToUse, value);
-
-	    
-	    //xxxx
             String select=  HU.select(arg, valuesToUse, value) +
 		HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
 				  HU.squote("select[name=\"" + arg+"\"]"),
-				  popupArgs)) +
+				  popupArgs.replace("${label}","Select " + getLabel())
+				  )) +
 		HU.space(2);
 	    String widget;
 	    String ending="";
