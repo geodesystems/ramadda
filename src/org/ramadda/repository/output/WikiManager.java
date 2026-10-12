@@ -1074,7 +1074,7 @@ public class WikiManager extends RepositoryManager
             alt = getProperty(wikiUtil, props, HU.ATTR_TITLE, "");
         }
 
-	String clazz = getProperty(wikiUtil,props,"class",null);
+	String clazz = getProperty(wikiUtil,props,ATTR_CLASS,null);
 	if(clazz!=null)
 	    HU.cssClass(extra, clazz);
         if (wikiUtil != null) {
@@ -1124,7 +1124,7 @@ public class WikiManager extends RepositoryManager
 	    style+=HU.css("object-position",position);
 	}	
         if (style.length() > 0) {
-            HU.attr(extra,"style", style);
+            HU.attr(extra,ATTR_STYLE, style);
         }
 
         String captionPosition = getProperty(wikiUtil, props, "captionPosition","bottom");
@@ -1175,7 +1175,7 @@ public class WikiManager extends RepositoryManager
         if (inDiv) {
             HU.open(sb, HU.TAG_DIV, attrs);
         } else {
-            HU.open(sb, HU.TAG_DIV, "style", ((align != null)
+            HU.open(sb, HU.TAG_DIV, ATTR_STYLE, ((align != null)
 					      ? "float:" + align + ";"
 					      : "") + "height:100%; display:inline-block;text-align:center");
         }
@@ -1556,10 +1556,10 @@ public class WikiManager extends RepositoryManager
 
         if (wrapInADiv) {
             HU.open(sb, HU.TAG_DIV, ((cssClass != null)
-                                     ? "class"
+                                     ? ATTR_CLASS
                                      : ""), (cssClass != null)
 		    ? cssClass
-		    : "", "style", style.toString());
+		    : "", ATTR_STYLE, style.toString());
         }
         sb.append(result);
         if (wrapInADiv) {
@@ -1775,20 +1775,22 @@ public class WikiManager extends RepositoryManager
 
     public String getNewPropertyLinks(Request request, Entry entry,Hashtable props) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	String style = Utils.getProperty(props,"style","");
-	String clazz = Utils.getProperty(props,"class","");		
+	sb.append("<div class=ramadda-property-add>");
+
+	String style = Utils.getProperty(props,ATTR_STYLE,"");
+	String clazz = Utils.getProperty(props,ATTR_CLASS,"");		
 	String suffix=Utils.getProperty(props,"addBreak",false)?"<br>":"";
 
 	if(Utils.getProperty(props,"addEditEntryLink",false)) {
 	    String url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
-	    String href = HU.href(url,"Edit Entry",  HU.attrs("style",style));
-	    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+	    String href = HU.href(url,"Edit Entry",  HU.attrs(ATTR_STYLE,style));
+	    href = HU.span(href,HU.attrs(ATTR_CLASS,"ramadda-clickable ramadda-button " + clazz,"role","button"));
 	    sb.append(href+suffix);
 	}
 	if(Utils.getProperty(props,"addEditPropertiesLink",false)) {
 	    String url = request.entryUrl(getMetadataManager().URL_METADATA_FORM, entry);
-	    String href = HU.href(url,"Edit Properties",  HU.attrs("style",style));
-	    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+	    String href = HU.href(url,"Edit Properties",  HU.attrs(ATTR_STYLE,style));
+	    href = HU.span(href,HU.attrs(ATTR_CLASS,"ramadda-clickable ramadda-button " + clazz,"role","button"));
 	    sb.append(href+suffix);
 	}
 
@@ -1797,14 +1799,21 @@ public class WikiManager extends RepositoryManager
 	    types.addAll(entry.getTypeHandler().getMetadataTypes());
 	}		    
 	types.addAll(Utils.split(Utils.getProperty(props,"type",""),",",true,true));
+	boolean first = true;
 	for(String type: types) {
+	    if(first) {
+		sb.append(HU.bold("Add:"));
+		sb.append(HU.space(1));
+		first=false;
+	    }
 	    String[] link =getMetadataManager().getMetadataAddLink( request, entry, type);
 	    if(link==null) return "Could not find property type:" + type;
 	    String label = Utils.getProperty(props,"label",link[1]);
-	    String href = HU.href(link[0],label,  HU.attrs("style",style));
-	    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+	    String href = HU.href(link[0],label,  HU.attrs(ATTR_STYLE,style));
+	    href = HU.span(href,HU.attrs(ATTR_CLASS,"ramadda-clickable ramadda-button " + clazz,"role","button"));
 	    sb.append(href+suffix);
 	}
+	sb.append("</div>");
 	if(Utils.getProperty(props,"showToggle",false)) {
 	    sb.append("<p>");
 	    StringBuilder tmp = new StringBuilder();
@@ -1964,8 +1973,8 @@ public class WikiManager extends RepositoryManager
 	    String icon=
 		getProperty(wikiUtil, props, "icon", "");
 	    String style=
-		getProperty(wikiUtil, props, "style", "");		
-	    String tmp =  HU.tag("i",HU.attrs("class",icon,"style",style),"");
+		getProperty(wikiUtil, props, ATTR_STYLE, "");		
+	    String tmp =  HU.tag("i",HU.attrs(ATTR_CLASS,icon,ATTR_STYLE,style),"");
 	    return tmp;
 
         } else if (theTag.equals(WIKI_TAG_CAPTION)
@@ -2025,7 +2034,7 @@ public class WikiManager extends RepositoryManager
 	    if(getProperty(wikiUtil,props,"fromEntry",false)) {
 		types.addAll(entry.getTypeHandler().getDefaultChildrenTypes());
 	    }
-	    String clazz = getProperty(wikiUtil,props,"class","");
+	    String clazz = getProperty(wikiUtil,props,ATTR_CLASS,"");
 	    String _type = getProperty(wikiUtil,props,"type",null);
 	    String template = getProperty(wikiUtil,props,"template","New ${type}");
 	    boolean showToggle = getProperty(wikiUtil,props,"showToggle",false);
@@ -2053,9 +2062,9 @@ public class WikiManager extends RepositoryManager
 					 HU.attr(HU.ATTR_WIDTH,ICON_WIDTH));
 		    label = icon +HU.space(1) +label;
 		}
-		sb.append(HU.href(url,label, HU.attrs("class","ramadda-button " + clazz,"role","button")));
+		sb.append(HU.href(url,label, HU.attrs(ATTR_CLASS,"ramadda-button " + clazz,"role","button")));
 	    }
-	    return HU.div(sb.toString(),HU.attrs("class","ramadda-newentry-buttons"));
+	    return HU.div(sb.toString(),HU.attrs(ATTR_CLASS,"ramadda-newentry-buttons"));
 	} else if(theTag.equals(WIKI_TAG_TYPECOUNT)) {
 	    final Request theRequest = request;
 	    final HashSet except = Utils.makeHashSet(Utils.split(getProperty(wikiUtil,props,"except",""),",",true,true));
@@ -2097,7 +2106,7 @@ public class WikiManager extends RepositoryManager
 
 
 	    final String template = getProperty(wikiUtil,props,"template","${icon} ${label}<br>${count}");
-	    final String style = getProperty(wikiUtil,props,"style","");
+	    final String style = getProperty(wikiUtil,props,ATTR_STYLE,"");
 	    final boolean hideWhenZero = getProperty(wikiUtil,props,"hideWhenZero",true);
 	    final boolean addPageSearch = getProperty(wikiUtil,props,"addPageSearch",false);
 	    final boolean addSearch = getProperty(wikiUtil,props,"addSearchLink",false);
@@ -2143,7 +2152,7 @@ public class WikiManager extends RepositoryManager
 		    }
 		    //		    scount = wikifyEntry(theRequest,entry,"{{odometer count=" + count+"}}");
 
-		    scount=HU.span(scount,HU.attrs("class","ramadda-typecount-count"));
+		    scount=HU.span(scount,HU.attrs(ATTR_CLASS,"ramadda-typecount-count"));
 		    String html =  template.replace("${count}",scount).replace("${label}",label);
 		    if(typeCount==1 && lastCount!=null) {
 			String icon = lastCount.getTypeHandler().getIconProperty(null);
@@ -2161,7 +2170,7 @@ public class WikiManager extends RepositoryManager
 		    if(doColor) _style=_style+"background:" +colors[cnt[0]]+";";
 		    cnt[0]++;
 		    totalCount[0]++;
-		    html=HU.inlineBlock(html,HU.attrs("style",_style,"class",clazz));
+		    html=HU.inlineBlock(html,HU.attrs(ATTR_STYLE,_style,ATTR_CLASS,clazz));
 		    if(typeCount == 1 && addSearch && lastCount!=null) {
 			String url= getRepository().getUrlBase()
 			    + "/search/type/"
@@ -2261,7 +2270,7 @@ public class WikiManager extends RepositoryManager
 		HU.href(
 			getSearchManager().URL_SEARCH_TYPE + "/" 
 			+ typeHandler.getType(), label,
-			HU.attrs("class","entry-type-search",
+			HU.attrs(ATTR_CLASS,"entry-type-search",
 				 HU.ATTR_TITLE,
 				 "Search for entries of this type"));
 
@@ -2340,7 +2349,7 @@ public class WikiManager extends RepositoryManager
 		    continue;
 		}
 
-		sb.append(HU.open("div",HU.cssClass("ramadda-user-profile") +HU.style(getProperty(wikiUtil, props,"style",""))));
+		sb.append(HU.open("div",HU.cssClass("ramadda-user-profile") +HU.style(getProperty(wikiUtil, props,ATTR_STYLE,""))));
 		sb.append("<table><tr valign=top>");
 		if(showAvatar) HU.tag(sb,"td","",avatar);
 		sb.append("<td>");
@@ -2384,7 +2393,7 @@ public class WikiManager extends RepositoryManager
 	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.js")));
 	    sb.append(HU.cssLink(getRepository().getHtdocsUrl("/lib/share/jquery-social-share-bar.css")));	    
 	    sb.append(HU.importCss(css.toString()));
-	    String style = getProperty(wikiUtil, props, "style", "");
+	    String style = getProperty(wikiUtil, props, ATTR_STYLE, "");
 	    List<String> args  = new ArrayList<String>();
 
 	    String tmp;
@@ -2409,7 +2418,7 @@ public class WikiManager extends RepositoryManager
 	    Utils.add(args,"channels",JU.list(JU.quote(Utils.split(
 								   getProperty(wikiUtil, props, "channels", channels),",",true,true))));
 	    String id = HU.getUniqueId("share_");
-	    HU.div(sb,"",HU.attrs("id",id,"class","ramadda-share share-bar","style",style));
+	    HU.div(sb,"",HU.attrs("id",id,ATTR_CLASS,"ramadda-share share-bar",ATTR_STYLE,style));
 	    StringBuilder js = new StringBuilder();
 	    js.append("$('#" + id +"').share(" +JU.map(args)+");\n");
 	    HU.script(sb,js.toString());
@@ -2471,7 +2480,7 @@ public class WikiManager extends RepositoryManager
 						     : "32"), "pt");
             String position = getProperty(wikiUtil, props, "position",
                                           (String) null);
-            String style = getProperty(wikiUtil, props, "style", "");
+            String style = getProperty(wikiUtil, props, ATTR_STYLE, "");
             String img;
             String title         = (other != null)
 		? other.getName()
@@ -2481,26 +2490,26 @@ public class WikiManager extends RepositoryManager
 		: "ramadda-nav-arrow-disabled";
             if (prev) {
                 img = HU.faIcon("fa-arrow-left",
-				HU.attrs("class",
+				HU.attrs(ATTR_CLASS,
 					 "ramadda-nav-arrow "
 					 + extraImgClass, "title", title,
-					 "style",
+					 ATTR_STYLE,
 					 "font-size:"
 					 + iconSize) + ";");
             } else if (next) {
                 img = HU.faIcon("fa-arrow-right",
-				HU.attrs("class",
+				HU.attrs(ATTR_CLASS,
 					 "ramadda-nav-arrow "
 					 + extraImgClass, "title", title,
-					 "style",
+					 ATTR_STYLE,
 					 "font-size:" + iconSize
 					 + ";"));
             } else {
                 img = HU.faIcon("fa-arrow-up",
-				HU.attrs("class",
+				HU.attrs(ATTR_CLASS,
 					 "ramadda-nav-arrow "
 					 + extraImgClass, "title", title,
-					 "style",
+					 ATTR_STYLE,
 					 "font-size:" + iconSize
 					 + ";"));
             }
@@ -2515,7 +2524,7 @@ public class WikiManager extends RepositoryManager
             String result;
             if (other == null) {
                 return HU.div(img,
-                              HU.attrs("style", style, "class",
+                              HU.attrs(ATTR_STYLE, style, ATTR_CLASS,
                                        " ramadda-nav-page " + extraClass));
             } else {
                 String label = "";
@@ -2534,7 +2543,7 @@ public class WikiManager extends RepositoryManager
                 clazz += " ramadda-shadow-box ramadda-nav-page-decorated ";
             }
             result = HU.div(result,
-                            HU.attrs("style", style, "class",
+                            HU.attrs(ATTR_STYLE, style, ATTR_CLASS,
                                      clazz + extraClass));
 
             return HU.href(getEntryManager().getEntryUrl(request, other),
@@ -2652,7 +2661,7 @@ public class WikiManager extends RepositoryManager
 	    if(url==null) {
 		url= entry.getTypeHandler().getEntryResourceUrl(request, entry);
 	    }
-	    HU.span(sb,label,HU.attrs("class","soundcite",
+	    HU.span(sb,label,HU.attrs(ATTR_CLASS,"soundcite",
 				      "data-url", url,
 				      "data-start",getProperty(wikiUtil,props,"start","0"),
 				      "xxdata-end","164000",
@@ -2916,7 +2925,7 @@ public class WikiManager extends RepositoryManager
 		String toggleLabel=getProperty(wikiUtil,props,"toggleLabel","Details");
 		if(getProperty(wikiUtil,props,"decorate",false)) {
 		    snippet = HU.div(snippet,
-				     HU.attrs("class","ramadda-shadow-box","style","padding:5px;"));
+				     HU.attrs(ATTR_CLASS,"ramadda-shadow-box",ATTR_STYLE,"padding:5px;"));
 		}
                 snippet = HU.makeShowHideBlock(toggleLabel, snippet, toggleOpen);
 	    }
@@ -2972,7 +2981,7 @@ public class WikiManager extends RepositoryManager
 		String label = user.getLabel().replace(" ", "&nbsp;");
 		String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25," class='ramadda-user-menu-image' title='User Settings'");
 		String userIcon = avatar!=null?avatar:HU.faIcon("fa-user", "title",
-								"User Settings", "class",
+								"User Settings", ATTR_CLASS,
 								"ramadda-user-menu-image");
 
 		String settingsUrl = request.makeUrl(getRepositoryBase().URL_USER_SETTINGS);
@@ -3006,7 +3015,7 @@ public class WikiManager extends RepositoryManager
 	    if(stringDefined(text))
 		text= HU.space(1) + text;
 	    String style=HU.css("text-align","left","display","inline-block","padding","5px");
-	    style+=getProperty(wikiUtil,props,"style","");
+	    style+=getProperty(wikiUtil,props,ATTR_STYLE,"");
 	    if(getProperty(wikiUtil,props,"decorate",false))
 		style+=HU.css("border","var(--basic-border)");
 
@@ -3035,7 +3044,7 @@ public class WikiManager extends RepositoryManager
 		result = license.getName();
 	    }
 	    String url = license.getUrl();
-            if(url!=null) result =  HU.href(url, result, HU.attrs("target","_other","style","text-decoration:none;"));
+            if(url!=null) result =  HU.href(url, result, HU.attrs("target","_other",ATTR_STYLE,"text-decoration:none;"));
 
 	    if(getProperty(wikiUtil, props,"showDescription",true) && license.getText()!=null) {
 		result +=HU.div(license.getText(),HU.cssClass("ramadda-license-description"));
@@ -3180,7 +3189,7 @@ public class WikiManager extends RepositoryManager
 		}
 		tt =  Utils.encodeBase64(tt,true);
 
-		String attrs = HU.attrs("class","ramadda-tooltip-element", "title",tt);
+		String attrs = HU.attrs(ATTR_CLASS,"ramadda-tooltip-element", "title",tt);
 		String ttWidth = getProperty(wikiUtil, props,"tooltipWidth",null);
 		if(ttWidth!=null)
 		    attrs+=HU.attrs("tooltip-width",ttWidth);
@@ -3347,7 +3356,7 @@ public class WikiManager extends RepositoryManager
 				    false,  (HashSet)null, false);
 	    }
 
-	    String style = Utils.getProperty(props,"style","");
+	    String style = Utils.getProperty(props,ATTR_STYLE,"");
 	    String height= Utils.getProperty(props,"height",maxHeight);
 	    if(height!=null) style+=HU.css("height",HU.makeDim(height,"px"),"maxHeight",HU.makeDim(height,"px"),"overflow-y","auto");
 	    if(maxHeight!=null || !raw) {
@@ -3631,8 +3640,8 @@ public class WikiManager extends RepositoryManager
 	    String style = HU.css("position","relative",
 				  "width",width);
 	    if(height!=null) style+=HU.css("height",height);
-	    style+=getProperty(wikiUtil,props,"style","");
-	    props.put("style","");
+	    style+=getProperty(wikiUtil,props,ATTR_STYLE,"");
+	    props.put(ATTR_STYLE,"");
 	    String id = HU.getUniqueId("canvas_");
 	    wikiUtil.putWikiProperty("inabs","true");
 	    boolean canEdit = getProperty(wikiUtil, props,"canEdit",false) &&
@@ -3650,7 +3659,7 @@ public class WikiManager extends RepositoryManager
 
 	    sb.append(HU.open("div", HU.id(id)+HU.style(style)+attrs));
 	    sb.append("\n");
-	    //	    sb.append(HU.open("canvas", attrs+HU.attrs("definedWidth",width,"id",id,"tabindex","1","width", width,"height",height,"style",HU.css("position","absolute","background","transparent", "left","0px","top","0px"))));
+	    //	    sb.append(HU.open("canvas", attrs+HU.attrs("definedWidth",width,"id",id,"tabindex","1","width", width,"height",height,ATTR_STYLE,HU.css("position","absolute","background","transparent", "left","0px","top","0px"))));
 	    //	    sb.append(HU.close("canvas"));
 	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/canvas.js")));
 	    sb.append("\n");
@@ -3710,7 +3719,7 @@ public class WikiManager extends RepositoryManager
             String height = getProperty(wikiUtil, props, "height",(String)null);
 	    String result =  tmp.toString();
 	    if(height!=null) {
-		result = HU.div(result,HU.attrs("style","max-height:" + HU.makeDim(height,"px")+";overflow-y:auto;"));
+		result = HU.div(result,HU.attrs(ATTR_STYLE,"max-height:" + HU.makeDim(height,"px")+";overflow-y:auto;"));
 	    }
 	    return result;
         } else if (theTag.equals(WIKI_TAG_CALENDAR)) {
@@ -4600,8 +4609,8 @@ public class WikiManager extends RepositoryManager
 			HU.style("width",HU.makeDim(width,"px"),"height",height);
 		    theContent= HU.makeFlipCard(front,back,
 						flipAttrs,
-						HU.attrs("style",myFrontStyle),
-						HU.attrs("style",backStyle));
+						HU.attrs(ATTR_STYLE,myFrontStyle),
+						HU.attrs(ATTR_STYLE,backStyle));
 		    theContent = makeComponent(request, wikiUtil, child, theContent,sdf2);
 		} else {
 		    theContent = content.toString();
@@ -4718,7 +4727,7 @@ public class WikiManager extends RepositoryManager
                     String displayHtml = contents.get(idx);
                     HU.div(comp, displayHtml,
                            HU.cssClass("bs-inner")
-                           + HU.attr("style", innerStyle.toString()));
+                           + HU.attr(ATTR_STYLE, innerStyle.toString()));
                     HU.close(comp, HU.TAG_DIV);
 		    if(addHeader)
 			buff.append(makeComponent(request, wikiUtil, child, comp.toString(),sdf2));
@@ -4747,7 +4756,7 @@ public class WikiManager extends RepositoryManager
 			 int    playSpeed = getProperty(wikiUtil, props, "speed", 5);
 			 String slideId   = HU.getUniqueId("slides_");
 			 sb.append("\n");
-			 HU.open(sb, "style", HU.attr("type", "text/css"));
+			 HU.open(sb, ATTR_STYLE, HU.attr("type", "text/css"));
 			 sb.append("\n");
 			 // need to set the height of the div to include the nav bar
 			 Utils.concatBuff(sb, "#", slideId, " { width: ",
@@ -4806,18 +4815,18 @@ public class WikiManager extends RepositoryManager
 			 HU.open(sb,"td",HU.attrs("width",tocWidth));
 			 String tocId = slideId +"_toc";
 			 HU.open(sb,"div",HU.attrs("id",tocId,
-			 "style",
+			 ATTR_STYLE,
 			 HU.css("margin-right","10px",
 			 "overflow-x","hidden",
 			 "overflow-y","auto",
 			 "white-space","nowrap",
 			 "max-width",tocWidth,
 			 "max-height",height)));
-			 String tocStyle = HU.attrs("style",HU.css("border-bottom","var(--basic-border)"));
+			 String tocStyle = HU.attrs(ATTR_STYLE,HU.css("border-bottom","var(--basic-border)"));
 			 for (int i = 0; i < titles.size(); i++) {
 			 sb.append(HU.div(titles.get(i),
 			 HU.attrs("title",titles.get(i),
-			 "class","ramadda-hoverable ramadda-clickable","data-index",(i+1)+"") + tocStyle));
+			 ATTR_CLASS,"ramadda-hoverable ramadda-clickable","data-index",(i+1)+"") + tocStyle));
 			 }
 			 sb.append("</div></td>");
 			 //		    js.append("let index  = +$(this).attr('data-index');\n");
@@ -4828,7 +4837,7 @@ public class WikiManager extends RepositoryManager
 
 			 HU.col(sb, prevImage,
 			 HU.attrs("width",arrowTDWidth,
-			 "style","vertical-align: middle;font-size: 30px;"));
+			 ATTR_STYLE,"vertical-align: middle;font-size: 30px;"));
 			 HU.open(sb, HU.TAG_TD, HU.attr(HU.ATTR_WIDTH, width));
 			 HU.open(sb, HU.TAG_DIV, HU.cssClass("ramadda-slides-container slides_container"));
 		*/
@@ -4871,7 +4880,7 @@ public class WikiManager extends RepositoryManager
 
 			 HU.col(sb, nextImage,
 			 HU.attrs("width",arrowTDWidth,
-			 "style","vertical-align: middle;font-size: 30px;"));
+			 ATTR_STYLE,"vertical-align: middle;font-size: 30px;"));
 
 			 sb.append("</tr></table>");
 			 HU.close(sb, HU.TAG_DIV);  
@@ -5112,7 +5121,7 @@ public class WikiManager extends RepositoryManager
 	    if (addPrefix) 
 		style = "list-style-type:none;" + style;
 	    int labelWidth = getProperty(wikiUtil,props,"labelWidth",40);
-	    sb.append(HU.open("span","class","ramadda-menutree"));
+	    sb.append(HU.open("span",ATTR_CLASS,"ramadda-menutree"));
 	    long[]size={0};
 	    int[]entryCount={0};	    
 	    int maxCount  =getProperty(wikiUtil,props,"maxCount",ENTRY_TREE_MAX_COUNT);
@@ -5156,19 +5165,19 @@ public class WikiManager extends RepositoryManager
 		    imageUrl = getPageHandler().makeHtdocsUrl("/images/placeholder.png");
 		}
 		sb.append("<tr class=ramadda-listing-row valign=top>");
-		sb.append(HU.open("td",HU.attrs("style","","width",imageWidth)));
+		sb.append(HU.open("td",HU.attrs(ATTR_STYLE,"","width",imageWidth)));
 		if(imageUrl!=null) {
 		    sb.append(HU.image(imageUrl,
-				       HU.attrs("class","ramadda-listing-image",
-						"style","max-width:100%;height:auto;",
+				       HU.attrs(ATTR_CLASS,"ramadda-listing-image",
+						ATTR_STYLE,"max-width:100%;height:auto;",
 						"loading", "lazy")));
 
 		}
 		sb.append(HU.close("td"));
 		sb.append(HU.open("td",HU.attrs("width",textWidth)));
-		sb.append(HU.open("div",HU.attrs("class","ramadda-listing-text")));
+		sb.append(HU.open("div",HU.attrs(ATTR_CLASS,"ramadda-listing-text")));
 		sb.append(HU.div(HU.href(getEntryManager().getEntryUrl(request, child), child.getName()),
-				 HU.attrs("class","ramadda-theme-heading ramadda-listing-header")));
+				 HU.attrs(ATTR_CLASS,"ramadda-theme-heading ramadda-listing-header")));
 		String snippet =  null;
 		if(showSnippet) {
 		    snippet=getSnippet(request,  child, false,"");
@@ -5244,7 +5253,7 @@ public class WikiManager extends RepositoryManager
 		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
 	    }
 
-	    String style = getProperty(wikiUtil, props, "style","",theTag);
+	    String style = getProperty(wikiUtil, props, ATTR_STYLE,"",theTag);
 	    String prefix = convertText(getProperty(wikiUtil, props, "before","",theTag));
 	    String suffix = convertText(getProperty(wikiUtil, props, "after","",theTag));
 	    String delimiter = getProperty(wikiUtil, props, "delimiter","",theTag);	    
@@ -5267,7 +5276,7 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_NAVBAR)) {
 	    boolean popup = getProperty(wikiUtil,props,ATTR_POPUP,false);
 	    boolean makeButtons = getProperty(wikiUtil,props,"makeButton",false);	    	    
-	    String style =getProperty(wikiUtil,props,"style","");
+	    String style =getProperty(wikiUtil,props,ATTR_STYLE,"");
 	    String linkStyle =getProperty(wikiUtil,props,"linkStyle","");
 	    String separator =getProperty(wikiUtil,props,"separator",popup?"<br>":null);
 	    String contents =getProperty(wikiUtil,props,"contents",null);
@@ -5282,10 +5291,10 @@ public class WikiManager extends RepositoryManager
 		separator = HU.div("",HU.clazz("ramadda-navbar-separator"));
 	    String image =getProperty(wikiUtil,props,"image","");	    
 	    int cnt = 0;
-	    sb.append(HU.open("div",HU.attrs("style",style,"class","ramadda-navbar")));
+	    sb.append(HU.open("div",HU.attrs(ATTR_STYLE,style,ATTR_CLASS,"ramadda-navbar")));
 	    if(header!=null) {
 		if(popup)
-		    HU.div(sb,header,HU.attrs("class","ramadda-navbar-popup-header"));
+		    HU.div(sb,header,HU.attrs(ATTR_CLASS,"ramadda-navbar-popup-header"));
 		else
 		    sb.append(header);		
 	    }
@@ -5325,7 +5334,7 @@ public class WikiManager extends RepositoryManager
 		if(stringDefined(image2)) {
 		    label = HU.div(image2,"")+label;
 		}
-		label = HU.div(label,HU.attrs("style",linkStyle,"class",clazz));
+		label = HU.div(label,HU.attrs(ATTR_STYLE,linkStyle,ATTR_CLASS,clazz));
 		if(cnt++>0) sb.append(separator);
 		sb.append(HU.href(url,label));
 	    }
@@ -5343,12 +5352,12 @@ public class WikiManager extends RepositoryManager
 		StringBuilder sb2= new StringBuilder();
 		HU.div(sb2,
 		       popupText,HU.attrs("id",id,
-					  "class",
+					  ATTR_CLASS,
 					  "ramadda-navbar-popup-link ramadda-clickable",
 					  "title","Show links",
-					  "style",popupLinkStyle));
+					  ATTR_STYLE,popupLinkStyle));
 		HU.span(sb2,sb.toString(),HU.attrs("id",id+"_popup",
-						   "class","ramadda-navbar-popup"));
+						   ATTR_CLASS,"ramadda-navbar-popup"));
 		sb2.append(HU.script(HU.call("Utils.initNavbarPopup",HU.squote(id))));
 		return sb2.toString();
 	    }
@@ -5802,7 +5811,7 @@ public class WikiManager extends RepositoryManager
 	String chunkStyle =  getProperty(wikiUtil, props, "chunkStyle","");
 	List<String> tds = new ArrayList<String>();
 	for(Object chunk: chunks) {
-	    tds.add(HU.div(chunk.toString(),HU.attrs("style",chunkStyle)));
+	    tds.add(HU.div(chunk.toString(),HU.attrs(ATTR_STYLE,chunkStyle)));
 	}
 	StringBuilder buff = new StringBuilder();
 	if(columns>0)  {
@@ -6337,10 +6346,10 @@ public class WikiManager extends RepositoryManager
 	String id = Utils.getGuid();
 	//entry.getResource().getPath(), true);
 	String formatted = JU.format(json,true);
-	String style = Utils.getProperty(props,"style","");
+	String style = Utils.getProperty(props,ATTR_STYLE,"");
 	String height= Utils.getProperty(props,"height",null);
 	if(height!=null) style+=HU.css("height",HU.makeDim(height,"px"),"maxHeight",HU.makeDim(height,"px"),"overflow-y","auto");
-	HU.open(sb, "div", "id", id,"style",style);
+	HU.open(sb, "div", "id", id,ATTR_STYLE,style);
 	HU.pre(sb, formatted);
 	HU.close(sb, "div");
 	sb.append(HU.importJS(getRepository().getHtdocsUrl("/jsonutil.js")));
@@ -6610,14 +6619,14 @@ public class WikiManager extends RepositoryManager
 
 	entryCount[0]++;
 	if(top) {
-	    HU.open(sb,"ul",HU.attrs("id",menuId, "style",style));
+	    HU.open(sb,"ul",HU.attrs("id",menuId, ATTR_STYLE,style));
 	    sb.append("\n");
 	}
 
 	String myId=HU.getUniqueId("size");
 	if ((prefix.length() > 0) || showRoot) {
 	    String corpus = entry.getTypeHandler().getType();
-	    HU.open(sb, "li",HU.attrs("class","search-component","data-corpus",corpus));
+	    HU.open(sb, "li",HU.attrs(ATTR_CLASS,"search-component","data-corpus",corpus));
             String label = Utils.clipTo(getEntryManager().getEntryDisplayName(entry),labelWidth,"...");
 	    if(showType) {
 		label = "(<span class=ramadda-fulltree-type>"+entry.getTypeHandler().getDescription()+"</span>)" +HU.SPACE +
@@ -6629,7 +6638,7 @@ public class WikiManager extends RepositoryManager
 		    
 	    }
             String link =  HtmlUtils.href(getEntryManager().getEntryURL(request, entry), label,
-					  HU.attrs("class","ramadda-tree-link"));
+					  HU.attrs(ATTR_CLASS,"ramadda-tree-link"));
 	    if(addPrefix) link = prefix +" " + link;
 	    if(asMenu) link = HU.div(link);
 
@@ -6682,7 +6691,7 @@ public class WikiManager extends RepositoryManager
 		if(count>maxCount) break;
 		if(!top) {
 		    if(!addedUl) {
-			HU.open(sb,"ul",HU.attrs("style",style));
+			HU.open(sb,"ul",HU.attrs(ATTR_STYLE,style));
 			sb.append("\n");
 			addedUl = true;
 		    }
@@ -6849,8 +6858,8 @@ public class WikiManager extends RepositoryManager
 	    }
 
             String img = HU.img(imageUrl, "",
-				HU.attrs("class","ramadda-card-image",
-					 "style",imageStyle,
+				HU.attrs(ATTR_CLASS,"ramadda-card-image",
+					 ATTR_STYLE,imageStyle,
 					 "loading", "lazy"));
 
             String  inner;
@@ -6884,7 +6893,7 @@ public class WikiManager extends RepositoryManager
                 inner = HU.href(entryUrl, img, HU.cssClass(""));
 	    }
 	    //	    card.append("<div class='ramadda-flip-card'><div class='ramadda-flip-card-inner'><div class='ramadda-flip-card-front'>");
-            card.append(HU.div(inner, HU.attrs("class","ramadda-imagewrap")));
+            card.append(HU.div(inner, HU.attrs(ATTR_CLASS,"ramadda-imagewrap")));
 	    //	    card.append("</div><div class='ramadda-flip-card-back'>");
 	    //	    card.append("The back");
 	    //	    card.append("</div></div></div>");
@@ -8063,7 +8072,7 @@ public class WikiManager extends RepositoryManager
         String captionPos = getProperty(wikiUtil, props, ATTR_POPUPCAPTION,
                                         "none");
         String padding = getProperty(wikiUtil, props, "padding","10px");
-        String style = getProperty(wikiUtil, props, "style","");
+        String style = getProperty(wikiUtil, props, ATTR_STYLE,"");
         boolean showDesc = getProperty(wikiUtil, props, ATTR_SHOWDESCRIPTION,
                                        false);
 	boolean showPlaceholderImage = getProperty(wikiUtil,props,"showPlaceholderImage",true);
@@ -8166,24 +8175,24 @@ public class WikiManager extends RepositoryManager
 		    extra = extra + HU.attr(HU.ATTR_ALT, name);
 		}
 		extra = extra + HU.attr("id", idPrefix + "img" + num) +
-		    HU.attrs("loading","lazy","style",imageStyle);
+		    HU.attrs("loading","lazy",ATTR_STYLE,imageStyle);
 		String img = url==null?"":HU.img(url, "", extra);
 		contents= img;
 	    }
-	    //	    if(imageStyle!=null) {img = HU.div(img,HU.attrs("style",imageStyle)); }
+	    //	    if(imageStyle!=null) {img = HU.div(img,HU.attrs(ATTR_STYLE,imageStyle)); }
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
-	    buff.append(HU.open("div",HU.attrs("style",outerStyle)));
+	    buff.append(HU.open("div",HU.attrs(ATTR_STYLE,outerStyle)));
 	    if(decorate) {
-		buff.append(HU.open("div",HU.attrs("class","image-outer search-component","entryid",child.getId())));
+		buff.append(HU.open("div",HU.attrs(ATTR_CLASS,"image-outer search-component","entryid",child.getId())));
 		buff.append("<div class=\"image-inner\">");
 	    } else {
 		style = "padding:" + HU.makeDim(padding)+";" + style;
-		HU.open(buff,"div",HU.attrs("style",style));
+		HU.open(buff,"div",HU.attrs(ATTR_STYLE,style));
 	    }
             if (popup) {
 		String thePopupCaption = applyMacros(request, child,popupMacros,num);
-                String popupExtras = HU.attrs("class","popup_image","data-order",""+num)
+                String popupExtras = HU.attrs(ATTR_CLASS,"popup_image","data-order",""+num)
 		    + HU.attr("width", "100%");
 		//                if ( !captionPos.equals("none")) {
 		if(theCaption!=null)
@@ -8646,7 +8655,7 @@ public class WikiManager extends RepositoryManager
 	final String[]currentHeader = new String[]{""};
 	Utils.UniFunction<String,String> hdr = (title)->{
 	    currentHeader[0] = title;
-	    return HU.div(HU.b(title),HU.attrs("class","wiki-editor-popup-link"));
+	    return HU.div(HU.b(title),HU.attrs(ATTR_CLASS,"wiki-editor-popup-link"));
 	};
 	Utils.UniFunction<String,String> plus = (s)->{
 	    return "+"+s+"\\n";
@@ -8864,7 +8873,7 @@ public class WikiManager extends RepositoryManager
         wikiMenuTagsButton = makeMenuButton("Tags",
 					    HU.span(HU.hbox(misc1, misc2,misc3),
 						    HU.attrs("data-title","Tags",
-							     "class","wiki-menubar-tags")),
+							     ATTR_CLASS,"wiki-menubar-tags")),
 					    true);
 
         String previewButton =
@@ -8872,7 +8881,7 @@ public class WikiManager extends RepositoryManager
 		    HU.attrs("id", textAreaId+"_previewbutton", "xstyle", "padding:5px;",
 			     "xclass",
 			     "ramadda-menubar-button ramadda-menubar-button-last"))
-	    +   HU.div("",HU.attrs("id", textAreaId+"_preview", "class", "wiki-editor-preview"));
+	    +   HU.div("",HU.attrs("id", textAreaId+"_preview", ATTR_CLASS, "wiki-editor-preview"));
 
         String colorButton =
 	    HU.href("#", "Color",
@@ -8953,7 +8962,7 @@ public class WikiManager extends RepositoryManager
         wikiMenuFormattingButton = makeMenuButton("Formatting",
 						  HU.span(HU.hbox(tags1, tags2,tags3,tags4),
 							  HU.attrs("data-title","Formatting",
-								   "class","wiki-menubar-tags")),true,true);
+								   ATTR_CLASS,"wiki-menubar-tags")),true,true);
 
     }
 
@@ -9029,11 +9038,11 @@ public class WikiManager extends RepositoryManager
         String entriesButton = makeMenuButton("Entry",
 					      HU.span(makeTagsMenu(entry,textAreaId),
 						      HU.attrs("data-title","Entries",
-							       "class","wiki-menubar-tags")),true);
+							       ATTR_CLASS,"wiki-menubar-tags")),true);
 
         String displaysButton = HU.href("javascript:noop()", "Displays",
 					HU.attrs("id", "displays_button" + textAreaId,
-						 "class",
+						 ATTR_CLASS,
 						 "ramadda-menubar-button"));
 
 
@@ -9055,10 +9064,10 @@ public class WikiManager extends RepositoryManager
                 HU.cssClass("ramadda-menubar")
                 + HU.attrs("id", textAreaId + "_toolbar"));
 	buttons.append(HU.span(HU.img(getIconUrl("fas fa-magnifying-glass")),
-			       HU.attrs("style","margin-left:6px;margin-right:2px;","title","Search for tags", "class",
+			       HU.attrs(ATTR_STYLE,"margin-left:6px;margin-right:2px;","title","Search for tags", ATTR_CLASS,
 					"wiki-editor-menu-icon ramadda-clickable","id", textAreaId + "_toolbar_search")));
 	buttons.append(HU.span(HU.img(getIconUrl("fas fa-pen-to-square")),
-			       HU.attrs("style","margin-left:6px;","title","Edit mode - click in tag to show editor", "class","wiki-editor-menu-icon ramadda-clickable","id", textAreaId + "_toolbar_edit")));
+			       HU.attrs(ATTR_STYLE,"margin-left:6px;","title","Edit mode - click in tag to show editor", ATTR_CLASS,"wiki-editor-menu-icon ramadda-clickable","id", textAreaId + "_toolbar_edit")));
 
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
                         wikiMenuFormattingButton, wikiMenuTagsButton, entriesButton);
@@ -9105,8 +9114,8 @@ public class WikiManager extends RepositoryManager
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
                 sb.append(HU.div(HU.href(js2, wikiTag.label),
-				 HU.attrs("class","wiki-editor-popup-link",
-					  "style","margin-left:8px;")));
+				 HU.attrs(ATTR_CLASS,"wiki-editor-popup-link",
+					  ATTR_STYLE,"margin-left:8px;")));
 	    }
             sb.append("</td>");
 	}
@@ -9120,7 +9129,7 @@ public class WikiManager extends RepositoryManager
                     sb.append("</td><td>&nbsp;</td><td valign=top>\n");
                 }
             }
-            sb.append(HU.div(cat.category,HU.attrs("class","wiki-editor-popup-category")));
+            sb.append(HU.div(cat.category,HU.attrs(ATTR_CLASS,"wiki-editor-popup-category")));
             rowCnt += cat.tags.length;
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
                 WikiTag tag          = cat.tags[tagIdx];
@@ -9136,8 +9145,8 @@ public class WikiManager extends RepositoryManager
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")
 		    + ");";
-		String attrs = HU.attrs("class","wiki-editor-popup-link",
-					"style","margin-left:8px;");
+		String attrs = HU.attrs(ATTR_CLASS,"wiki-editor-popup-link",
+					ATTR_STYLE,"margin-left:8px;");
 		if(tag.tt!=null) attrs+=HU.attr("title",getMenuTooltip(tag.tt));
                 sb.append(HU.div(HU.href(js2, tag.label),
 				 attrs));
@@ -9196,7 +9205,7 @@ public class WikiManager extends RepositoryManager
 		+ HU.squote(prefix) + "," + HU.squote(suffix) + ","
 		+ HU.squote("") + ");";
         }
-	String attrs=  HU.attrs("class","wiki-editor-popup-link");
+	String attrs=  HU.attrs(ATTR_CLASS,"wiki-editor-popup-link");
 	if(corpus!=null) attrs+=HU.attrs("data-corpus",corpus);
         return HU.div(HU.href(js, label,linkAttrs),attrs);
     }
@@ -10603,7 +10612,7 @@ public class WikiManager extends RepositoryManager
 					     "name",JU.quote(mapEntry.getName()),
 					     "id",JU.quote(mapEntry.getId()),
 					     "type",JU.quote("shapefile"),
-					     "style",mapStyle));
+					     ATTR_STYLE,mapStyle));
 		    } else  if (mapEntry.getTypeHandler().isType("geo_editable_json")) {
                         if (annotatedIds == null) {
                             annotatedIds   = mapEntry.getId();
@@ -10623,7 +10632,7 @@ public class WikiManager extends RepositoryManager
 					     "name",JU.quote(mapEntry.getName()),
 					     "id",JU.quote(mapEntry.getId()),
 					     "type",JU.quote(type),
-					     "style",mapStyle));
+					     ATTR_STYLE,mapStyle));
                     }
                     if (Misc.equals(metadata.getAttr2(), "true")) {
                         Utils.add(propList, "displayAsMap", "true");
@@ -10707,26 +10716,26 @@ public class WikiManager extends RepositoryManager
 			      "color", "#333",
                               "background-color", "#fff");
 
-        String s = (String) entry.getValue(request,"style");
+        String s = (String) entry.getValue(request,ATTR_STYLE);
         if (Utils.stringDefined(s)) {
             style += s;
         }
-	style += Utils.getProperty(props, "style","");
+	style += Utils.getProperty(props, ATTR_STYLE,"");
         style = style.replaceAll("\n", " ");
         String id = HU.getUniqueId("zoomify_div");
-	String main = HU.div("",HU.attrs("class","ramadda-zoomify","style",mainStyle,"id", id));
+	String main = HU.div("",HU.attrs(ATTR_CLASS,"ramadda-zoomify",ATTR_STYLE,mainStyle,"id", id));
 	String top = HU.div("", HU.attrs("id", id+"_top"));
 	String bar = HU.div("", HU.attrs("id", id+"_annotations"));
 	HU.open(sb,"center");
 	sb.append("\n");
-	main = HU.div(main,HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
+	main = HU.div(main,HU.attrs(ATTR_STYLE,HU.css("text-align","left","display","inline-block","width",width)));
 	String cols = "";
 	if(Utils.getProperty(props,"showLeftColumn",true))  {
 	    //The width gets set from annotation.js if there are annotations
 	    cols+=HU.col(bar,HU.attr("width","1px"));
 	}
 	cols+=
-	    HU.col(HU.div(main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),"");
+	    HU.col(HU.div(main,HU.attrs(ATTR_CLASS,"ramadda-annotation-wrapper",ATTR_STYLE, style)),"");
 	String table = HU.table(HU.row(cols,HU.attr("valign","top")), HU.attr("width","100%"));
 	sb.append(top);
 	sb.append(table);	
