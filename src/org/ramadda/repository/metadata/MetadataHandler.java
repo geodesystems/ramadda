@@ -586,6 +586,7 @@ public class MetadataHandler extends RepositoryManager {
             return;
         }
         Metadata metadata = new Metadata(type);
+	metadata.setIsNew(true);
         metadata.setEntry(entry);
         String   formId   = HU.getUniqueId("metadata_");
         FormInfo formInfo = new FormInfo(formId);
@@ -679,13 +680,14 @@ public class MetadataHandler extends RepositoryManager {
             return;
         }
 
-        Metadata metadata = metadataType.handleForm(request, entry, id,
-                                suffix, ((existingMetadata == null)
-                                         ? null
-                                         : existingMetadata.get(
-                                             id)), newMetadata);
+        List<Metadata> metadata =
+	    metadataType.handleForm(request, entry, id,
+				    suffix, ((existingMetadata == null)
+					     ? null
+					     : existingMetadata.get(
+								    id)), newMetadata);
         if (metadata != null) {
-            metadataList.add(metadata);
+            metadataList.addAll(metadata);
         }
     }
 

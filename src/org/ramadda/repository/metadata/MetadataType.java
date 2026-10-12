@@ -70,6 +70,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     private List<Column> databaseColumns;
     private String displayCategory = "Properties";
     private String displayGroup = null;
+    private boolean addMultiples=false;
+
+
     private String tag = null;
     private String category = "Properties";
     private boolean adminOnly = false;
@@ -231,6 +234,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 	tag = MyXmlUtil.getAttributeFromTree(node, "tag",  (String) null);
 
+	addMultiples = MyXmlUtil.getAttribute(node, "addmultiples",false);
         setDisplayGroup(MyXmlUtil.getAttributeFromTree(node, ATTR_DISPLAYGROUP,
 						     (String) null));
         setCategory(MyXmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
@@ -397,21 +401,39 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     }
 
-    public Metadata handleForm(Request request, Entry entry, String id,
+    public List<Metadata> handleForm(Request request, Entry entry, String id,
                                String suffix, Metadata oldMetadata,
                                boolean newMetadata)
 	throws Exception {
         boolean inherited = request.get(ARG_METADATA_INHERITED + suffix,
                                         false);
-        Metadata metadata = new Metadata(id, entry.getId(), this, inherited);
-	metadata.setAccess(request.getString(ARG_METADATA_ACCESS+suffix,""));
-        for (MetadataElement element : getChildren()) {
-            String value = element.handleForm(request, entry, metadata,
-					      oldMetadata, suffix);
-            metadata.setAttr(element.getIndex(), value);
-        }
+	List<Metadata> mtdList = new ArrayList<Metadata>();
+	int copies=0;
+	if(newMetadata && addMultiples) {
+	    //not now	    copies=3;
+	}
 
-        return metadata;
+	for(int version=0;true;version++) {
+	    if(version>50) {
+		throw new IllegalStateException("Too many iterations creating metadata");
+	    }
+	    Metadata metadata = new Metadata(id, entry.getId(), this, inherited);
+	    for (MetadataElement element : getChildren()) {
+		String value = element.handleForm(request, entry, metadata,
+						  oldMetadata, suffix, version);
+		metadata.setAttr(element.getIndex(), value);
+	    }
+	    //for now if there are extra then skip if attr 1 not defined
+	    if(version>0) {
+		if(!Utils.stringDefined(metadata.getAttr1())) {
+		    break;
+		}
+	    }
+	    metadata.setAccess(request.getString(ARG_METADATA_ACCESS+suffix,""));
+	    mtdList.add(metadata);
+	}
+
+        return mtdList;
     }
 
     public boolean addMetadataToXml(Request request, String templateType,
@@ -894,40 +916,46 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	String clazz = 	"ramadda-metadata-widget ramadda-metadata-widget-"+HU.makeCssClass(id);
 
         String lastGroup = null;
-        for (MetadataElement element : getChildren()) {
-            if (forEdit && (firstValue == null || element.getIsTitle())) {
-		String attr = metadata.getAttr(element.getIndex());
-                MetadataElement.MetadataHtml metadataHtml =
-                    element.getHtml(request, entry, this, metadata,   attr, 0);
-                if (metadataHtml != null) {
-		    if(firstValue==null)
-			firstValue = metadataHtml.getHtml();
-		} 
-		if(element.getIsTitle()) {
-		    if(element.isFileType())
-			attr = getStorageManager().getFileTail(attr);
-		    titles.add(attr);
-		}		    
-            }
-
-            if ((element.getGroup() != null)
-		&& !Misc.equals(element.getGroup(), lastGroup)) {
-                lastGroup = element.getGroup();
-                sb.append(HU.row(HU.colspan(header(lastGroup),
-					    2)));
-            }
-            String widget =
-                element.getForm(request, entry, formInfo, metadata, suffix,
-                                metadata.getAttr(element.getIndex()),
-                                forEdit);
-            if ((widget == null) || (widget.length() == 0)) {}
-            else {
-                String help = element.getHelp();
-		if(stringDefined(help)) {
-		    String _help = HU.div(help,HU.clazz("ramadda-form-help"));
-		    sb.append(HU.formEntryTop("",_help));
+	boolean isNew = metadata.getIsNew();
+	int copies=0;
+	if(isNew && addMultiples) {
+	    //not now:	    copies=3;
+	}
+	String widgetGroupId = HU.getUniqueId("widgets");
+	String widgetGroupClass = HU.getUniqueId("widgets");	
+	sb.append("\n");
+        for(int version=0;version<=copies;version++) {
+	    for (MetadataElement element : getChildren()) {
+		if (forEdit && (firstValue == null || element.getIsTitle())) {
+		    String attr = metadata.getAttr(element.getIndex());
+		    MetadataElement.MetadataHtml metadataHtml =
+			element.getHtml(request, entry, this, metadata,   attr, 0);
+		    if (metadataHtml != null) {
+			if(firstValue==null)
+			    firstValue = metadataHtml.getHtml();
+		    } 
+		    if(element.getIsTitle()) {
+			if(element.isFileType())
+			    attr = getStorageManager().getFileTail(attr);
+			titles.add(attr);
+		    }		    
 		}
 
+		if ((element.getGroup() != null)
+		    && !Misc.equals(element.getGroup(), lastGroup)) {
+		    lastGroup = element.getGroup();
+		    sb.append(HU.row(HU.colspan(header(lastGroup),
+						2)));
+		}
+		String widget =
+		    element.getForm(request, entry, formInfo, metadata, suffix,
+				    metadata.getAttr(element.getIndex()),
+				    forEdit,version);
+		if ((widget == null) || (widget.length() == 0)) {continue;}
+		String help = element.getHelp();
+		if(stringDefined(help) && version==0) {
+		    sb.append(HU.formEntryTop("",HU.div(help,HU.clazz("ramadda-form-help"))));
+		}
 		String suffixLabel = element.getSuffixLabel();
 		if(suffixLabel==null) suffixLabel = "";
 		if(element.isBoolean()) {
@@ -935,11 +963,15 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 		} else {
 		    String elementLbl = msgLabel(element.getLabel());
 		    suffixLabel = HU.div(suffixLabel.replace("\\n","\n"),HU.attrs("class","ramadda-metadata-widget-suffix"));
-		    sb.append(HU.formEntryTop(elementLbl, HU.hbox(widget,suffixLabel)));
+		    widget=HU.div(widget,HU.attrs("class", widgetGroupClass));
+		    if(version==0 && copies>0) {
+			widget+=HU.div("",HU.attrs("id",widgetGroupId));
+		    }
+		    sb.append(HU.formEntryTop(version==0?elementLbl:"",
+					      HU.hbox(widget,suffixLabel)));
 		}
-            }
-        }
-
+	    }
+	}
         sb.append("\n");
 	HU.formEntry(sb,"",HU.formHelp("Apply this property to all children entries"));
         sb.append( HU.formEntry("",

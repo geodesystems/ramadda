@@ -100,8 +100,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	if(id==null && getName()!=null)
 	    id = Utils.makeID(getName());
         max     = MyXmlUtil.getAttribute(node, ATTR_MAX, max);
+
         setDataType(MyXmlUtil.getAttribute(node, ATTR_DATATYPE,
                                          MetadataElement.DATATYPE_STRING));
+
 
         setRows(MyXmlUtil.getAttribute(node, ATTR_ROWS, 1));
         setColumns(MyXmlUtil.getAttribute(node, ATTR_COLUMNS, isEnumeration()?20:60));
@@ -551,13 +553,20 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return getDataType().equals(DATATYPE_GROUP);
     }
 
+    public String getUrlArg(String suffix, int version) {
+        String arg = ARG_METADATA_ATTR + getIndex() + suffix;
+	if(version>0) {
+	    arg = arg + "_v" + version;
+	}
+	return arg;
+    }
+
     public String handleForm(Request request, Entry entry,
                              Metadata newMetadata, Metadata oldMetadata,
-                             String suffix)
+                             String suffix,int version)
 	throws Exception {
 
-        String arg = ARG_METADATA_ATTR + getIndex() + suffix;
-
+        String arg = getUrlArg(suffix,version);
         if (getDataType().equals(DATATYPE_LATLON)) {
             return request.getString(arg + ".latitude", "") + ","
 		+ request.getString(arg + ".longitude", "");
@@ -602,7 +611,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		    String>();
                 for (MetadataElement element : getChildren()) {
                     String subValue = element.handleForm(request, entry,
-							 newMetadata, oldMetadata, subArg);
+							 newMetadata, oldMetadata, subArg,version);
                     if (subValue == null) {
                         continue;
                     }
@@ -718,14 +727,13 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
     public String getForm(Request request, Entry entry, FormInfo formInfo,
                           Metadata metadata, String suffix, String value,
-                          boolean forEdit)
+                          boolean forEdit,int version)
 	throws Exception {
 
         if (dataType.equals(DATATYPE_SKIP)) {
             return "";
         }
-        String arg = ARG_METADATA_ATTR + getIndex() + suffix;
-
+        String arg = getUrlArg(suffix,version);
         if ((value == null) || (value.length() == 0)) {
             value = request.getString(arg, dflt);
         }
@@ -832,17 +840,21 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    }
             boolean contains = HtmlUtils.Selector.contains(valuesToUse, value);
 
-            String select=  HU.select(arg, valuesToUse, value) + HU.space(2)
-		+ msgLabel("Or")
-		+ HU.input(arg + "_input", (contains
-					    ? ""
-					    : value), HU.attrs("size",""+columns));
-	    select +=HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
-				       HU.squote("select[name=\"" + arg+"\"]"),
-				       popupArgs));
-
-	    return select;
-
+	    
+	    //xxxx
+            String select=  HU.select(arg, valuesToUse, value) +
+		HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				  HU.squote("select[name=\"" + arg+"\"]"),
+				  popupArgs)) +
+		HU.space(2);
+	    String widget;
+	    String ending="";
+	    widget =  HU.input(arg + "_input", (contains
+						? ""
+						: value), HU.attrs("size",""+columns));
+	    return select+msgLabel("Or") + widget + ending;
+	    //	    return HU.hbox(select,msgLabel("Or"),widget,ending);
+	    //	    return select;
         } else if (dataType.equals(DATATYPE_FILE)) {
             String image = (forEdit
                             ? getFileHtml(request, entry, metadata, this,
@@ -931,7 +943,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         subValue = "";
                     }
                     String widget = element.getForm(request, entry, formInfo,
-						    metadata, subArg, subValue, forEdit);
+						    metadata, subArg, subValue, forEdit,version);
                     if ((widget == null) || (widget.length() == 0)) {
                         continue;
                     }

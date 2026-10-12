@@ -76,6 +76,7 @@ public class Metadata implements Constants {
     private List<Role> accessList;
     private Object[] values;
     private boolean markedForDelete = false;
+    private boolean isNew = false;
 
     public Metadata() {}
 
@@ -676,5 +677,25 @@ public class Metadata implements Constants {
     public MetadataType getMetadataType () {
 	return metadataType;
     }
+
+    /**
+       Set the IsNew property.
+
+       @param value The new value for IsNew
+    **/
+    public void setIsNew (boolean value) {
+	isNew = value;
+    }
+
+    /**
+       Get the IsNew property.
+
+       @return The IsNew
+    **/
+    public boolean getIsNew () {
+	return isNew;
+    }
+
+
 
 }

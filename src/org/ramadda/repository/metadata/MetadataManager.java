@@ -199,13 +199,14 @@ public class MetadataManager extends RepositoryManager {
         return type.getHandler();
     }
 
-    public String[] getMetadataAddLink(Request request, Entry entry, String metadataType) {
+    public String[] getMetadataAddLink(Request request, Entry entry, String metadataType,String...prefix) {
 	MetadataType type =findType(metadataType);
 	if(type==null) return null;
 	return  new String[]{
 	    request.entryUrl(URL_METADATA_ADDFORM,
 			     entry, ARG_METADATA_TYPE,
-			     metadataType), msg("Add") + " " + type.getName()};
+			     metadataType),
+	    (prefix.length==0?"":prefix[0]+" ") +type.getName()};
     }
 
     public void addMetadataType(MetadataType type) {
@@ -2008,6 +2009,16 @@ public class MetadataManager extends RepositoryManager {
                                         entry));
 
 	getEntryManager().addEntryEditHeader(request, entry,sb, URL_METADATA_FORM);
+
+	String lastType = request.getString(ARG_METADATA_TYPE,"");
+	if(stringDefined(lastType)) {
+	    String[] link =getMetadataManager().getMetadataAddLink( request, entry, lastType);		
+	    if(link!=null) {
+		String href = HU.href(link[0],link[1]);
+		sb.append(HU.div("Add another " + HU.span(href,HU.attrs("class","ramadda-button ramadda-button-small"))));
+	    }
+	}	
+
         List<Metadata> metadataList = getMetadata(request,entry);
         if (metadataList.size() != 0) {
 	    sb.append(getWikiManager().getNewPropertyLinks(request,  entry,
@@ -2157,6 +2168,7 @@ public class MetadataManager extends RepositoryManager {
         StringBuilder sb    = new StringBuilder();
         Entry         entry = getEntryManager().getEntry(request);
 
+
         if (request.get(ARG_METADATA_CLIPBOARD_PASTE, false)) {
             getPageHandler().entrySectionOpen(request, entry, sb,
                     "Add Property");
@@ -2254,18 +2266,23 @@ public class MetadataManager extends RepositoryManager {
             }
             //            request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
 
-	    groupSB.append(HU.open("span",HU.attrs("class","ramadda-metadata-add","data-corpus",type.getLabel())));
-            groupSB.append(request.form(URL_METADATA_ADDFORM,HU.style("display:inline-block;margin:5px;")));
-            groupSB.append(HU.hidden(ARG_ENTRYID, entry.getId()));
-            groupSB.append(HU.hidden(ARG_METADATA_TYPE, type.getId()));
-            groupSB.append(HU.submit("Add" + HU.space(1)
-                                            + type.getLabel()));
-            if (Utils.stringDefined(type.getHelp())) {
-                groupSB.append(HU.space(1));
-                groupSB.append(HU.span(HU.faIcon("fas fa-info"),HU.attrs("title",type.getHelp().trim(),"class","ramadda-clickable")));
-            }
-            groupSB.append(HU.formClose());
+	    String help = Utils.stringDefined(type.getHelp())?type.getHelp():"";
+	    groupSB.append(HU.open("span",
+				   HU.attrs(ATTR_CLASS,"ramadda-button ramadda-button-small ramadda-metadata-add",
+					    "title",help,
+					    "data-corpus",type.getLabel())));
+	    String url = request.makeUrl(URL_METADATA_ADDFORM,
+					 ARG_ENTRYID, entry.getId(),
+					 ARG_METADATA_TYPE, type.getId());
+	    groupSB.append(HU.href(url, type.getLabel()));
+				//            groupSB.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+				//            groupSB.append(HU.hidden(ARG_METADATA_TYPE, type.getId()));
+	    //            groupSB.append(HU.submit("Add" + HU.space(1)                                           + type.getLabel()));
 	    groupSB.append(HU.close("span"));
+            if (Utils.stringDefined(type.getHelp())) {
+		//                groupSB.append(HU.space(1));
+		//                groupSB.append(HU.span(HU.faIcon("fas fa-info"),HU.attrs("title",type.getHelp().trim(),"class","ramadda-clickable")));
+            }
 	    //            groupSB.append(HU.p());
             groupSB.append(NEWLINE);
         }
@@ -2301,7 +2318,7 @@ public class MetadataManager extends RepositoryManager {
 	sb.append("</center>");
 	sb.append(HU.open("div",HU.attr("id",uid)));
 	for(int i=0;i<titles.size();i++) {
-	    sb.append(HU.open("div",HU.clazz("ramadda-metadata-group")));
+	    sb.append(HU.open("div",HU.clazz("ramadda-metadata-group ramadda-property-add")));
 	    sb.append(HU.div(titles.get(i),HU.attrs("style","margin-top:10px","class","ramadda-form-header xramadda-metadata-add")));
 	    sb.append(tabs.get(i));
 	    sb.append(HU.close("div"));
@@ -2331,8 +2348,11 @@ public class MetadataManager extends RepositoryManager {
             getRepository().checkModifiedEntries(request,
 						 Misc.newList(entry));
 
-            return new Result(request.makeUrl(URL_METADATA_FORM, ARG_ENTRYID,
-                    entry.getId()));
+            return new Result(request.makeUrl(URL_METADATA_FORM,
+					      ARG_ENTRYID,
+					      entry.getId(),
+					      ARG_METADATA_TYPE,request.getString(ARG_METADATA_TYPE,"")
+				      ));
 
         }
     }
