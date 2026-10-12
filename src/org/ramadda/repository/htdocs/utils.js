@@ -281,7 +281,6 @@ var Utils =  {
 	});
     },
     initPage: function() {
-	
         this.initContent();
         this.pageLoaded = true;
         this.initDisplays();
@@ -306,7 +305,6 @@ var Utils =  {
         Utils.loadFunctions.forEach(f=>{
             f();
         });
-//	HU.toggleDarkMode();
     },
 
     addLoadFunction: function(f) {
@@ -3055,6 +3053,9 @@ var Utils =  {
         /* for select menus with icons */
 	//iconmenu
 	let menus = $(parent + ".ramadda-pulldown-with-icons");
+	Utils.initMenus(menus);
+    },
+    initMenus:function(menus) {
 	menus.each(function() {
 	    let width = $(this).attr(ATTR_WIDTH);
 	    $(this).iconselectmenu({width:width,
@@ -3070,6 +3071,7 @@ var Utils =  {
 				   });
 	    $(this).addClass("ui-menu-icons ramadda-select-icon");
 	});
+
     },
     setMenuValue:function(menu,value) {
 	menu.val(value);
@@ -4069,7 +4071,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	});
     },
-
     initToggleAll:function(cbx,selector,notHidden) {
 	jqid(cbx).change(function(){
 	    let on = HU.isChecked($(this));
@@ -6440,7 +6441,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 
 	let guid = HU.getUniqueId('btn');
-	let btn =HU.span([ATTR_CLASS,CLASS_CLICKABLE,
+	let btn =HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_SELECT_POPUP),
 			  ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
 			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid],
 			 opts.buttonLabel)+(opts.addBreak?HU.br():'');
