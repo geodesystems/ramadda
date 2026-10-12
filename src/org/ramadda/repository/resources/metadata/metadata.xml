@@ -61,7 +61,7 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
     </type>
 
-    <type name="Category" id="content.category" searchable="true" browsable="true" displaygroup="Tags and Keywords">
+    <type addmultiples="true" name="Category" id="content.category" searchable="true" browsable="true" displaygroup="Tags and Keywords">
       <element name="Category"       datatype="enumerationplus"
 	       values="photographs-and-images:Photographs and Images,film-and-video:Film and Video,audio-recordings:Audio Recordings,artifacts-and-object:Artifacts and Objects,stories:Stories"/>
     </type>
@@ -243,6 +243,26 @@
       <element name="Type" />
       <element name="Label" />
     </type>
+
+    <type
+	priority="1"
+       searchable="true" browsable="true"
+       name="RAMADDA Alias"
+       id="content.alias"
+       tag="internal"
+       displaycategory="AKA"
+       >
+      <help>
+<![CDATA[
+	 Specify a short hand alias for the entry. Will link to /repository/alias/&lt;alias/&gt;
+	 <br>Should be lower case with no spaces
+]]>
+</help>
+      <element name="Alias" />
+      <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
+    </type>
+
+
 
     <type
        name="Entry Icon"
@@ -434,22 +454,6 @@ View help <a target=_help href="${root}/userguide/wiki/sortorder.html">here</a>
 </type>
 
 
-    <type
-       searchable="true" browsable="true"
-       name="RAMADDA Alias"
-       id="content.alias"
-       tag="internal"
-       displaycategory="AKA"
-       >
-      <help>
-<![CDATA[
-	 Specify a short hand alias for the entry. Will link to /repository/alias/&lt;alias/&gt;
-	 <br>Should be lower case with no spaces
-]]>
-</help>
-      <element name="Alias" />
-      <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
-    </type>
 
     <type
 	tag="internal" 	     showinhtml="false"
