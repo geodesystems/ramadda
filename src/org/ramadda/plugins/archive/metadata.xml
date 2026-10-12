@@ -14,8 +14,10 @@
 
 
 
-    <type id="archive_subject" name="Archive Subject" displaygroup="Archive Subjects" priority="1">
-      <element id="subject" name="Subject" datatype="enumerationplus"/>
+    <type id="archive_subject" name="Archive Subject" displaygroup="Archive Subjects" priority="1"
+	  addmultiples="true">
+      <element id="subject" name="Subject" datatype="enumerationplus"
+	       />
     </type>
 
     <type id="archive_term" name="Archive Term" displaygroup="Archive Terms" priority="1"
