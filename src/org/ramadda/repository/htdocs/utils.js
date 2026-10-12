@@ -6433,6 +6433,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    args.buttonLabel = HU.getIconImage('fas fa-list-check');
 	$.extend(opts,args);
 	if(!opts.tooltip)
+
 	    opts.tooltip=opts.single?'Select value':'Select multiple';
 
 	let label = opts.label??'Select';
@@ -6495,10 +6496,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		select.val(selectedOptions);
 	    }
 
+
 	    if(trigger) {
 		select.change();
 		if(select.iconselectmenu && select.iconselectmenu('instance')) {
-		    select.iconselectmenu('refresh');
+		    //so the UI is refreshed
+		    setTimeout(()=>{
+			select.iconselectmenu('refresh');
+		    },1);
 		}
 	    }
 	    if(opts.single && !opts.single) {
