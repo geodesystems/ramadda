@@ -1132,6 +1132,7 @@ public class LogManager extends RepositoryManager {
 		cnt++;
 		if(maxLines>0 && cnt> maxLines) break;
 		if(fromDate!=null || toDate!=null) {
+		    System.err.println(line);
 		    tokenizer.reset(line);
 		    String tokens[] = tokenizer.getTokenArray();
 		    Date dttm = sdf.parse(tokens[5]);
