@@ -1168,131 +1168,131 @@ public class EntryManager extends RepositoryManager {
 	    String icon;
 	    if(type!=null) {
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
-		getPageHandler().sectionOpen(request, sb,"Entry Type  - " + typeHandler.getLabel(),false);
-		sb.append(HU.center(HU.href(getRepository().getUrlPath("/entry/types.html"),"Entry type list")));
-		sb.append(HU.formTable(true));
+		if(typeHandler!=null) {
+		    getPageHandler().sectionOpen(request, sb,
+						 "Entry Type  - " + typeHandler.getLabel(),false);
+		    sb.append(HU.center(HU.href(getRepository().getUrlPath("/entry/types.html"),"Entry type list")));
+		    sb.append(HU.formTable(true));
 
-		String help = typeHandler.getHelp();
-		if(stringDefined(help)) {
-		    HU.formEntry(sb,"", getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))));
-		}		
+		    String help = typeHandler.getHelp();
+		    if(stringDefined(help)) {
+			HU.formEntry(sb,"", getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))));
+		    }		
 
 
-		icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
-		String searchLink = HU.href(getSearchManager().getTypeSearchUrl(typeHandler),
-					    HU.getIconImage(ICON_SEARCH));
+		    icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+		    String searchLink = HU.href(getSearchManager().getTypeSearchUrl(typeHandler),
+						HU.getIconImage(ICON_SEARCH));
 
-		HU.formEntry(sb,"Type ID:", searchLink+HU.space(1) +
-			     icon+HU.space(1)+typeHandler.getType());
+		    HU.formEntry(sb,"Type ID:", searchLink+HU.space(1) +
+				 icon+HU.space(1)+typeHandler.getType());
 
-		String pattern = typeHandler.getFilePattern();
-		if(stringDefined(pattern))  {
-		    HU.formEntry(sb,"File pattern:", 
-				 HU.href(HU.url(getRepository().getUrlPath("/testpattern"),
-						"pattern",
-						pattern),
-					 pattern,HU.attrs("title","Test Pattern",
-							  "target","_pattern")));
-		}
-
-		HU.formEntry(sb,"Priority:", ""+typeHandler.getPriority());
-		List<TypeHandler> ancestors = new ArrayList<TypeHandler>();
-		typeHandler.getAncestorTypes(ancestors);
-		if(ancestors.size()!=0) {
-		    StringBuilder tmp = new StringBuilder();
-		    String space = "";
-		    for(TypeHandler parent: ancestors) {
-			icon = HU.img(parent.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
-			String parentUrl = getRepository().getUrlPath("/entry/types.html?type="  + parent.getType());
-			HU.div(tmp,space+HU.href(parentUrl, icon+HU.space(1) +parent.getDescription() +" - "+ parent.getType()));
-			space+=HU.space(6);
+		    String pattern = typeHandler.getFilePattern();
+		    if(stringDefined(pattern))  {
+			HU.formEntry(sb,"File pattern:", 
+				     HU.href(HU.url(getRepository().getUrlPath("/testpattern"),
+						    "pattern",
+						    pattern),
+					     pattern,HU.attrs("title","Test Pattern",
+							      "target","_pattern")));
 		    }
-		    sb.append(HU.formEntry("Parent Types:",tmp.toString()));
-		}
 
-		StringBuilder importHeader = new StringBuilder("type,name,id,parent,description");
-		StringBuilder extraLines = new StringBuilder(typeHandler.getType());		
-		extraLines.append(",Some entry name,some id,,");
-		StringBuilder extraLines2 = new StringBuilder(",Some other entry name,some other id,,");
-		List<Column> columns = typeHandler.getColumns();
-		int colCnt = 0;
-		if (Utils.listNotEmpty(columns)) {
-		    StringBuilder tmp = new StringBuilder();
-		    tmp.append("<table width=100%><tr><td width=20% ><b>Column ID</b></td><td width=20% ><b>Label</b></td><td width=20% ><b>Type</b></td><td width=20% ><b>Searchable</b></td><td width=20% ></td></tr>");
-		    for(Column column: columns) {
-			String extra = "";
-			String chelp = column.getHelp();
-			if(stringDefined(chelp)) extra+=chelp+" ";
-			String suffix = column.getSuffix();						
-			if(stringDefined(suffix)) extra+=suffix+" ";
-			if(stringDefined(extra)) {
-			    extra = getWikiManager().wikify(request,
-							    HU.div(extra,HU.cssClass("")));
+		    HU.formEntry(sb,"Priority:", ""+typeHandler.getPriority());
+		    List<TypeHandler> ancestors = new ArrayList<TypeHandler>();
+		    typeHandler.getAncestorTypes(ancestors);
+		    if(ancestors.size()!=0) {
+			StringBuilder tmp = new StringBuilder();
+			String space = "";
+			for(TypeHandler parent: ancestors) {
+			    icon = HU.img(parent.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+			    String parentUrl = getRepository().getUrlPath("/entry/types.html?type="  + parent.getType());
+			    HU.div(tmp,space+HU.href(parentUrl, icon+HU.space(1) +parent.getDescription() +" - "+ parent.getType()));
+			    space+=HU.space(6);
 			}
-			colCnt++;
-			importHeader.append(",");			
-			importHeader.append(column.getName());			
-			extraLines.append(",");
-			extraLines2.append(",");						
-			tmp.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;","width=20%") +
-					 HU.td(column.getLabel()+"&nbsp;&nbsp;","width=20%") +
-					 HU.td(column.getType(),"width=20%") +
-					 HU.td(column.getCanSearch()+"","width=20%") +				 
-					 HU.td(extra,"width=20%"),"valign=top"));
+			sb.append(HU.formEntry("Parent Types:",tmp.toString()));
 		    }
-		    tmp.append(HU.close("table"));
-		    sb.append(HU.formEntry("Columns:",tmp.toString()));
-		}
 
-		importHeader.append("\n");
-		importHeader.append("#add entries one per line\n");
-		importHeader.append("#no need to change the type unless the entry type changes\n");		
-		if(colCnt==0) {
-		    importHeader.append("#the id and parent id are optional\n");
-		} else {
-		    importHeader.append("#the id  parent id and columns are optional\n");
-		}
-		extraLines.append("\n");
-		extraLines2.append("\n");		
-		importHeader.append(extraLines);
-		importHeader.append(extraLines2);				    
-		String fileName = Utils.makeID(typeHandler.getLabel())+"_import.csv";
-		String importHelp = HU.href(getRepository().getUrlBase()+
-				      "/userguide/csvimporter.html", "Help",
-				      HU.attrs("target","_help","class","ramadda-clickable"));
+		    StringBuilder importHeader = new StringBuilder("type,name,id,parent,description");
+		    StringBuilder extraLines = new StringBuilder(typeHandler.getType());		
+		    extraLines.append(",Some entry name,some id,,");
+		    StringBuilder extraLines2 = new StringBuilder(",Some other entry name,some other id,,");
+		    List<Column> columns = typeHandler.getColumns();
+		    int colCnt = 0;
+		    if (Utils.listNotEmpty(columns)) {
+			StringBuilder tmp = new StringBuilder();
+			tmp.append("<table width=100%><tr><td width=20% ><b>Column ID</b></td><td width=20% ><b>Label</b></td><td width=20% ><b>Type</b></td><td width=20% ><b>Searchable</b></td><td width=20% ></td></tr>");
+			for(Column column: columns) {
+			    String extra = "";
+			    String chelp = column.getHelp();
+			    if(stringDefined(chelp)) extra+=chelp+" ";
+			    String suffix = column.getSuffix();						
+			    if(stringDefined(suffix)) extra+=suffix+" ";
+			    if(stringDefined(extra)) {
+				extra = getWikiManager().wikify(request,
+								HU.div(extra,HU.cssClass("")));
+			    }
+			    colCnt++;
+			    importHeader.append(",");			
+			    importHeader.append(column.getName());			
+			    extraLines.append(",");
+			    extraLines2.append(",");						
+			    tmp.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;","width=20%") +
+					     HU.td(column.getLabel()+"&nbsp;&nbsp;","width=20%") +
+					     HU.td(column.getType(),"width=20%") +
+					     HU.td(column.getCanSearch()+"","width=20%") +				 
+					     HU.td(extra,"width=20%"),"valign=top"));
+			}
+			tmp.append(HU.close("table"));
+			sb.append(HU.formEntry("Columns:",tmp.toString()));
+		    }
 
-		sb.append(HU.formEntry("Import Header:",
-				       HU.textArea("", importHeader.toString(), 4,80,
-						   HU.attrs("id","importheader","add-to-parent","true",
-							    "link-style","margin-left:5px;",
-							    "download-file",fileName,
-							    "add-download","true"))+HU.space(1) + importHelp));
+		    importHeader.append("\n");
+		    importHeader.append("#add entries one per line\n");
+		    importHeader.append("#no need to change the type unless the entry type changes\n");		
+		    if(colCnt==0) {
+			importHeader.append("#the id and parent id are optional\n");
+		    } else {
+			importHeader.append("#the id  parent id and columns are optional\n");
+		    }
+		    extraLines.append("\n");
+		    extraLines2.append("\n");		
+		    importHeader.append(extraLines);
+		    importHeader.append(extraLines2);				    
+		    String fileName = Utils.makeID(typeHandler.getLabel())+"_import.csv";
+		    String importHelp = HU.href(getRepository().getUrlBase()+
+						"/userguide/csvimporter.html", "Help",
+						HU.attrs("target","_help","class","ramadda-clickable"));
+
+		    sb.append(HU.formEntry("Import Header:",
+					   HU.textArea("", importHeader.toString(), 4,80,
+						       HU.attrs("id","importheader","add-to-parent","true",
+								"link-style","margin-left:5px;",
+								"download-file",fileName,
+								"add-download","true"))+HU.space(1) + importHelp));
 		
-		sb.append(HU.script("Utils.addCopyLink('importheader');"));
+		    sb.append(HU.script("Utils.addCopyLink('importheader');"));
 		
-		StringBuilder subTypes = new StringBuilder();
-		List<TypeHandler> children = typeHandler.getChildrenTypes();
-		getTypeList(subTypes,children);
-		if(subTypes.length()>0) {
-		    sb.append(HU.formEntry("",
-					   HU.makeShowHideBlock("Sub Types", subTypes.toString(),true)));
+		    StringBuilder subTypes = new StringBuilder();
+		    List<TypeHandler> children = typeHandler.getChildrenTypes();
+		    getTypeList(subTypes,children);
+		    if(subTypes.length()>0) {
+			sb.append(HU.formEntry("",
+					       HU.makeShowHideBlock("Sub Types", subTypes.toString(),true)));
+		    }
+
+
+
+		    String wikiText = typeHandler.getWikiTemplate(request, null);
+		    if(stringDefined(wikiText)) {
+			StringBuilder tmp = new StringBuilder();
+			typeHandler.addReadOnlyWikiEditor(request, null,tmp, wikiText.trim());
+			sb.append(HU.formEntry("Wiki Text:",tmp.toString()));
+		    }
+
+		    sb.append(HU.formTableClose());
+		    typeHandler.addToEntryTypePage(request, sb);
+
 		}
-
-
-
-		String wikiText = typeHandler.getWikiTemplate(request, null);
-		if(stringDefined(wikiText)) {
-		    StringBuilder tmp = new StringBuilder();
-		    typeHandler.addReadOnlyWikiEditor(request, null,tmp, wikiText.trim());
-		    sb.append(HU.formEntry("Wiki Text:",tmp.toString()));
-		}
-
-
-
-
-		sb.append(HU.formTableClose());
-		typeHandler.addToEntryTypePage(request, sb);
-
 
 	    } else {
 		getPageHandler().sectionOpen(request, sb,"Entry Type",false);
