@@ -1131,18 +1131,29 @@ public class LogManager extends RepositoryManager {
                 }
 		cnt++;
 		if(maxLines>0 && cnt> maxLines) break;
+		String[]tokens=null;
 		if(fromDate!=null || toDate!=null) {
-		    System.err.println(line);
 		    tokenizer.reset(line);
-		    String tokens[] = tokenizer.getTokenArray();
+		    tokens = tokenizer.getTokenArray();
+		    //check for bad line
+		    if(tokens.length!=6) {
+			System.err.println("bad log line:" + line); 
+			continue;
+		    }
 		    Date dttm = sdf.parse(tokens[5]);
 		    long rowTime = dttm.getTime();
 		    if(fromDate!=null && rowTime < fromDate.getTime()) continue;
 		    if(toDate!=null && rowTime>toDate.getTime())  continue;
 		}
 		if(showSummary) {
-		    tokenizer.reset(line);
-		    String tokens[] = tokenizer.getTokenArray();
+		    if(tokens==null) {
+			tokenizer.reset(line);
+			tokens = tokenizer.getTokenArray();
+			if(tokens.length!=6) {
+			    System.err.println("bad log line:" + line); 
+			    continue;
+			}
+		    }
 		    String key = tokens[0];
 		    if(field.equals("entry")) key = tokens[2]+"::" + tokens[3];
 		    Integer count = counts.get(key);
