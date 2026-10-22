@@ -75,6 +75,10 @@ public class CsvImporter extends ImportHandler {
 	return isMine;
     }
 
+    private String processDate(String date) {
+	return date;
+    }	
+
     @Override
     public InputStream getStream(Request request, Entry parent,
                                  String fileName, InputStream stream,
@@ -107,9 +111,9 @@ public class CsvImporter extends ImportHandler {
 		int dateIdxTo=-1;		
 		int latitudeIdx=-1;
 		int longitudeIdx=-1;		
-		Hashtable<String,Integer> metadataIdx= new Hashtable<String,Integer>();
+		List<Index> metadataIdx= new ArrayList<Index>();
+		List<Index> newIdx= new ArrayList<Index>();
 		Hashtable<String,Integer> thumbnailIdx= new Hashtable<String,Integer>();
-		Hashtable<String,Integer> newIdx= new Hashtable<String,Integer>();
 		Hashtable<String,Integer> columnIdx= new Hashtable<String,Integer>();		
 		String currentType="";
 		String currentParent = "";
@@ -173,16 +177,27 @@ public class CsvImporter extends ImportHandler {
 				    parentIdx=i;
 				} else if(_field.startsWith("new:")) {
 				    String type= _field.substring("new:".length()).trim();
-				    newIdx.put(type,i);				    
+				    newIdx.add(new Index(type,i));				    
 				} else if(_field.startsWith("metadata:")) {
 				    String mtd= _field.substring("metadata:".length()).trim();
-				    metadataIdx.put(mtd,i);
+				    if(!getMetadataManager().isValidType(mtd)) {
+					getSessionManager().addSessionMessage(request,
+									      "Unknown metadata type:" + mtd);
+					continue;
+				    }
+				    metadataIdx.add(new Index(mtd,i));
+				} else if(_field.startsWith("property:")) {
+				    String mtd= _field.substring("property:".length()).trim();
+				    if(!getMetadataManager().isValidType(mtd)) {
+					getSessionManager().addSessionMessage(request,
+									      "Unknown metadata type:" + mtd);
+					continue;
+				    }
+
+				    metadataIdx.add(new Index(mtd,i));
 				} else if(_field.startsWith("thumbnail:")) {
 				    String mtd= _field.substring("thumbnail:".length()).trim();
 				    thumbnailIdx.put(mtd,i);				    
-				} else if(_field.startsWith("property:")) {
-				    String mtd= _field.substring("property:".length()).trim();
-				    metadataIdx.put(mtd,i);				    
 				} else if(_field.startsWith("column:")) {
 				    String prop= _field.substring("column:".length()).trim();
 				    columnIdx.put(prop,i);
@@ -197,6 +212,7 @@ public class CsvImporter extends ImportHandler {
 			    if(nameIdx==-1) makeError("Input data must have a \"name\" column",headerRow);
 			    return row;
 			}	
+
 
 			if(defaultType==null && !row.indexOk(typeIdx)) {
 			    if(!hadBadType) {
@@ -273,23 +289,23 @@ public class CsvImporter extends ImportHandler {
 				    to = toks.get(1);
 				}
 				if(stringDefined(from)) {
-				    attrs+=XU.attrs("fromdate",from);
+				    attrs+=XU.attrs("fromdate",processDate(from));
 				}
 				if(stringDefined(to)) {
-				    attrs+=XU.attrs("todate",to);
+				    attrs+=XU.attrs("todate",processDate(to));
 				}				
 			    }
 			}
 			if(dateIdxFrom>=0) {
 			    String v = row.getString(dateIdxFrom,"");
 			    if(stringDefined(v)) {
-				attrs+=XU.attrs("fromdate",v);
+				attrs+=XU.attrs("fromdate",processDate(v));
 			    }
 			}
 			if(dateIdxTo>=0) {
 			    String v = row.getString(dateIdxTo,"");
 			    if(stringDefined(v)) {
-				attrs+=XU.attrs("todate",v);
+				attrs+=XU.attrs("todate",processDate(v));
 			    }
 			}						
 
@@ -389,11 +405,14 @@ public class CsvImporter extends ImportHandler {
 			}
 
 
-
 			if(privateIdx>=0 && row.indexOk(privateIdx)) {
-			    String v = row.getString(privateIdx,"").toLowerCase();
+			    String v = row.getString(privateIdx,"").toLowerCase().trim();
 			    if(v.equals("true") || v.equals("yes")) {			    
-				sb.append("<permissions><permission action=\"view\"><role role=\"none\"/></permission></permissions>\n");
+				sb.append("<permissions><permission action=\"view\"><role role=\"none\"/></permission></permissions>\n"); 
+			    } else if(v.equals("") || v.equals("no") || v.equals("yes")) {
+			    } else {
+				getSessionManager().addSessionMessage(request,
+								      "Unknown private value: " +v +"\n\tneeds to be \"yes\" or \"true\"");
 			    }
 			}
 
@@ -405,10 +424,13 @@ public class CsvImporter extends ImportHandler {
 			    if(!Utils.stringDefined(v)) continue;
 			}
 
-			for (String mtdType : metadataIdx.keySet()) {
-			    int idx = metadataIdx.get(mtdType);
+
+
+			for (Index typeIndex : metadataIdx) {
+			    int idx = typeIndex.index;
 			    if(!row.indexOk(idx)) continue;
 			    String v = row.getString(idx,"");
+			    //			    System.err.println("\ttype:" + mtdType +" index:" + idx+" value:" + v);
 			    if(!Utils.stringDefined(v)) continue;
 			    //<access><![CDATA[admin,user]]></access>
 			    //<access:admin,user>
@@ -423,7 +445,7 @@ public class CsvImporter extends ImportHandler {
 			    List<String> toks = Utils.split(v,";",true,true);
 			    for(String tok: toks) {
 				List<String> subToks = Utils.split(tok,":");
-				sb.append(XU.openTag("metadata",XU.attrs("type",mtdType)));
+				sb.append(XU.openTag("metadata",XU.attrs("type",typeIndex.value)));
 				int index=0;
 				for(String mtdValue: subToks) {
 				    mtdValue =  mtdValue.replace("_semicolon_",":");
@@ -443,8 +465,9 @@ public class CsvImporter extends ImportHandler {
 			    }
 			}
 			sb.append(XU.closeTag("entry"));
-			for (String newType : newIdx.keySet()) {
-			    int idx = newIdx.get(newType);
+			for (Index newIndex: newIdx) {
+			    String newType = newIndex.value;
+			    int idx = newIndex.index;
 			    if(!row.indexOk(idx)) continue;
 			    String v = row.getString(idx,"");
 			    if(!Utils.stringDefined(v)) continue;
@@ -503,6 +526,16 @@ public class CsvImporter extends ImportHandler {
 
 	message.append(HU.div(HU.b("New entries:")));
         return new ByteArrayInputStream(sb.toString().getBytes());
+    }
+
+    private static class Index {
+	String value;
+	int index;
+
+	Index(String value,int index) {
+	    this.value = value;
+	    this.index= index;
+	}
     }
 
 
