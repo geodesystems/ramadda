@@ -418,6 +418,8 @@ public class SessionManager extends RepositoryManager {
 	    if(!raw) {
 		message = HU.strictSanitizeString(message);
 	    }
+	    message = message.replace("\n","<br>").replace("\t","&nbsp;");
+
 	    List<SessionMessage> messages=(List<SessionMessage>)
 		getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
 	    if(messages==null) {
