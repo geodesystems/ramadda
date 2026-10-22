@@ -190,6 +190,11 @@ public class MetadataManager extends RepositoryManager {
 	return type;
     }
 
+    public boolean isValidType(String stringType) {
+        MetadataType type = findType(stringType,false);
+	return type!=null;
+    }
+
     public MetadataHandler findHandler(String stringType) {
         MetadataType type = findType(stringType);
         if (type == null) {
