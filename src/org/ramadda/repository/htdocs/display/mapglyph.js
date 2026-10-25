@@ -591,7 +591,11 @@ MapGlyph.prototype = {
 	let level = this.getVisibleLevelRange(true)??{};
 	let visHtml =
 	    HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible');
-	if(this.getMapLayer() || this.imageLayers || this.isImage()) {
+	
+	if(this.isRings() ||
+	   this.getMapLayer() ||
+	   this.imageLayers ||
+	   this.isImage()) {
 	    visHtml+= HU.space(4)+HU.checkbox(this.domId(ID_CANSELECT),[],this.getCanSelect(),'Can Select');
 	}
 	visHtml+=HU.br();	
@@ -4411,7 +4415,7 @@ MapGlyph.prototype = {
 	});
     },
     showFeaturesTable:function(anchor) {
-	if(this.featuresTableDialog)
+	if(this.featuresTableDialog) 
 	    this.featuresTableDialog.remove();
 	let html =  HU.div([ATTR_ID,this.domId('downloadfeatures'),ATTR_CLASS,CLASS_CLICKABLE],'Download Table');
 	html+=HU.div([ATTR_ID,this.domId('featurestable')]);
@@ -6304,9 +6308,12 @@ MapGlyph.prototype = {
 	    });
 	}
 	let labels = [];
-	if(Utils.stringDefined(this.attrs.rangeRingLabels))
+	if(Utils.stringDefined(this.attrs.rangeRingLabels)) {
 	    labels = Utils.split(this.attrs.rangeRingLabels);
-	this.setExtraFeatures(this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,labels));
+	}
+	this.setExtraFeatures(this.display.makeRangeRings(center,this.getRadii(),
+							  this.style,this.attrs.rangeRingAngle,
+							  ringStyle,labels));
     },
     setExtraFeatures:function(features) {
 	this.extraFeatures = features;
