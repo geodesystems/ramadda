@@ -1145,33 +1145,59 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    labelStyle[a] = style[a];
 		}
 	    }
-	    for(let idx=radii.length-1;idx>=0;idx--) {
-		let km =radii[idx];
-		if(km==null) continue;
-		let skm = String(km).trim();
-		if(skm.endsWith(UNIT_MILES)) {
+
+	    let lastUnit=UNIT_KM;
+	    let check = (value,unit)=>{
+		value = value.toLowerCase();
+		if(value.endsWith(unit)) {
+		    lastUnit=unit;
+		    return true;
+		}
+		return false;
+	    }
+	    let convert = (value,firstCall) =>{
+		let skm = String(value).trim();
+		let km=skm;
+		if(check(skm,UNIT_MILES)) {
 		    km = 1.60934*parseFloat(skm.replace(UNIT_MILES,''));
-		} else if(skm.endsWith(UNIT_NM)) {
+		} else if(check(skm,UNIT_NM)) {
 		    km = 1.852*parseFloat(skm.replace(UNIT_NM,''));
-		} else if (skm.endsWith(UNIT_FT)) {
+		} else if (check(skm,UNIT_FT)) {
 		    km = 0.0003048*parseFloat(skm.replace(UNIT_FT,''));
-		} else if (skm.endsWith(UNIT_KM)) {
+		} else if (check(skm,UNIT_KM)) {
 		    km = skm.replace(UNIT_KM,'');
-		} else if (skm.endsWith(UNIT_M)) {
+		} else if (check(skm,UNIT_M)) {
 		    km = parseFloat(skm.replace(UNIT_M,''))/1000;
 		} else {
-		    //console.log('unknown unit:' + skm);
+		    if(firstCall) {
+//			console.log('convert:' + value +' unit:' + lastUnit);
+			return convert(value+lastUnit,false);
+		    }
+		    console.log('unknown unit:' + skm);
 		}
+		return km;
+	    }
+
+	    let values = radii.map(km=>{
+		let label = km;
+		if(!Utils.stringDefined(km)) return null;
+		return {label:label,km:convert(km,true)};
+	    });
+
+	    for(let idx=values.length-1;idx>=0;idx--) {
+		let ring = values[idx];
+		let label = ring.label;
+		let skm = String(ring.km).trim();
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
-		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)&& !isNaN(angle)?angle:90+45,km);
+		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)&& !isNaN(angle)?angle:90+45,ring.km);
 		if(p2==null) {
-		    console.error("Could not create range rings with center:",center,p2,km);
+		    console.error("Could not create range rings with center:",center,p2,ring.km);
 		    return null;
 		}
 		p1 = this.getMap().transformLLPoint(p1);
 		p2 = this.getMap().transformLLPoint(p2);
 		let dist = Utils.distance(p1.lon,p1.lat,p2.lon,p2.lat);
-		let ring = OpenLayers.Geometry.Polygon.createRegularPolygon({x:p1.lon,y:p1.lat},
+		let polygon = OpenLayers.Geometry.Polygon.createRegularPolygon({x:p1.lon,y:p1.lat},
 									    dist, 100,0);
 		let _style = $.extend({},style??{strokeWidth:2,strokeColor:'blue',fillColor:COLOR_TRANSPARENT});
 		if(ringStyle['*']) {
@@ -1193,18 +1219,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    $.extend(_style,ringStyle['N']);
 		}
 
-		rings.push(MapUtils.createVector(ring,null,_style));
+		rings.push(MapUtils.createVector(polygon,null,_style));
 		p2 = MapUtils.createPoint(p2.lon,p2.lat);
 		let s = $.extend({},labelStyle);
 		if(!isNaN(angle)) {
 		    if(labels && idx<labels.length) {
 			s.label = labels[idx].replace("${d}",skm);
 		    } else {
-			s.label=skm;
+			s.label=label;
 		    }
 		}
-		let label = MapUtils.createVector(p2,null,s);
-		rings.push(label);
+		let labelFeature = MapUtils.createVector(p2,null,s);
+		rings.push(labelFeature);
 	    }
 	    return rings;
 	},
