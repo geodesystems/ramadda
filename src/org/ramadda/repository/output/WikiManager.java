@@ -10684,7 +10684,6 @@ public class WikiManager extends RepositoryManager
         return MEDIA_OTHER;
     }
 
-    //    public static final String OSD_PATH = "/lib/openseadragon-bin-3.0.0";
     public static final String OSD_PATH = "/lib/openseadragon-bin-5.0.1";    
     public static final String ANN_PATH = "/lib/annotorius";
 
