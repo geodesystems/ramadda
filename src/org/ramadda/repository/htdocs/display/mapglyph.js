@@ -562,6 +562,7 @@ MapGlyph.prototype = {
     },
 
     addToPropertiesDialog:function(content,style) {
+	this.propertyDialogAppliers = [];
 	let tabs = [];
 	let html='';
 	let layout = (lbl,widget)=>{
@@ -585,9 +586,31 @@ MapGlyph.prototype = {
 	    }
 	}	    
 
+	if(this.isMapServer()) {
+	    if(this.attrs.predefinedLayer) {
+		this.baseMapPlaceID=HU.getUniqueId('');
+		let layers = RAMADDA_MAP_LAYERS.map(l=>{return {value:l.id,label:l.name}});
+		let layerSelect=   HU.select('',
+					      [ATTR_ID,this.domId('maplayermenu')],layers,this.attrs.predefinedLayer);
+
+
+/*		let layerSelect = this.display.getBaseLayersSelect({
+		    id:this.domId('maplayermenu'),
+		    selected:this.attrs.predefinedLayer
+		});*/
+		html+=HU.formEntryLabel('Map Layer',
+					layerSelect
+					//SPACE + HU.span([ATTR_ID,this.baseMapPlaceID])
+				       );
+		this.propertyDialogAppliers.push(()=>{
+		    let layer = this.jq('maplayermenu').val();
+		    if(layer && layer!=this.attrs.predefinedLayer) {
+			this.setMapServerUrl(null,null,null,layer,null,true);
+			this.checkMapServer(false, true);
+		    }});
+	    }
+	}
 	html+=HU.formTableClose();
-
-
 	let level = this.getVisibleLevelRange(true)??{};
 	let visHtml =
 	    HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible');
@@ -633,6 +656,7 @@ MapGlyph.prototype = {
 				     HU.div([ATTR_STYLE,HU.css(CSS_MIN_HEIGHT,HU.px(250))],
 					    a.contents);
 				     return a;}));
+
 
 
 	html+=this.propsTabs.contents;
@@ -832,6 +856,11 @@ MapGlyph.prototype = {
     applyPropertiesDialog: function(style) {
 	//Clear out any feature infos
 	this.featureInfo=null;
+
+	if(this.propertyDialogAppliers) {
+	    this.propertyDialogAppliers.forEach(func=>func());
+	}
+
 
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq('mapglyphname').val());
@@ -3547,7 +3576,7 @@ MapGlyph.prototype = {
     setShowDataIcons:function(v) {
 	this.attrs[ID_SHOWDATAICONS] = v;
     },
-    setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
+    setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions,force) {
 	//check for wmts
 	if(Utils.stringDefined(url)) {
 	    url = url.replace(/[0-9]+\/[0-9]+\/[0-9]+/,'${z}/${x}/${y}');
@@ -3557,17 +3586,23 @@ MapGlyph.prototype = {
 	this.attrs.wmsLayer = wmsLayer;
 	this.attrs.predefinedLayer = predefined;
 	this.mapServerOptions = mapOptions;
-
 	if(Utils.stringDefined(predefined)) {
-	    if(!Utils.stringDefined(this.attrs.name)) {
+	    if(force || !Utils.stringDefined(this.attrs.name)) {
 		let mapLayer = RAMADDA_MAP_LAYERS_MAP[predefined];
 		if(mapLayer) {
 		    this.attrs.name = mapLayer.name;
+		    this.jq('mapglyphname').val(this.attrs.name);
 		    this.style.legendUrl = mapLayer.opts.legend;
+		    if(force) {
+			this.display.jq('glyphedit_legendUrl').val(this.style.legendUrl??'');
+			this.attrs[ID_LEGEND_TEXT] = '';
+		    }
 		    if(Utils.stringDefined(mapLayer.opts.attribution) &&
 		       !Utils.stringDefined(this.attrs[ID_LEGEND_TEXT])) {
 			this.attrs[ID_LEGEND_TEXT] = mapLayer.opts.attribution;
 		    }
+		    //Resest the legend text text area
+		    this.jq(ID_LEGEND_TEXT).val(this.attrs[ID_LEGEND_TEXT]);
 		}
 	    }
 	} else {
@@ -3625,12 +3660,13 @@ MapGlyph.prototype = {
     },    
     checkMapLayer:function(andZoom,force) {
 	//Only create the map if we're visible
-	if(!this.isMap() || !this.isVisible()) return;
+	if(!this.isMap() || !this.isVisible()) {
+	    return;
+	}
 	if(this.mapLayer!=null && force) {
 	    this.display.getMap().removeLayer(this.mapLayer);
 	    this.mapLayer = null;
 	}
-
 
 	if(this.mapLayer==null) {
 	    if(!Utils.isDefined(andZoom)) {
@@ -3657,7 +3693,8 @@ MapGlyph.prototype = {
     getMapServerUrl:function() {
 	let url=this.attrs.mapServerUrl;
 	//Convert malformed TMS url
-	url = url.replace(/\/{/g,'/${');
+	if(url) 
+	    url = url.replace(/\/{/g,'/${');
 	return url;
     },
 
@@ -3682,8 +3719,21 @@ MapGlyph.prototype = {
 								    false,false,false,opts);
     },
     
-    checkMapServer:function(andZoom) {
+    checkMapServer:function(andZoom,force) {
 	if(!this.isMapServer()) return;
+	if(this.mapServerLayer!=null && force) {
+	    if(Utils.stringDefined(this.attrs.predefinedLayer)) {
+		let mapLayer = RAMADDA_MAP_LAYERS_MAP[this.attrs.predefinedLayer];
+		if(mapLayer) {	
+		    this.mapServerLayer.url = mapLayer.url;
+		    this.getMapServerLayer().setVisibility(false);
+		    this.getMapServerLayer().setVisibility(true);
+		    ImdvUtils.scheduleRedraw(this.getMapServerLayer());
+		}
+	    }
+	    return;
+	}
+
 	if(this.mapServerLayer==null) {
 	    let url=this.attrs.mapServerUrl;
 	    let wmsLayer=this.attrs.wmsLayer;
@@ -3701,7 +3751,7 @@ MapGlyph.prototype = {
 		this.createMapServer();
 	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
 		let mapLayer = RAMADDA_MAP_LAYERS_MAP[this.attrs.predefinedLayer];
-		if(mapLayer) {
+		if(mapLayer) {	
 		    this.mapServerLayer = this.display.getMap().makeMapLayer(this.attrs.predefinedLayer);
 		} else {
 		    console.error('Unknown map layer:' +this.attrs.predefinedLayer);
@@ -4001,6 +4051,12 @@ MapGlyph.prototype = {
     },
 
     initPropertiesComponent: function(dialog) {
+	if(this.baseMapPlaceID) {
+	    HU.initSelect2(this.jq('maplayermenu'));
+/*	    HU.makeSelectTagPopup('#'+this.domId('maplayermenu'),
+				  {location:this.baseMapPlaceID,icon:true,single:true});*/
+	}
+
 	if(this.propsTabs) {
 	    this.propsTabs.init();
 	}
