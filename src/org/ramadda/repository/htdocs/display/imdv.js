@@ -1470,20 +1470,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		wmtHtml+=HU.close(TAG_TABLE);
 
 		let contents = [];
-		let ids =Utils.mergeLists([{value:'',label:'Select'}],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
+		let ids =Utils.mergeLists([{value:'',label:'Select'}],
+					  RAMADDA_MAP_LAYERS.map(l=>{return {value:l.id,label:l.name}}));
 		let predefined =  HU.select('',
 					    [ATTR_ID,this.domId('predefined')],ids,this.cache['predefined']);	
-
-		let html = HU.boldLabel('Pre-defined layer') + predefined;
-		html+=wmtHtml;
-		setTimeout(()=>{
-		    HU.makeSelectTagPopup('#'+this.domId('predefined'),{after:true,icon:true,single:true});
-		},1);
-
 
 		let buttons = HU.buttons([
 		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
 		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
+		let html = HU.boldLabel('Pre-defined layer') + predefined;
+		html+=buttons;
+
+
+		html+=wmtHtml;
+
+		setTimeout(()=>{
+		    HU.makeSelectTagPopup('#'+this.domId('predefined'),
+					  {after:true,icon:true,single:true,showCategories:true});
+		},1);
+
 		html+=buttons;
 		contents.push({label:'WMS/WMTS',contents:html});
 
