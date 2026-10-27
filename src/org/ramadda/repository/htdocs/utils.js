@@ -6433,7 +6433,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    args.buttonLabel = HU.getIconImage('fas fa-list-check');
 	$.extend(opts,args);
 	if(!opts.tooltip)
-
 	    opts.tooltip=opts.single?'Select value':'Select multiple';
 
 	let label = opts.label??'Select';
@@ -6506,7 +6505,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    },1);
 		}
 	    }
-	    if(opts.single && !opts.single) {
+	    if(opts.single) {
 		dialog.remove();
 	    }
 	}
