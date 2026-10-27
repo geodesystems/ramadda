@@ -63,6 +63,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public static final String WIDTH_KIND = "120";
     public static final JQuery JQ = null;
 
+    public static final Link LINK_HR =  new Link(true,OutputType.TYPE_VIEW);		    
+
     /** max connections attribute */
     public static final String ATTR_MAXCONNECTIONS = "maxconnections";
 
