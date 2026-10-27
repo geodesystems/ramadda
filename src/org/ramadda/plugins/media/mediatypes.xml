@@ -253,13 +253,30 @@ Access to this audio file is restricted
     <column name="annotations_json_base" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false"/>     
     <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
     <column   name="filename" label="Alternate filename"  showinhtml="false" />
+    <column name="show_information" type="boolean"
+	  label="Show Information" default="true"  showinhtml="false"/>
+    <column name="show_zoom" type="boolean"
+	  label="Show Zoom" default="false"  showinhtml="false"/>
     <wikis tag="simple">
-       <![CDATA[<div class=ramadda-description>{{description wikify=true}}</div>
+      <![CDATA[<div class=ramadda-description>{{description wikify=true}}</div>
 +inset left=10px right=10px
 {{image width=100% border=""}}
 -inset
 ]]>
 </wikis>
+<wiki_inner><![CDATA[
+:title {{name}}
++if property=show_zoom
+{{zoomify singleFile="true" showRotationControl="true"  }}
+-if
++if property=show_information
+{{description box.class="entry-page-description"}}
+<block show="mobile" decorate="false">{{resource message="" includeicon="true" title="Download"}}</block>{{information details="true" showTitle="\
+false"}}
+-if
+
+]]></wiki_inner>
+
 
 </type>
 
@@ -390,7 +407,6 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="false"/>
 -->
-xxx
      <column name="image_width" type="int" label="Image Width" showinhtml="false"/>
      <column name="image_height" type="int" label="Image Height" showinhtml="false"/>     
      <column name="single_image" type="boolean"
