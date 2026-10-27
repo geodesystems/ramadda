@@ -366,13 +366,20 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    return layer;
 	},
 
-	getBaseLayersSelect:function() {
-	    if(this.map.baseLayers) {
+	getBaseLayersSelect:function(args) {
+	    let opts = {
+		id:null,
+		selected:null,
+		layers:null
+	    };
+	    if(args) $.extend(opts,args);
+	    let layers = this.map.baseLayers;
+	    if(layers) {
 		let items = [];
 		let on = false;
 		let category =null;
-		for(a in this.map.baseLayers) {
-		    let layer = this.map.baseLayers[a];
+		for(a in layers) {
+		    let layer = layers[a];
 		    if(!layer.isBaseLayer) continue;
 		    if(layer.getVisibility()) on = a;
 		    let ramaddaMapLayer = layer.ramaddaMapLayer;
@@ -384,10 +391,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		}
 		let prefix = this.getBaseLayerSelectLabel();
 		if(prefix) prefix=HU.boldLabel(prefix);
+		let id = opts.id ??this.domId(ID_BASELAYERS);
 		return  HU.span([ATTR_TITLE,"Choose base layer",
 				 ATTR_CLASS,"display-filter"],
 				(prefix??'') +
-				HU.select("",[ATTR_ID,this.domId(ID_BASELAYERS)],items,on));
+				HU.select("",[ATTR_ID,id],items,opts.selected??on));
 	    }
 	    return '';
 	},
@@ -836,6 +844,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    }
 		    return url;
 		};
+
 
 		let name = args['name'] ?? type;
 		let isBaseLayer = Utils.isDefined(args.baseLayer)?args.baseLayer:false;
