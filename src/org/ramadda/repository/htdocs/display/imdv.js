@@ -845,7 +845,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					       {label:'Distance (miles)',value:'distance'}],
 					      this.isolineType));	    
 	    html+=HU.formTableClose();
-	    let buttons  =HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+	    let buttons  =
+		HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
 		HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL);	    
 	    html+=HU.div([ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_TOP,HU.px(5))], buttons);
 	    html=HU.div([ATTR_STYLE, HU.css(CSS_MARGIN,HU.px(5))],html);
@@ -1445,69 +1446,88 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let wmtHtml = '';
-		wmtHtml+=HU.br();
-		wmtHtml+=HU.br()+'Or enter either a TMS/WMS server URL with a layer name:';
-		let form = (label,name,size)=>{
-		    wmtHtml+=HU.formEntryLabel(label,HU.input('',this.cache[name]??'',
-							      [ATTR_ID,this.domId(name),ATTR_SIZE,size??60]));
+		wmtHtml+=HU.b('Enter a WMS or WMTS server URL:');
+		let form = (label,name,size,suffix)=>{
+		    let widget = HU.input('',this.cache[name]??'',
+					  [ATTR_ID,this.domId(name),ATTR_SIZE,size??60]);
+		    if(suffix) {
+			widget+=HU.space(2) +suffix;
+		    }
+		    wmtHtml+=HU.formEntryLabel(label,widget);
 		}
 		let args = [
 		    ['Name','servername'],
-		    ['Server URL','serverurl'],
-		    ['WMS Layer','wmslayer','20'],
+		    ['Server URL','serverurl',null,
+		     HU.popupHelp('e.g. for WMTS https://map.gov/.../tile/${z}/${y}/${x}')],
+		    ['WMS Layer','wmslayer','20','If using a WMS server'],
 		    ['Legend URL','maplegend']
 		];
 
 		this.cache = this.cache??{};
 		wmtHtml +=  HU.formTable();
 		args.forEach(a=>{
-		    form(a[0],a[1],a[2]);
+		    form(a[0],a[1],a[2],a[3]);
 		});
 		wmtHtml+=HU.close(TAG_TABLE);
-		wmtHtml+=HU.br()+'Or enter Tile JSON URL:';
-		wmtHtml +=  HU.formTable();
-		form("Tile JSON",'tilejson',60);
-		wmtHtml+=HU.close(TAG_TABLE);
+
+		let tileJson = HU.b('Enter Tile JSON URL:')
+		tileJson +=  HU.formTable();
+		tileJson += HU.formEntryLabel('Tile JSON',
+					       HU.input('',this.cache['tilejson']??'',
+							[ATTR_ID,this.domId('tilejson'),ATTR_SIZE,60]));
+		tileJson+=HU.close(TAG_TABLE);
 
 		let contents = [];
 		let ids =Utils.mergeLists([{value:'',label:'Select'}],
-					  RAMADDA_MAP_LAYERS.map(l=>{return {value:l.id,label:l.name}}));
+					  this.getMapMenuOptions());
 		let predefined =  HU.select('',
 					    [ATTR_ID,this.domId('predefined')],ids,this.cache['predefined']);	
 
-		let buttons = HU.buttons([
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
-		let html = HU.boldLabel('Pre-defined layer') + predefined;
-		html+=buttons;
-
-
-		html+=wmtHtml;
-
+		predefined = HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+							CSS_WIDTH,HU.px(300),
+							CSS_MAX_WIDTH,HU.px(300))],predefined);
+		let html = HU.boldLabel('Layer') + predefined;
 		setTimeout(()=>{
-		    HU.makeSelectTagPopup('#'+this.domId('predefined'),
-					  {after:true,icon:true,single:true,showCategories:true});
+		    HU.initSelect2(this.jq('predefined'));
+//		    HU.makeSelectTagPopup('#'+this.domId('predefined'),
+//					  {after:true,icon:true,single:true,showCategories:true});
 		},1);
+		let buttons = (type) =>{
+		    return HU.buttons([
+			HU.div([ATTR_CLASS,HU.classes(type,CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)
+		    ]);
+		};
+		let addLayer = (type,label,inner) =>{
+		    inner +=buttons(type);
+		    contents.push({label:label,contents:inner});
+		};
 
-		html+=buttons;
-		contents.push({label:'WMS/WMTS',contents:html});
-
+		addLayer('predefined','Layers',html);
+		addLayer('wms','WMS/WMTS',wmtHtml);
+		addLayer('tilejson','Tile JSON',tileJson);		
 
 		let showStac = false;
 		let tabs;
 		if(showStac) {
 		    let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
 		    contents.push({label:'STAC',contents: stac});
-		    tabs = HU.makeTabs(contents)
-		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
-						   CSS_MIN_HEIGHT,HU.px(400),
-						   CSS_MARGIN,HU.px(10))], tabs.contents);
-		} else {
-		    let tabs = HU.div([],HU.b(HU.center(contents[0].label))) +    contents[0].contents;
+		} 
+		tabs = HU.makeTabs(contents,
+				   {contentsStyle:
+				    HU.css(CSS_MIN_HEIGHT,HU.em(14),
+					   CSS_MIN_WIDTH,HU.px(600))});
+		html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(800),
+					       CSS_MIN_HEIGHT,HU.px(400),
+					       CSS_MARGIN,HU.px(10))], tabs.contents);
+
+		/*
+		    let tabs = HU.div([],HU.b(HU.center(contents[0].label))) +
+			contents[0].contents;
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
 						   CSS_MIN_HEIGHT,HU.px(400),
 						   CSS_MARGIN,HU.px(10))], tabs);
-		}
+		*/
 
 		let dialog = this.mapServerDialog =
 		    HU.makeDialog({remove:false,content:html,title:'Map Server',
@@ -1517,7 +1537,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove= () =>{
 		    dialog.hide();
 		}
-		if(showStac) {
+		if(tabs) {
 		    tabs.init();
 		}
 
@@ -1534,7 +1554,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapOptions.legendText = args.legendText;
 		    this.clearCommands();
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,this.jq('predefined').val());
+		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,
+					     args.predefined);
 		    mapGlyph.checkMapServer();
 		    this.lastCreatedGlyph=mapGlyph;
 		    this.addGlyph(mapGlyph);
@@ -1544,13 +1565,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			mapGlyph.panMapTo();
 		    }
 		}
-		let ok = ()=>{
+		let ok = (button)=>{
 		    args.forEach(a=>{
 			this.cache[a[1]] =  this.jq(a[1]).val().trim();
 		    });
 		    let predefined = this.jq('predefined').val().trim();
-		    let tileJson = this.jq('tilejson').val();
-		    if(Utils.stringDefined(tileJson)) {
+		    if(button.hasClass('predefined')) {
+			if(!Utils.stringDefined(predefined)) {
+			    alert('Please select a layer');
+			    return;
+			}
+			loadLayer({predefined:this.jq('predefined').val()});
+			return;
+		    }
+		    
+
+		    if(button.hasClass('tilejson')) {
+			let tileJson = this.jq('tilejson').val();
+			if(!Utils.stringDefined(tileJson)) {
+			    alert('Please enter a Tile JSON URL');
+			    return;
+			}
 			$.getJSON(tileJson, (data)=> {
 			    let args = {
 				name:data.name,
@@ -1572,20 +1607,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    let url = this.jq('serverurl').val();
-		    if(!Utils.stringDefined(url) && !Utils.stringDefined(predefined)) {
-			alert('Please enter a map server');
-			return;
+		    if(button.hasClass('wms')) {
+			if(!Utils.stringDefined(url)) {
+			    alert('Please enter a map server URL');
+			    return;
+			}
 		    }
-		    
+		    //replace the wmts indices with macros
+		    url = url.replace(/\/\d\/\d\/\d/, "/${z}/${y}/${x}");
 		    loadLayer({
 			name:this.jq('servername').val(),
 			url:url,
 			layerName:this.jq('wmslayer').val(),
 			legendUrl:this.jq('maplegend').val()
 		    });
-
-		}
-		dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
+		};
+		dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(
+		    function() {ok($(this));});
 		dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		    dialog.hide();
 		});
@@ -1898,6 +1936,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
+	getMapMenuOptions:function() {
+	    let layers =[];
+	    let lastCategory;
+	    RAMADDA_MAP_LAYERS.forEach(l=>{
+		if(l.getCategory() && l.getCategory()!=lastCategory) {
+		    lastCategory=l.getCategory();
+		    layers.push({category:lastCategory});
+		}
+		layers.push({value:l.id,label:l.name});
+	    });
+	    return layers;
+	},
+	
+
+
 	loadWmtsEntry:function(attrs) {
 	    getRamadda().getEntry(attrs.entryId, entry=>{
 		//		console.dir(entry);
@@ -7402,4 +7455,6 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
     }
     return false;
 }
+
+
 

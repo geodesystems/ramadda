@@ -129,6 +129,9 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 MapGlyph.prototype = {
     CLASS_NAME:'MapGlyph',
     animationInfo:{},
+    getDisplay: function() {
+	return this.display;
+    },
     domId:function(id) {
 	return this.getId() +'_'+this.display.domId(id);
     },
@@ -589,7 +592,7 @@ MapGlyph.prototype = {
 	if(this.isMapServer()) {
 	    if(this.attrs.predefinedLayer) {
 		this.baseMapPlaceID=HU.getUniqueId('');
-		let layers = RAMADDA_MAP_LAYERS.map(l=>{return {value:l.id,label:l.name}});
+		let layers =this.getDisplay().getMapMenuOptions();
 		let layerSelect=   HU.select('',
 					      [ATTR_ID,this.domId('maplayermenu')],layers,this.attrs.predefinedLayer);
 
@@ -4053,8 +4056,8 @@ MapGlyph.prototype = {
     initPropertiesComponent: function(dialog) {
 	if(this.baseMapPlaceID) {
 	    HU.initSelect2(this.jq('maplayermenu'));
-/*	    HU.makeSelectTagPopup('#'+this.domId('maplayermenu'),
-				  {location:this.baseMapPlaceID,icon:true,single:true});*/
+//	    HU.makeSelectTagPopup('#'+this.domId('maplayermenu'),
+//				  {location:this.baseMapPlaceID,icon:true,single:true});
 	}
 
 	if(this.propsTabs) {
