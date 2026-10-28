@@ -4735,6 +4735,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		jqid(id ).tabs();
 	    }};
     },
+    popupHelp:function(msg) {
+	return HU.span([ATTR_TITLE,msg], HU.getIconImage(icon_help));
+    },
     makeAccordionHtml(list) {
 	let id = HU.getUniqueId('accordion_');
 	let html = HU.open(TAG_DIV,[ATTR_CLASS,'ui-accordion ui-widget ui-helper-reset',
