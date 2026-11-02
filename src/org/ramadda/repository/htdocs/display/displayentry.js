@@ -4946,7 +4946,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		    _this.loadEntry(entry);
 		});
 		HU.initSelect(menu,{ autoWidth: true,  'max-height':HU.px(100)});
-		HU.makeSelectTagPopup(menu,{icon:true,single:true,makeButtons:false});
+		HU.makeSelectTagPopup(menu,{closeDialog:false,icon:true,single:true,makeButtons:false});
 		if(this.sourceEntry)
 		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'),4);		    
 	    }
