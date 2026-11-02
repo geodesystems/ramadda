@@ -8,6 +8,7 @@ package org.ramadda.repository;
 import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.MyDateFormat;
 
 import ucar.unidata.util.DateUtil;
 
@@ -60,6 +61,7 @@ public class DateHandler extends RepositoryManager {
         new Hashtable<String, SimpleDateFormat>();
 
     protected static List<SimpleDateFormat> parseFormats;
+    //    protected static List<MyDateFormat> _parseFormats;    
 
     public DateHandler(Repository repository) {
         super(repository);
@@ -562,18 +564,35 @@ public class DateHandler extends RepositoryManager {
             tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss"));
             tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm"));
             tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd"));
+            tmp.add(RepositoryUtil.makeDateFormat("MM-dd-yyyy"));	    
             tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM"));
             tmp.add(RepositoryUtil.makeDateFormat("yyyy"));	    
             parseFormats = tmp;
 
         }
 
+	/*
+        if (_parseFormats == null) {
+            List<MyDateFormat> tmp = new ArrayList<MyDateFormat>();
+            tmp.add(new MyDateFormat("yyyy-MM-dd HH:mm:ss z"));
+            tmp.add(new MyDateFormat("yyyy-MM-dd HH:mm:ss"));
+            tmp.add(new MyDateFormat("yyyy-MM-dd HH:mm"));
+            tmp.add(new MyDateFormat("yyyy-MM-dd"));
+            tmp.add(new MyDateFormat("MM-dd-yyyy"));	    
+            tmp.add(new MyDateFormat("yyyy-MM"));
+            tmp.add(new MyDateFormat("yyyy"));	    
+            _parseFormats = tmp;
+	    }*/
+
+
         for (SimpleDateFormat fmt : parseFormats) {
             try {
                 synchronized (fmt) {
-                    return fmt.parse(dttm);
+		    Date d = fmt.parse(dttm);
+                    return d;
                 }
-            } catch (Exception noop) {}
+            } catch (Exception noop) {
+	    }
         }
 
         throw new IllegalArgumentException("Unable to parse date:" + dttm);
