@@ -3506,71 +3506,74 @@ public class WikiUtil implements HtmlUtilsConstants {
         s = sb.toString();
 
         if (headingsNav != null) {
-            StringBuilder hb = new StringBuilder();
-            boolean left = "true".equals(Utils.getProperty(headingsProps,
+            int minHeadings = Utils.getProperty(headingsProps, "minHeadings", -1);
+	    StringBuilder hb = new StringBuilder();
+	    boolean left = "true".equals(Utils.getProperty(headingsProps,
 							   "navleft", "false"));
-            boolean list = "true".equals(Utils.getProperty(headingsProps,
+	    boolean list = "true".equals(Utils.getProperty(headingsProps,
 							   "navlist", "false"));
-            boolean popup = "true".equals(Utils.getProperty(headingsProps,
+	    boolean popup = "true".equals(Utils.getProperty(headingsProps,
 							    "navpopup", "false"));	    
-            String delim;
-            int maxLevel = Utils.getProperty(headingsProps, "maxLevel", 100);
-            int minLevel = Utils.getProperty(headingsProps, "minLevel", -1);	    
-            if (left || list || popup) {
-                delim = "<br>";
-            } else {
+	    String delim;
+	    int maxLevel = Utils.getProperty(headingsProps, "maxLevel", 100);
+	    int minLevel = Utils.getProperty(headingsProps, "minLevel", -1);
+	    if (left || list || popup) {
+		delim = "<br>";
+	    } else {
 		delim = NAVDELIM;
 		delim = "";
 		delim= HU.span(Utils.getProperty(headingsProps, "delimiter", delim),
 			       HU.cssClass("ramadda-nav-top-delimiter"));
 	    }
-            for (Object o : headings2) {
-                Object[] tuple = (Object[]) o;
-                int      level = (int) tuple[2];
-                if (level > maxLevel || level<minLevel) {
-                    continue;
-                }
-                String id    = (String) tuple[0];
-                String label = (String) tuple[1];
-                //Handle if this is {{title}} eg.
-                if (label.indexOf("{{") >= 0) {
-                    label = wikify(label, handler);
-                    label = label.replaceAll(".*<.*?>(.*)</.*>.*", "$1");
-                }
-                if ( !left && (hb.length() > 0)) {
-                    hb.append(delim);
-                }
-                String clazz = " ramadda-link ramadda-nav-link ";
-                if ((list || popup) && (level == 0)) {
-                    continue;
-                }
-                if (left) {
-                    clazz += " ramadda-nav-link-" + level;
-                } else if (list) {
-                    clazz += "ramadda-nav-list-link ramadda-nav-list-link-"
+	    for (Object o : headings2) {
+		Object[] tuple = (Object[]) o;
+		int      level = (int) tuple[2];
+		if (level > maxLevel || level<minLevel) {
+		    continue;
+		}
+		String id    = (String) tuple[0];
+		String label = (String) tuple[1];
+		//Handle if this is {{title}} eg.
+		if (label.indexOf("{{") >= 0) {
+		    label = wikify(label, handler);
+		    label = label.replaceAll(".*<.*?>(.*)</.*>.*", "$1");
+		}
+		if ( !left && (hb.length() > 0)) {
+		    hb.append(delim);
+		}
+		String clazz = " ramadda-link ramadda-nav-link ";
+		if ((list || popup) && (level == 0)) {
+		    continue;
+		}
+		if (left) {
+		    clazz += " ramadda-nav-link-" + level;
+		} else if (list) {
+		    clazz += "ramadda-nav-list-link ramadda-nav-list-link-"
 			+ level;
-                } else if (popup) {
-                    clazz += "ramadda-nav-popup-link ramadda-nav-popup-link-"
+		} else if (popup) {
+		    clazz += "ramadda-nav-popup-link ramadda-nav-popup-link-"
 			+ level;
-                }
-                String href = HU.mouseClickHref((left?"HtmlUtils.navLinkClicked('":"HtmlUtils.scrollToAnchor('")
+		}
+		String href = HU.mouseClickHref((left?"HtmlUtils.navLinkClicked('":"HtmlUtils.scrollToAnchor('")
 						+ id + "',-50,"+(navId==null?"null":"'" + navId+"'")+")", label,
 						HU.attrs(ATTR_CLASS, clazz,"id",id+"_href"));
-                if (left) {
-                    href = HU.div(href,
-                                  HU.attrs(ATTR_CLASS, "ramadda-nav-left-link",
-                                           "navlink", id));
-                } else if (list || popup) {
+		if (left) {
+		    href = HU.div(href,
+				  HU.attrs(ATTR_CLASS, "ramadda-nav-left-link",
+					   "navlink", id));
+		} else if (list || popup) {
 		}
 		hb.append(href);
-            }
-            if (left) {
+	    }
+	    if(headings2.size()<minHeadings) {
+		s = s.replace("${" + headingsNav + "}", "");
+	    } else 	if (left) {
 		StringBuilder args = new StringBuilder();
 		boolean open = Utils.getProperty(headingsProps,"leftOpen", true);
 		String theLeftWidth = Utils.getProperty(headingsProps,"leftWidth", "250px");
-                String theLeftStyle = (String) Utils.getProperty(headingsProps,
+		String theLeftStyle = (String) Utils.getProperty(headingsProps,
 								 "leftStyle", "");
-                String theRightStyle = (String) Utils.getProperty(headingsProps,
+		String theRightStyle = (String) Utils.getProperty(headingsProps,
 								  "rightStyle", "");
 		String title = Utils.getProperty(headingsProps, ATTR_TITLE,null);
 		theLeftStyle = HU.css(ATTR_WIDTH,theLeftWidth) +
@@ -3583,49 +3586,49 @@ public class WikiUtil implements HtmlUtilsConstants {
 		} else {
 		    theRightStyle+=HU.css("margin-left",theLeftWidth);
 		}
-                s = s.replace("${" + headingsNav + "}", "");
+		s = s.replace("${" + headingsNav + "}", "");
 		boolean haveLinks = hb.length()>0;
-                String leftLinks = HU.div(hb.toString(),
-                                          HU.attrs(ATTR_CLASS,"ramadda-nav-left-links"));
+		String leftLinks = HU.div(hb.toString(),
+					  HU.attrs(ATTR_CLASS,"ramadda-nav-left-links"));
 
 		if(title!=null && haveLinks) {
 		    leftLinks = "<div class=ramadda-links>" +HU.h3(title) + "</div>\n" + leftLinks;
 		}
-                s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='"
-                    + theLeftStyle + "'><div id=ramadda-nav-1></div>"
-                    + (haveLinks?leftLinks:"")
-                    + "<div id=ramadda-nav-2></div><div id=ramadda-nav-3></div></div><div style='"
-                    + theRightStyle + "' class=ramadda-nav-right>" + s
-                    + "</div></div>" + HU.script("HtmlUtils.initNavLinks({" + args+"})");
-            } else if (list) {
-                String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
-                s = s.replace("${" + headingsNav + "}",
-                              HU.div(hb.toString(),
-                                     HU.attrs(ATTR_CLASS, "ramadda-nav-list",
+		s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='"
+		    + theLeftStyle + "'><div id=ramadda-nav-1></div>"
+		    + (haveLinks?leftLinks:"")
+		    + "<div id=ramadda-nav-2></div><div id=ramadda-nav-3></div></div><div style='"
+		    + theRightStyle + "' class=ramadda-nav-right>" + s
+		    + "</div></div>" + HU.script("HtmlUtils.initNavLinks({" + args+"})");
+	    } else if (list) {
+		String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
+		s = s.replace("${" + headingsNav + "}",
+			      HU.div(hb.toString(),
+				     HU.attrs(ATTR_CLASS, "ramadda-nav-list",
 					      ATTR_STYLE, style)));
-            } else if (popup) {
-                String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
+	    } else if (popup) {
+		String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
 		String id = HU.getUniqueId("popup");
 		String p =  HU.div(hb.toString(),
 				   HU.attrs("id",id+"-popup", ATTR_CLASS, "ramadda-shadow-box  ramadda-popup ramadda-nav-popup",
 					    ATTR_STYLE, style));
 		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,ATTR_CLASS,"ramadda-nav-popup-link",ATTR_TITLE,"Click to view table of contents"));
 		String container = HU.div(icon +p, HU.attrs(ATTR_CLASS,"ramadda-nav-popup-container"));
-                String align = Utils.getProperty(headingsProps, "align", "left");
+		String align = Utils.getProperty(headingsProps, "align", "left");
 		String args = JsonUtil.map(Utils.makeListFromValues("align",JsonUtil.quote(align)));
 		container += HU.script(JQuery.ready("HtmlUtils.initNavPopup('" + id+"',"+ args+");"));
-                s = s.replace("${" + headingsNav + "}",container);
+		s = s.replace("${" + headingsNav + "}",container);
 
-            } else {
-                String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
-                s = s.replace("${" + headingsNav + "}",
-                              HU.div(hb.toString(),
-                                     HU.attrs(ATTR_CLASS, "ramadda-nav-top",
+	    } else {
+		String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
+		s = s.replace("${" + headingsNav + "}",
+			      HU.div(hb.toString(),
+				     HU.attrs(ATTR_CLASS, "ramadda-nav-top",
 					      ATTR_STYLE, style)));
 
-            }
-        }
-
+	    }
+	}
+    
     
         /*
           <block title="foo">xxxxx</block>
