@@ -6430,7 +6430,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    wrap:'${widget}',
 	    makeButton:true,
 	    makeButtons:true,
-	    sticky:false
+	    sticky:false,
+	    closeDialog:true
 	}
 	if(args.icon && !args.buttonLabel)
 	    args.buttonLabel = HU.getIconImage('fas fa-list-check');
@@ -6508,7 +6509,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    },1);
 		}
 	    }
-	    if(opts.single) {
+	    if(opts.single && opts.closeDialog) {
 		dialog.remove();
 	    }
 	}
