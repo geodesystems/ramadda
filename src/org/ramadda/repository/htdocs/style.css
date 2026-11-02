@@ -5542,6 +5542,7 @@ a.ramadda-menuitem-link:hover {
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
     filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray');
     -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray')";
+    overflow-x:auto;
 }
 
 .image-inner {
