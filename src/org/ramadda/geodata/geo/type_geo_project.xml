@@ -13,9 +13,10 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 >
 
 <!-- Columns-->
+<column  name="project_id"  label="Project ID"  type="string" />
 <column  name="project_type"  label="Project Type"  type="enumerationplus"   cansearch="true"  default="geologic _project"  values="file:/org/ramadda/geodata/geo/project_types.txt" />
 <column  name="project_status"  label="Project Status"  type="enumerationplus"   cansearch="true" values="Active,Inactive" default="Active" />
-<column  name="showmap"  label="Show Map"  type="boolean"   showinhtml="false" default="true"  group="Display" />
+<column  name="show_map"  label="Show Map"  type="boolean"   showinhtml="false" default="true"  group="Display" />
 <column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="true" />
 <column  name="show_search"  label="Show Search"  type="boolean"   showinhtml="false" default="true" />
 <!-- Properties-->
@@ -36,7 +37,7 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 {{description wikify=true}}
 +row 
 +col-8
-+if property=showmap
++if property=show_map
 {{map listentries="true" message="" prefix=":nonavheading Project Locations" hideIfNoLocations=true 
 entries="this,children,childrenof:type:type_map_folder" 
 height=450px
@@ -53,6 +54,7 @@ orderby=entryorder_up ascending=true}}
 -col
 +col-4
 <table class="formtable"> 
+{{field  name="project_id"  row.label="Project ID:"  }} 
 {{field  name="project_type"  row.label="Project Type:"  }} 
 {{field  name="project_status"  row.label="Project Status:"  }}
 </table>
