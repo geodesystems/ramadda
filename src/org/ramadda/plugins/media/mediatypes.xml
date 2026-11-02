@@ -244,7 +244,7 @@ Access to this audio file is restricted
 </type>
 
 
-  <type name="type_image"  description="Image"  includeInSearch="true" foruser="true"  pattern="(?i)(.*\.webp|.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
+  <type name="type_image"  description="Image"  includeInSearch="true" foruser="true"  pattern="(?i)(.*\.bmp|.*\.webp|.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
     <property name="icon" value="/icons/image.png"/>
     <property name="file.accept" value="image/*"/>
     <property name="search.tabs" value="images,list"/>
@@ -257,6 +257,10 @@ Access to this audio file is restricted
 	  label="Show Information" default="true"  showinhtml="false"/>
     <column name="show_zoom" type="boolean"
 	  label="Show Zoom" default="false"  showinhtml="false"/>
+    <column name="image_width" type="int"
+	    label="Image Width" xxxshowinhtml="false"/>
+    <column name="image_height" type="int"
+	  label="Image Height"   xxxshowinhtml="false"/>    
     <wikis tag="simple">
       <![CDATA[<div class=ramadda-description>{{description wikify=true}}</div>
 +inset left=10px right=10px
