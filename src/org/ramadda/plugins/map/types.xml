@@ -16,26 +16,44 @@
 	    type="string" showinhtml="false" default=""
 	    suffix="e.g.: fillColor:red,radius:4,strokeColor:green,strokeWidth:2"
 	    />    
-    <column  name="show_information"  label="Show Information"  type="boolean"   showinhtml="false" default="true" />
-    <column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="false" />
+    <column  name="show_map"  label="Show Map"
+	     type="boolean"   showinhtml="false" default="true" />    
+    <column  name="show_information"  label="Show Information"
+	     type="boolean"   showinhtml="false" default="true" />
+    <column  name="show_list"  label="Show List"
+	     type="boolean"   showinhtml="false" default="true" />
+    <column  name="show_album"  label="Show Album"
+	     type="boolean"   showinhtml="false" default="false" />    
+    <column  name="show_type_summary"  label="Show Type Summary"
+	     type="boolean"   showinhtml="false" default="false" />
 
 
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
-:navtop
+:navtop minHeadings=2
++if property=show_map
 :heading Map
 {{map  width="100%"  showCircles="property:show_circles"
 mapProps="property:map_props"
 height="80vh"  orderby=name ascending=true listEntries="true"   
-entriesListHeader=""  }} 
+entriesListHeader=""  }}
+-if
 
++if property=show_album
+:heading Album
+{{gallery columns="3"}}
+-if
+
+
++if property=show_list
 :heading List
 +center
 {{group}}
 {{display_simplesearch  doPageSearch=true autoFocus=false}} 
 -center
 {{tabletree  message="No entries" orderby=name ascending=true}}
+-if
 
 +if property=show_type_summary
 :vspace 1em
