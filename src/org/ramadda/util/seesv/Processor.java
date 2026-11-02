@@ -2495,7 +2495,8 @@ public abstract class Processor extends SeesvOperator {
 		    : "NA";
 		Object value = values.get(i);
 		if(interactive) {
-		    ctx.println("<tr><td align=right data-id='" + label+"' class='seesv-record-id'>"+Utils.makeLabel(label)+":</td><td>"+value+"</td></tr>");
+		    String fieldId = Utils.makeID(label);
+		    ctx.println("<tr><td align=right data-id='" + fieldId+"' class='seesv-record-id'>"+Utils.makeLabel(label)+":</td><td>"+value+"</td></tr>");
 		    continue;
 		}
 		label = StringUtil.padLeft(label, maxWidth);
