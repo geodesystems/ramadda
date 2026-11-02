@@ -188,7 +188,8 @@
 
 
   <group handler="metadatamanager">
-    <api request="/metadata/types.html"        method="processMetadataTypes"/>    
+    <api request="/metadata/types.html"        method="processMetadataTypes"/>
+    <api request="/metadata/type.html"        method="processMetadataType"/>        
     <api request="/usagedescriptors"       method="processUsageDescriptors"      />
     <api request="/metadata/suggest"       method="processMetadataSuggest"/>
     <api request="/metadata/list"       method="processMetadataList"/>    
