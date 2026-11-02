@@ -1859,7 +1859,6 @@ public class Seesv implements SeesvCommands {
 			TYPE_ENUMERATION,ATTR_VALUES,"exact,clean,fuzzy:threshold")),
         new Cmd(CMD_NONUNIQUE, "Pass through non-unique values",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
-
         new Cmd(CMD_DUPS, "Pass through duplicate values",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
         new Cmd(CMD_SAMPLE, "Pass through rows based on probablity",
@@ -2007,6 +2006,8 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Include Rows",
                 new Arg("rows", "one or more rows, -1 to the end", ATTR_TYPE,
                         TYPE_ROWS)),
+
+	new Cmd(CMD_SIEVE, "Sieve - fill in blank rows and pass back one full row"),
 	new Cmd(CMD_SHUFFLE, "Randomize the rows"),
 	new Cmd(CMD_ROWS_FIRST, "Move rows to the top that match the pattern",
 		ARG_LABEL,"Move Rows First",
@@ -3401,6 +3402,13 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.RowAppender(parseInt(args.get(++i)),
 							   parseInt(args.get(++i)),
 							   args.get(++i)));
+		return i;
+	    });
+	try {
+	    //	    IO.debugStderr();
+	} catch(Exception exc){}
+	defineFunction(CMD_SIEVE,0, (ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.Sieve(ctx));
 		return i;
 	    });
 	defineFunction(CMD_SHUFFLE,0, (ctx,args,i) -> {

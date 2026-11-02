@@ -315,12 +315,60 @@ public class RowCollector extends Processor {
 
     }
 
+    public static class Sieve extends RowCollector {
+        public Sieve(TextReader ctx) {
+	}
+
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+            List<Row> newRows = new ArrayList<Row>();
+	    Row headerRow=null;
+	    Row firstRow=null;
+	    int cnt=0;
+            for (Row row : getRows()) {
+		if(headerRow==null) {
+		    headerRow=row;
+		    newRows.add(row);
+		    continue;
+		}
+
+		if(firstRow==null) {
+		    firstRow=row;
+		    newRows.add(firstRow);
+		    continue;
+		}
+		cnt++;
+                List baseValues = firstRow.getValues();
+                List values = row.getValues();
+		for(int i=0;i<baseValues.size() && i < values.size();i++) {
+		    Object baseValue = baseValues.get(i);
+		    Object currentValue = values.get(i);
+		    if(baseValue==null) {
+			baseValue = currentValue;
+		    } else if(!Utils.stringDefined(baseValue.toString())) {
+			baseValue = currentValue;
+		    } else {
+			//			System.err.println("base Value:" + baseValue);
+		    }
+		    baseValues.set(i,baseValue);
+		}
+		firstRow.setValues(baseValues);
+	    }
+	    
+            return newRows;
+        }
+
+    }
+
+
+
     public static class FirstLast extends RowCollector {
         boolean atStart;
         String pattern;
 
         public FirstLast(TextReader ctx, boolean atStart, List<String> cols,
-                           String pattern) {
+			 String pattern) {
             super(cols);
             this.atStart = atStart;
             this.pattern = pattern;
@@ -2046,62 +2094,62 @@ public class RowCollector extends Processor {
 
 	    return newRows;
 	    /*
-            List<Row> newRows   = new ArrayList<Row>();
-            Row       newHeader = new Row();
-	    for(int i:uniqueIndices) {
-		newHeader.add(headerRow.get(i));
-	    }
-	    for(int i:valueIndices) {
-		for(String w: what) {
-		    if(w.equals("count"))
-		       newHeader.add(headerRow.get(i)+" Count");
-		    else
-			newHeader.add(headerRow.get(i)+" " + w);
-		}
-	    }	    
+	      List<Row> newRows   = new ArrayList<Row>();
+	      Row       newHeader = new Row();
+	      for(int i:uniqueIndices) {
+	      newHeader.add(headerRow.get(i));
+	      }
+	      for(int i:valueIndices) {
+	      for(String w: what) {
+	      if(w.equals("count"))
+	      newHeader.add(headerRow.get(i)+" Count");
+	      else
+	      newHeader.add(headerRow.get(i)+" " + w);
+	      }
+	      }	    
 
-            if (valueIndices.size() == 0) {
-                newHeader.add("Count");
-            }
-            for (int j : extraIndices) {
-                newHeader.add(firstRow.get(j));
-            }
-            newRows.add(newHeader);
-            for (String key : keys) {
-                Count count = counts.get(key);
-                if (valueIndices.size() == 0) {
-                    //just count them
-                    Row       row      = count.sample;
-                    Row       newRow   = new Row();
-                    newRows.add(newRow);
-                    for (int i : uniqueIndices) {
-                        newRow.add(row.get(i));
-                    }
-                    newRow.add(count.count);
-                    for (int j : extraIndices) {
-                        newRow.add(row.get(j));
-                    }
-                    continue;
-                }
+	      if (valueIndices.size() == 0) {
+	      newHeader.add("Count");
+	      }
+	      for (int j : extraIndices) {
+	      newHeader.add(firstRow.get(j));
+	      }
+	      newRows.add(newHeader);
+	      for (String key : keys) {
+	      Count count = counts.get(key);
+	      if (valueIndices.size() == 0) {
+	      //just count them
+	      Row       row      = count.sample;
+	      Row       newRow   = new Row();
+	      newRows.add(newRow);
+	      for (int i : uniqueIndices) {
+	      newRow.add(row.get(i));
+	      }
+	      newRow.add(count.count);
+	      for (int j : extraIndices) {
+	      newRow.add(row.get(j));
+	      }
+	      continue;
+	      }
 
-                Row newRow = null;
-                for (int i = 0; i < valueIndices.size(); i++) {
-                    int    valueIdx = valueIndices.get(i);
-		    if (newRow == null) {
-			newRow = new Row();
-			for (int u = 0; u < uniqueIndices.size(); u++) {
-			    newRow.add(count.sample.get(uniqueIndices.get(u)));
-			}
-			newRows.add(newRow);
-		    }
+	      Row newRow = null;
+	      for (int i = 0; i < valueIndices.size(); i++) {
+	      int    valueIdx = valueIndices.get(i);
+	      if (newRow == null) {
+	      newRow = new Row();
+	      for (int u = 0; u < uniqueIndices.size(); u++) {
+	      newRow.add(count.sample.get(uniqueIndices.get(u)));
+	      }
+	      newRows.add(newRow);
+	      }
 
-		    for(String w: what) {
-			if(w.equals(OPERAND_SUM)) {
-			    newRow.add(Double.valueOf(count.totals[i]));
- 			} else if(w.equals(OPERAND_MIN)) {
-			    newRow.add(Double.valueOf(count.mins[i]));
- 			} else if(w.equals(OPERAND_MAX)) {
-			    newRow.add(Double.valueOf(count.maxs[i]));
+	      for(String w: what) {
+	      if(w.equals(OPERAND_SUM)) {
+	      newRow.add(Double.valueOf(count.totals[i]));
+	      } else if(w.equals(OPERAND_MIN)) {
+	      newRow.add(Double.valueOf(count.mins[i]));
+	      } else if(w.equals(OPERAND_MAX)) {
+	      newRow.add(Double.valueOf(count.maxs[i]));
 	      } else if(w.equals(OPERAND_AVERAGE)) {
 	      newRow.add(Double.valueOf(count.totals[i]/count.count));
 	      } else if(w.equals("count")) {
@@ -2471,8 +2519,8 @@ public class RowCollector extends Processor {
                 throw new RuntimeException("Cannot read file:" + file);
             }
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(file)));
+						   new InputStreamReader(
+									 getInputStream(file)));
             SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             rows2        = new ArrayList<Row>();
