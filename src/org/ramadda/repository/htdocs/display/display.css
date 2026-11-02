@@ -3415,6 +3415,7 @@ table.dataTable tfoot td {
 
 
 .imdv-legend-offset {
+    margin-left:8px;
     margin-right:4px;
 }
 
