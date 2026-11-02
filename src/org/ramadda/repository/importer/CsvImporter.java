@@ -24,6 +24,7 @@ import org.ramadda.util.seesv.TextReader;
 
 import org.w3c.dom.*;
 import ucar.unidata.util.StringUtil;
+import java.util.zip.*;
 
 import ucar.unidata.util.TwoFacedObject;
 import org.ramadda.util.MyXmlUtil;
@@ -80,454 +81,484 @@ public class CsvImporter extends ImportHandler {
     }	
 
     @Override
-    public InputStream getStream(Request request, Entry parent,
+    public InputStream getStream(final Request request, Entry parent,
                                  String fileName, InputStream stream,
 				 StringBuilder message)
 	throws Exception {
+	System.err.println("csv-1");
         if (!isMine(request)) {
+	System.err.println("csv- - not mine");
             return null;
         }
-
-
 	Request lookupRequest = new Request(getRepository(),request.getUser());
 	HashSet seenMessage=new HashSet();
-	StringBuilder myMessage =new StringBuilder();
-	StringBuilder myMessage2 =new StringBuilder();	
-        final StringBuffer sb = new StringBuffer("<entries>\n");
-	Processor myProcessor = new Processor() {
-		boolean hadBadType = false;
-		boolean inheritParentId =false;
-		int entryCnt=0;
-		Row headerRow;
-		int typeIdx=-1;
-		int nameIdx=-1;
-		int privateIdx=-1;
-		int descIdx=-1;
-		int idIdx=-1;
-		int parentIdx=-1;
-		int dateIdx=-1;
-		int dateIdxFrom=-1;
-		int dateRangeIdx=-1;
-		int dateIdxTo=-1;		
-		int latitudeIdx=-1;
-		int longitudeIdx=-1;		
-		List<Index> metadataIdx= new ArrayList<Index>();
-		List<Index> newIdx= new ArrayList<Index>();
-		Hashtable<String,Integer> thumbnailIdx= new Hashtable<String,Integer>();
-		Hashtable<String,Integer> columnIdx= new Hashtable<String,Integer>();		
-		String currentType="";
-		String currentParent = "";
-		String defaultType=null;
-		TypeHandler  currentTypeHandler=null;
-		int cnt=0;
-		@Override
-		public org.ramadda.util.seesv.Row handleRow(TextReader textReader,
-							    org.ramadda.util.seesv.Row row) {
-		    try {
-			//Check for comments
-			if(row.size()>0 && row.getString(0,"").trim().startsWith("#")) return row;
-			if(row.size()==0) return row;
-			cnt++;
-			if(row.getString(0).startsWith("config:" )) {
-			    String config =row.getString(0).substring ("config:".length()).trim();
-			    if(config.toLowerCase().equals("inheritparentid")) inheritParentId=true;
-			    return row;
-			}
-			//get the indices
-			if(headerRow==null) {
-			    //maybe only do this if there is just one child type
-			    List<String> parentTypes= parent.getTypeHandler().getDefaultChildrenTypes();
-			    if(parentTypes.size()>0) {
-				defaultType=parentTypes.get(0);
-			    }
-			    headerRow = row;
-			    for(int i=0;i<row.size();i++) {
-				String field = row.getString(i);
-				field = field.replace("\uFEFF", "").trim();
-				String _field=field.toLowerCase().trim();
-				_field = _field.replace(":","_semicolon_");
-				_field = _field.replace(".","_dot_");				
-				_field=Utils.makeID(_field);
-				_field = _field.replace("_semicolon_",":");
-				_field = _field.replace("_dot_",".");				
-
-				if(_field.equals("name") || _field.equals("entry_name")) {
-				    nameIdx=i;
-				} else if(_field.equals("type")) {
-				    typeIdx=i;
-				} else if(_field.equals("date")) {
-				    dateIdx = i;
-				} else if(_field.matches("^(from_?date|start_?date)$")) {
-				    dateIdxFrom = i;
-				} else if(_field.matches("^(to_?date|end_?date)$")) {
-				    dateIdxTo = i;
-				} else if(_field.matches("^(dates|date_?range)$")) {
-				    dateRangeIdx = i;				    
-				} else if(_field.equals("latitude")) {
-				    latitudeIdx = i;
-				} else if(_field.equals("longitude")) {
-				    longitudeIdx = i;				    
-				} else if(_field.equals("private")) {
-				    privateIdx=i;				    
-				} else if(_field.equals("description")) {
-				    descIdx=i;
-				} else if(_field.equals("id")) {
-				    idIdx=i;
-				} else if(_field.equals("parent")) {
-				    parentIdx=i;
-				} else if(_field.startsWith("new:")) {
-				    String type= _field.substring("new:".length()).trim();
-				    newIdx.add(new Index(type,i));				    
-				} else if(_field.startsWith("metadata:")) {
-				    String mtd= _field.substring("metadata:".length()).trim();
-				    if(!getMetadataManager().isValidType(mtd)) {
-					getSessionManager().addSessionMessage(request,
-									      "Unknown metadata type:" + mtd);
-					continue;
-				    }
-				    metadataIdx.add(new Index(mtd,i));
-				} else if(_field.startsWith("property:")) {
-				    String mtd= _field.substring("property:".length()).trim();
-				    if(!getMetadataManager().isValidType(mtd)) {
-					getSessionManager().addSessionMessage(request,
-									      "Unknown metadata type:" + mtd);
-					continue;
-				    }
-
-				    metadataIdx.add(new Index(mtd,i));
-				} else if(_field.startsWith("thumbnail:")) {
-				    String mtd= _field.substring("thumbnail:".length()).trim();
-				    thumbnailIdx.put(mtd,i);				    
-				} else if(_field.startsWith("column:")) {
-				    String prop= _field.substring("column:".length()).trim();
-				    columnIdx.put(prop,i);
-				} else {
-				    columnIdx.put(_field,i);
-
-				}
-			    }
-			    if(typeIdx==-1 && defaultType==null) {
-				makeError("Input data must have a \"type\" column",headerRow);
-			    }
-			    if(nameIdx==-1) makeError("Input data must have a \"name\" column",headerRow);
-			    return row;
-			}	
-
-
-			if(defaultType==null && !row.indexOk(typeIdx)) {
-			    if(!hadBadType) {
-				hadBadType=true;
-				String msg = "Bad type index:" + typeIdx+" for row:";
-				for(int i=0;i<row.size();i++) {
-				    msg+="#"+i+": " + row.get(i)+"<br>";
-				}
-				myMessage2.append(HU.div(msg));
-			    }
-			    return row;
-			}
-			String tmpType=defaultType;
-			if(typeIdx>=0) {
-			    tmpType = row.getString(typeIdx,"");
-			}
-			if(Utils.stringDefined(tmpType)) {
-			    currentType = tmpType;
-			    currentTypeHandler = getRepository().getTypeHandler(currentType);
-			}
-			if(!Utils.stringDefined(currentType)) {
-			    makeError("No type defined",headerRow);
-			}
-			String attrs = "";
-			String entryName  =null;
-
-			if(row.indexOk(nameIdx)) {
-			    entryName = row.getString(nameIdx,"");
-			    attrs += XU.attrs("name",entryName, "type",currentType);
-			}
-			//if name is blank then check if all of the columns are blank
-			if(!stringDefined(entryName)) {
-			    boolean ok = false;
-			    for(int i=0;i<row.size();i++) {
-				String s = row.getString(i);
-				if(stringDefined(s)) {
-				    ok = true;
-				    break;
-				}
-			    }
-			    if(!ok) {
-				return row;
-			    }
-			}
-
-			entryCnt++;
-			String id = null;
-			if(idIdx>=0 && row.indexOk(idIdx)) {
-			    id = row.getString(idIdx,"");
-			}
-			if(!stringDefined(id)) {
-			    id   = "entry_" + (entryCnt);
-			}
-			attrs+=XU.attrs("id",id);
-
-			if(dateIdx>=0) {
-			    String v = row.getString(dateIdx,"");
-			    if(stringDefined(v)) {
-				attrs+=XU.attrs("fromdate",v);
-				attrs+=XU.attrs("todate",v);
-			    }
-			}
-			if(dateRangeIdx>=0) {
-			    String v = row.getString(dateRangeIdx,"");
-			    if(stringDefined(v)) {
-				List<String> toks = StringUtil.splitUpTo(v,"-",2);
-				String from=null;
-				String to = null;
-				if(toks.size()==1) {
-				    from = toks.get(0);
-				    to = toks.get(0);
-				} else if(toks.size()==2) {
-				    from = toks.get(0);
-				    to = toks.get(1);
-				}
-				if(stringDefined(from)) {
-				    attrs+=XU.attrs("fromdate",processDate(from));
-				}
-				if(stringDefined(to)) {
-				    attrs+=XU.attrs("todate",processDate(to));
-				}				
-			    }
-			}
-			if(dateIdxFrom>=0) {
-			    String v = row.getString(dateIdxFrom,"");
-			    if(stringDefined(v)) {
-				attrs+=XU.attrs("fromdate",processDate(v));
-			    }
-			}
-			if(dateIdxTo>=0) {
-			    String v = row.getString(dateIdxTo,"");
-			    if(stringDefined(v)) {
-				attrs+=XU.attrs("todate",processDate(v));
-			    }
-			}						
-
-
-			if(latitudeIdx>=0) {
-			    String v = row.getString(latitudeIdx,"");
-			    if(stringDefined(v)) {
-				attrs+=XU.attrs("latitude",v);
-			    }
-			}
-			if(longitudeIdx>=0) {
-			    String v = row.getString(longitudeIdx,"");
-			    if(stringDefined(v)) {
-				attrs+=XU.attrs("longitude",v);
-			    }
-			}			
-
-
-		
-			if(parentIdx>=0 && row.indexOk(parentIdx)) {
-			    String parent = row.getString(parentIdx,"");
-			    if(inheritParentId && !Utils.stringDefined(parent)) {
-				parent = currentParent;
-			    }
-
-			    if(Utils.stringDefined(parent) && !parent.trim().equals("none")) {
-				attrs+=XU.attrs("parent",parent);
-				currentParent = parent;
-			    }
-			}			
-
-			sb.append(XU.openTag("entry",attrs));
-			if(descIdx>=0 && row.indexOk(descIdx)) {
-			    String desc = row.getString(descIdx,"");
-			    if(Utils.stringDefined(desc)) {
-				sb.append(XU.openTag("description",""));
-				XU.appendCdata(sb,desc);
-				sb.append(XU.closeTag("description"));
-			    }
-			}
-			for (String prop : columnIdx.keySet()) {
-			    boolean lookupName = false;
-			    int idx = columnIdx.get(prop);
-			    if(!row.indexOk(idx)) continue;
-			    if(prop.indexOf(".")>0) {
-				List<String>propToks = Utils.splitUpTo(prop,".",2);
-				String propType = propToks.get(0);
-				if(!propType.equals(currentType)) continue;
-				prop = propToks.get(1);
-			    }
-			    if(prop.indexOf(":")>0) {
-				List<String>propToks = Utils.splitUpTo(prop,":",2);
-				if(propToks.size()>1) {
-				    String modifier = propToks.get(0);
-				    if(modifier.equals("name")) {
-					lookupName  = true;
-				    }
-				    prop = propToks.get(1);
-				}
-			    }
-
-			    Column column = currentTypeHandler!=null? currentTypeHandler.getColumn(prop):null;
-			    if(column==null) {
-				if(!seenMessage.contains(prop)) {
-				    String message= "";
-				    if(currentTypeHandler!=null)
-					message+="Type:" + currentTypeHandler.getLabel()+" ";
-				    message+="column: " + prop+":";
-				    myMessage.append(HU.div(message));
-				    //				    System.err.println(currentTypeHandler);
-				    //				    System.err.println("prop:"+ prop+":");
-				    //				    for(Column _column: currentTypeHandler.getColumns()) {System.err.println("C:" + _column);}
-
-				    seenMessage.add(prop);
-				}
-				continue;
-			    }
-			    String v = row.getString(idx,"");
-			    if(!Utils.stringDefined(v)) continue;
-			    if(lookupName && column.isEntryType()) {
-				String entryType = column.getEntryType();
-				lookupRequest.put(ARG_NAME_EXACT,v);
-				lookupRequest.put(ARG_EXACT,"true");				
-				if(entryType!=null)
-				    lookupRequest.put(ARG_TYPE,entryType);
-				List<Entry> columnEntries = getEntryManager().getEntriesFromDb(lookupRequest);
-				lookupRequest.remove(ARG_NAME_EXACT,ARG_TYPE,ARG_EXACT);
-				if(columnEntries.size()==0) {
-				    myMessage2.append(HU.div("Could not find linked entry:" + entryType+" name:" +v));
-				} else {
-				    v = columnEntries.get(0).getId();
-				}
-			    }
-			    sb.append(XU.openTag(prop,""));
-			    XU.appendCdata(sb,v);
-			    sb.append(XU.closeTag(prop));
-			}
-
-
-			if(privateIdx>=0 && row.indexOk(privateIdx)) {
-			    String v = row.getString(privateIdx,"").toLowerCase().trim();
-			    if(v.equals("true") || v.equals("yes")) {			    
-				sb.append("<permissions><permission action=\"view\"><role role=\"none\"/></permission></permissions>\n"); 
-			    } else if(v.equals("") || v.equals("no") || v.equals("yes")) {
-			    } else {
-				getSessionManager().addSessionMessage(request,
-								      "Unknown private value: " +v +"\n\tneeds to be \"yes\" or \"true\"");
-			    }
-			}
-
-			//TODO
-			for (String thumb : thumbnailIdx.keySet()) {
-			    int idx = thumbnailIdx.get(thumb);
-			    if(!row.indexOk(idx)) continue;
-			    String v = row.getString(idx,"");
-			    if(!Utils.stringDefined(v)) continue;
-			}
-
-
-
-			for (Index typeIndex : metadataIdx) {
-			    int idx = typeIndex.index;
-			    if(!row.indexOk(idx)) continue;
-			    String v = row.getString(idx,"");
-			    //			    System.err.println("\ttype:" + mtdType +" index:" + idx+" value:" + v);
-			    if(!Utils.stringDefined(v)) continue;
-			    //<access><![CDATA[admin,user]]></access>
-			    //<access:admin,user>
-			    String access = StringUtil.findPattern(v,"(<access:[^>]*>)");
-			    if(access!=null) {
-				v = v.replace(access,"");
-				access = access.replace("<access:","").replace(">","");
-				System.err.println("V:" + v +" access:" + access);
-			    }
-
-			    v = v.replace("\\:","_semicolon_").replace("_blank_","");
-			    List<String> toks = Utils.split(v,";",true,true);
-			    for(String tok: toks) {
-				List<String> subToks = Utils.split(tok,":");
-				sb.append(XU.openTag("metadata",XU.attrs("type",typeIndex.value)));
-				int index=0;
-				for(String mtdValue: subToks) {
-				    mtdValue =  mtdValue.replace("_semicolon_",":");
-				    index++;
-				    sb.append(XU.openTag("attr",
-							 XU.attrs("index",""+index,
-								  "encoded","false")));
-				    XU.appendCdata(sb,mtdValue);
-				    sb.append(XU.closeTag("attr"));
-				} 
-				if(access!=null) {
-				    sb.append(XU.openTag("access",""));				    
-				    XU.appendCdata(sb,access);
-				    sb.append(XU.closeTag("access"));
-				}				    
-				sb.append(XU.closeTag("metadata"));
-			    }
-			}
-			sb.append(XU.closeTag("entry"));
-			for (Index newIndex: newIdx) {
-			    String newType = newIndex.value;
-			    int idx = newIndex.index;
-			    if(!row.indexOk(idx)) continue;
-			    String v = row.getString(idx,"");
-			    if(!Utils.stringDefined(v)) continue;
-			    for(String name:Utils.split(v,";",true,true)) {
-				String newAttrs="";
-				StringBuffer contents=null;
-				int index = name.toLowerCase().indexOf("description:");
-				if(index>=0) {
-				    String desc = name.substring(index+1).substring("description".length()).trim();
-				    name = name.substring(0,index).trim();
-				    if(Utils.stringDefined(desc)) {
-					contents= new StringBuffer();
-					contents.append(XU.openTag("description",""));
-					XU.appendCdata(contents, desc);
-					contents.append(XU.closeTag("description"));
-				    }
-				}
-				newAttrs=XU.attrs("type",newType,"name",name,"parent",id);
-
-				sb.append(XU.openTag("entry",newAttrs));
-				if(contents!=null) sb.append(contents);
-				sb.append(XU.closeTag("entry"));
-			    }
-			}
-			return row;
-		    } catch (Exception exc) {
-			fatal(textReader, "Processing CSV import", exc);
-			return null;
-		    }
-		}
-	    };
-	
-
-	InputStream  source = new FileInputStream(fileName);
-	//	for(NamedInputStream input: sources) {
-	TextReader                textReader = new TextReader();
-
-	textReader.addProcessor(myProcessor);
+	StringBuilder missingColumnsSB =new StringBuilder();
+	StringBuilder warningSB =new StringBuilder();	
+        StringBuffer sb = new StringBuffer("<entries>\n");
 	Seesv csvUtil = new Seesv(new ArrayList<String>());
-	textReader.setInput(new NamedInputStream("input",
-						 csvUtil.makeInputStream(new IO.Path(fileName))));
-	
-	//						 new BufferedInputStream(source)));
-	DataProvider.CsvDataProvider provider =
-	    new DataProvider.CsvDataProvider(textReader,0);
-	csvUtil.process(textReader, provider,0);
-        sb.append("</entries>\n");
-	source.close();
-	if(myMessage.length()>0) {
-	    message.append(getPageHandler().showDialogWarning("Some columns were not processed:" +
-							      myMessage));
+	if(fileName.toLowerCase().endsWith(".zip")) {
+            InputStream    fis = IO.getInputStream(fileName);
+            ZipInputStream zin = new ZipInputStream(fis);
+            ZipEntry       ze  = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                if (ze.isDirectory()) {
+                    continue;
+                }
+                String p = ze.getName().toLowerCase();
+                if (p.endsWith(".csv") || p.endsWith(".tsv")) {
+		    processFile(request, csvUtil,parent, zin, seenMessage, missingColumnsSB,warningSB,sb);
+                }
+	    }
+	} else {
+	    InputStream inputStream = csvUtil.makeInputStream(new IO.Path(fileName));
+	    processFile(request, csvUtil,parent, inputStream, seenMessage, missingColumnsSB,warningSB,sb);
 	}
-	if(myMessage2.length()>0) {
-	    message.append(getPageHandler().showDialogWarning(myMessage2.toString()));
+        sb.append("</entries>\n");
+	if(missingColumnsSB.length()>0) {
+	    message.append(getPageHandler().showDialogWarning("Some columns were not processed:" +
+							      missingColumnsSB));
+	}
+	if(warningSB.length()>0) {
+	    message.append(getPageHandler().showDialogWarning(warningSB.toString()));
 	}
 
 	message.append(HU.div(HU.b("New entries:")));
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
 
+    private void processFile(final Request request,Seesv csvUtil,
+			     final Entry parent, InputStream inputStream,
+			     final HashSet seenMessage,
+			     final StringBuilder missingColumnsSB,
+			     final StringBuilder warningSB, final StringBuffer sb) throws Exception {
+	Processor myProcessor = getProcessor(request, parent, seenMessage, missingColumnsSB,warningSB,sb);
+	TextReader                textReader = new TextReader();
+	textReader.addProcessor(myProcessor);
+	textReader.setInput(new NamedInputStream("input",inputStream));
+	DataProvider.CsvDataProvider provider =    new DataProvider.CsvDataProvider(textReader,0);
+	csvUtil.process(textReader, provider,0);
+
+    }
+
+
+    private Processor getProcessor(final Request request,final Entry parent,
+				   final HashSet seenMessage,
+				   final StringBuilder missingColumnsSB,
+				   final StringBuilder warningSB, final StringBuffer sb) {
+	final 	Request lookupRequest = new Request(getRepository(),request.getUser());
+	return  new Processor() {
+	    boolean hadBadType = false;
+	    boolean inheritParentId =false;
+	    int entryCnt=0;
+	    Row headerRow;
+	    int typeIdx=-1;
+	    int nameIdx=-1;
+	    int privateIdx=-1;
+	    int descIdx=-1;
+	    int idIdx=-1;
+	    int parentIdx=-1;
+	    int dateIdx=-1;
+	    int dateIdxFrom=-1;
+	    int dateRangeIdx=-1;
+	    int dateIdxTo=-1;		
+	    int latitudeIdx=-1;
+	    int longitudeIdx=-1;		
+	    List<Index> metadataIdx= new ArrayList<Index>();
+	    List<Index> newIdx= new ArrayList<Index>();
+	    Hashtable<String,Integer> thumbnailIdx= new Hashtable<String,Integer>();
+	    Hashtable<String,Integer> columnIdx= new Hashtable<String,Integer>();		
+	    String currentType="";
+	    String currentParent = "";
+	    String defaultType=null;
+
+	    TypeHandler  currentTypeHandler=null;
+	    int cnt=0;
+	    @Override
+	    public org.ramadda.util.seesv.Row handleRow(TextReader textReader,
+							org.ramadda.util.seesv.Row row) {
+		try {
+		    //Check for comments
+		    if(row.size()>0 && row.getString(0,"").trim().startsWith("#")) return row;
+		    if(row.size()==0) return row;
+		    cnt++;
+		    if(row.getString(0).startsWith("config:" )) {
+			String config =row.getString(0).substring ("config:".length()).trim();
+			if(config.toLowerCase().equals("inheritparentid")) inheritParentId=true;
+			return row;
+		    }
+		    //get the indices
+		    if(headerRow==null) {
+			String extra = request.getString("extra",null);
+			if(stringDefined(extra)) {
+			    defaultType = StringUtil.findPattern(extra,"\\btype\\s*=\\s*([^\\s,]+)");
+			}
+
+			//maybe only do this if there is just one child type
+			List<String> parentTypes= parent.getTypeHandler().getDefaultChildrenTypes();
+			if(parentTypes.size()>0) {
+			    defaultType=parentTypes.get(0);
+			}
+			headerRow = row;
+			for(int i=0;i<row.size();i++) {
+			    String field = row.getString(i);
+			    field = field.replace("\uFEFF", "").trim();
+			    String _field=field.toLowerCase().trim();
+			    _field = _field.replace(":","_semicolon_");
+			    _field = _field.replace(".","_dot_");				
+			    _field=Utils.makeID(_field);
+			    _field = _field.replace("_semicolon_",":");
+			    _field = _field.replace("_dot_",".");				
+
+			    if(_field.equals("name") || _field.equals("entry_name")) {
+				nameIdx=i;
+			    } else if(_field.equals("type")) {
+				typeIdx=i;
+			    } else if(_field.equals("date")) {
+				dateIdx = i;
+			    } else if(_field.matches("^(from_?date|start_?date)$")) {
+				dateIdxFrom = i;
+			    } else if(_field.matches("^(to_?date|end_?date)$")) {
+				dateIdxTo = i;
+			    } else if(_field.matches("^(dates|date_?range)$")) {
+				dateRangeIdx = i;				    
+			    } else if(_field.equals("latitude")) {
+				latitudeIdx = i;
+			    } else if(_field.equals("longitude")) {
+				longitudeIdx = i;				    
+			    } else if(_field.equals("private")) {
+				privateIdx=i;				    
+			    } else if(_field.equals("description")) {
+				descIdx=i;
+			    } else if(_field.equals("id")) {
+				idIdx=i;
+			    } else if(_field.equals("parent")) {
+				parentIdx=i;
+			    } else if(_field.startsWith("new:")) {
+				String type= _field.substring("new:".length()).trim();
+				newIdx.add(new Index(type,i));				    
+			    } else if(_field.startsWith("metadata:")) {
+				String mtd= _field.substring("metadata:".length()).trim();
+				if(!getMetadataManager().isValidType(mtd)) {
+				    getSessionManager().addSessionMessage(request,
+									  "Unknown metadata type:" + mtd);
+				    continue;
+				}
+				metadataIdx.add(new Index(mtd,i));
+			    } else if(_field.startsWith("property:")) {
+				String mtd= _field.substring("property:".length()).trim();
+				if(!getMetadataManager().isValidType(mtd)) {
+				    getSessionManager().addSessionMessage(request,
+									  "Unknown metadata type:" + mtd);
+				    continue;
+				}
+
+				metadataIdx.add(new Index(mtd,i));
+			    } else if(_field.startsWith("thumbnail:")) {
+				String mtd= _field.substring("thumbnail:".length()).trim();
+				thumbnailIdx.put(mtd,i);				    
+			    } else if(_field.startsWith("column:")) {
+				String prop= _field.substring("column:".length()).trim();
+				columnIdx.put(prop,i);
+			    } else {
+				columnIdx.put(_field,i);
+
+			    }
+			}
+			if(typeIdx==-1 && defaultType==null) {
+			    makeError("Input data must have a \"type\" column. You can add a type=some_type_id in the extra field",headerRow);
+			}
+			if(nameIdx==-1) makeError("Input data must have a \"name\" column",headerRow);
+			return row;
+		    }	
+
+
+		    if(defaultType==null && !row.indexOk(typeIdx)) {
+			if(!hadBadType) {
+			    hadBadType=true;
+			    String msg = "Bad type index:" + typeIdx+" for row:";
+			    for(int i=0;i<row.size();i++) {
+				msg+="#"+i+": " + row.get(i)+"<br>";
+			    }
+			    warningSB.append(HU.div(msg));
+			}
+			return row;
+		    }
+		    String tmpType=defaultType;
+		    if(typeIdx>=0) {
+			tmpType = row.getString(typeIdx,"");
+		    }
+		    if(Utils.stringDefined(tmpType)) {
+			currentType = tmpType;
+			currentTypeHandler = getRepository().getTypeHandler(currentType);
+		    }
+		    if(!Utils.stringDefined(currentType)) {
+			makeError("No type defined",headerRow);
+		    }
+		    String attrs = "";
+		    String entryName  =null;
+
+		    if(row.indexOk(nameIdx)) {
+			entryName = row.getString(nameIdx,"");
+			attrs += XU.attrs("name",entryName, "type",currentType);
+		    }
+		    //if name is blank then check if all of the columns are blank
+		    if(!stringDefined(entryName)) {
+			boolean ok = false;
+			for(int i=0;i<row.size();i++) {
+			    String s = row.getString(i);
+			    if(stringDefined(s)) {
+				ok = true;
+				break;
+			    }
+			}
+			if(!ok) {
+			    return row;
+			}
+		    }
+
+		    entryCnt++;
+		    String id = null;
+		    if(idIdx>=0 && row.indexOk(idIdx)) {
+			id = row.getString(idIdx,"");
+		    }
+		    if(!stringDefined(id)) {
+			id   = "entry_" + (entryCnt);
+		    }
+		    attrs+=XU.attrs("id",id);
+
+		    if(dateIdx>=0) {
+			String v = row.getString(dateIdx,"");
+			if(stringDefined(v)) {
+			    attrs+=XU.attrs(ATTR_FROMDATE,v);
+			    attrs+=XU.attrs(ATTR_TODATE,v);
+			}
+		    }
+		    if(dateRangeIdx>=0) {
+			String v = row.getString(dateRangeIdx,"");
+			if(stringDefined(v)) {
+			    List<String> toks = StringUtil.splitUpTo(v,"-",2);
+			    String from=null;
+			    String to = null;
+			    if(toks.size()==1) {
+				from = toks.get(0);
+				to = toks.get(0);
+			    } else if(toks.size()==2) {
+				from = toks.get(0);
+				to = toks.get(1);
+			    }
+			    if(stringDefined(from)) {
+				attrs+=XU.attrs(ATTR_FROMDATE,processDate(from));
+			    }
+			    if(stringDefined(to)) {
+				attrs+=XU.attrs(ATTR_TODATE,processDate(to));
+			    }				
+			}
+		    }
+		    if(dateIdxFrom>=0) {
+			String v = row.getString(dateIdxFrom,"");
+			if(stringDefined(v)) {
+			    attrs+=XU.attrs(ATTR_FROMDATE,processDate(v));
+			}
+		    }
+		    if(dateIdxTo>=0) {
+			String v = row.getString(dateIdxTo,"");
+			if(stringDefined(v)) {
+			    attrs+=XU.attrs(ATTR_TODATE,processDate(v));
+			}
+		    }						
+
+
+		    if(latitudeIdx>=0) {
+			String v = row.getString(latitudeIdx,"");
+			if(stringDefined(v)) {
+			    attrs+=XU.attrs(ATTR_LATITUDE,v);
+			}
+		    }
+		    if(longitudeIdx>=0) {
+			String v = row.getString(longitudeIdx,"");
+			if(stringDefined(v)) {
+			    attrs+=XU.attrs(ATTR_LONGITUDE,v);
+			}
+		    }			
+
+
+		
+		    if(parentIdx>=0 && row.indexOk(parentIdx)) {
+			String parent = row.getString(parentIdx,"");
+			if(inheritParentId && !Utils.stringDefined(parent)) {
+			    parent = currentParent;
+			}
+
+			if(Utils.stringDefined(parent) && !parent.trim().equals("none")) {
+			    attrs+=XU.attrs("parent",parent);
+			    currentParent = parent;
+			}
+		    }			
+
+		    sb.append(XU.openTag("entry",attrs));
+		    if(descIdx>=0 && row.indexOk(descIdx)) {
+			String desc = row.getString(descIdx,"");
+			if(Utils.stringDefined(desc)) {
+			    sb.append(XU.openTag(ATTR_DESCRIPTION,""));
+			    XU.appendCdata(sb,desc);
+			    sb.append(XU.closeTag(ATTR_DESCRIPTION));
+			}
+		    }
+		    for (String prop : columnIdx.keySet()) {
+			boolean lookupName = false;
+			int idx = columnIdx.get(prop);
+			if(!row.indexOk(idx)) continue;
+			if(prop.indexOf(".")>0) {
+			    List<String>propToks = Utils.splitUpTo(prop,".",2);
+			    String propType = propToks.get(0);
+			    if(!propType.equals(currentType)) continue;
+			    prop = propToks.get(1);
+			}
+			if(prop.indexOf(":")>0) {
+			    List<String>propToks = Utils.splitUpTo(prop,":",2);
+			    if(propToks.size()>1) {
+				String modifier = propToks.get(0);
+				if(modifier.equals("name")) {
+				    lookupName  = true;
+				}
+				prop = propToks.get(1);
+			    }
+			}
+
+			Column column = currentTypeHandler!=null? currentTypeHandler.getColumn(prop):null;
+			if(column==null) {
+			    if(!seenMessage.contains(prop)) {
+				String message= "";
+				if(currentTypeHandler!=null)
+				    message+="Type:" + currentTypeHandler.getLabel()+" ";
+				message+="column: " + prop+":";
+				missingColumnsSB.append(HU.div(message));
+				//				    System.err.println(currentTypeHandler);
+				//				    System.err.println("prop:"+ prop+":");
+				//				    for(Column _column: currentTypeHandler.getColumns()) {System.err.println("C:" + _column);}
+
+				seenMessage.add(prop);
+			    }
+			    continue;
+			}
+			String v = row.getString(idx,"");
+			if(!Utils.stringDefined(v)) continue;
+			if(lookupName && column.isEntryType()) {
+			    String entryType = column.getEntryType();
+			    lookupRequest.put(ARG_NAME_EXACT,v);
+			    lookupRequest.put(ARG_EXACT,"true");				
+			    if(entryType!=null)
+				lookupRequest.put(ARG_TYPE,entryType);
+			    List<Entry> columnEntries = getEntryManager().getEntriesFromDb(lookupRequest);
+			    lookupRequest.remove(ARG_NAME_EXACT,ARG_TYPE,ARG_EXACT);
+			    if(columnEntries.size()==0) {
+				warningSB.append(HU.div("Could not find linked entry:" + entryType+" name:" +v));
+			    } else {
+				v = columnEntries.get(0).getId();
+			    }
+			}
+			sb.append(XU.openTag(prop,""));
+			XU.appendCdata(sb,v);
+			sb.append(XU.closeTag(prop));
+		    }
+
+
+		    if(privateIdx>=0 && row.indexOk(privateIdx)) {
+			String v = row.getString(privateIdx,"").toLowerCase().trim();
+			if(v.equals("true") || v.equals("yes")) {			    
+			    sb.append("<permissions><permission action=\"view\"><role role=\"none\"/></permission></permissions>\n"); 
+			} else if(v.equals("") || v.equals("no") || v.equals("yes")) {
+			} else {
+			    getSessionManager().addSessionMessage(request,
+								  "Unknown private value: " +v +"\n\tneeds to be \"yes\" or \"true\"");
+			}
+		    }
+
+		    //TODO
+		    for (String thumb : thumbnailIdx.keySet()) {
+			int idx = thumbnailIdx.get(thumb);
+			if(!row.indexOk(idx)) continue;
+			String v = row.getString(idx,"");
+			if(!Utils.stringDefined(v)) continue;
+		    }
+
+
+
+		    for (Index typeIndex : metadataIdx) {
+			int idx = typeIndex.index;
+			if(!row.indexOk(idx)) continue;
+			String v = row.getString(idx,"");
+			//			    System.err.println("\ttype:" + mtdType +" index:" + idx+" value:" + v);
+			if(!Utils.stringDefined(v)) continue;
+			//<access><![CDATA[admin,user]]></access>
+			//<access:admin,user>
+			String access = StringUtil.findPattern(v,"(<access:[^>]*>)");
+			if(access!=null) {
+			    v = v.replace(access,"");
+			    access = access.replace("<access:","").replace(">","");
+			    System.err.println("V:" + v +" access:" + access);
+			}
+
+			v = v.replace("\\:","_semicolon_").replace("_blank_","");
+			List<String> toks = Utils.split(v,";",true,true);
+			for(String tok: toks) {
+			    List<String> subToks = Utils.split(tok,":");
+			    sb.append(XU.openTag("metadata",XU.attrs("type",typeIndex.value)));
+			    int index=0;
+			    for(String mtdValue: subToks) {
+				mtdValue =  mtdValue.replace("_semicolon_",":");
+				index++;
+				sb.append(XU.openTag("attr",
+						     XU.attrs("index",""+index,
+							      "encoded","false")));
+				XU.appendCdata(sb,mtdValue);
+				sb.append(XU.closeTag("attr"));
+			    } 
+			    if(access!=null) {
+				sb.append(XU.openTag("access",""));				    
+				XU.appendCdata(sb,access);
+				sb.append(XU.closeTag("access"));
+			    }				    
+			    sb.append(XU.closeTag("metadata"));
+			}
+		    }
+		    sb.append(XU.closeTag("entry"));
+		    for (Index newIndex: newIdx) {
+			String newType = newIndex.value;
+			int idx = newIndex.index;
+			if(!row.indexOk(idx)) continue;
+			String v = row.getString(idx,"");
+			if(!Utils.stringDefined(v)) continue;
+			for(String name:Utils.split(v,";",true,true)) {
+			    String newAttrs="";
+			    StringBuffer contents=null;
+			    int index = name.toLowerCase().indexOf("description:");
+			    if(index>=0) {
+				String desc = name.substring(index+1).substring("description".length()).trim();
+				name = name.substring(0,index).trim();
+				if(Utils.stringDefined(desc)) {
+				    contents= new StringBuffer();
+				    contents.append(XU.openTag(ATTR_DESCRIPTION,""));
+				    XU.appendCdata(contents, desc);
+				    contents.append(XU.closeTag(ATTR_DESCRIPTION));
+				}
+			    }
+			    newAttrs=XU.attrs("type",newType,"name",name,"parent",id);
+
+			    sb.append(XU.openTag("entry",newAttrs));
+			    if(contents!=null) sb.append(contents);
+			    sb.append(XU.closeTag("entry"));
+			}
+		    }
+		    return row;
+		} catch (Exception exc) {
+		    fatal(textReader, "Processing CSV import", exc);
+		    return null;
+		}
+	    }
+	};
+
+    }
     private static class Index {
 	String value;
 	int index;
