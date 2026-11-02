@@ -380,6 +380,9 @@ public class ServiceInput {
 
 
 
-
+    @Override
+    public String toString() {
+	return "input:" + operands;
+    }	
 
 }
