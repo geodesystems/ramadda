@@ -68,14 +68,26 @@ public class ImageTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
-
-	if(!isNew(newType)) return;
-	if(!request.get(ARG_IMAGE_RESIZE,false) &&
-	   !request.get(ARG_STRIP_METADATA,false)) return;
+	if(!isNew(newType)) {
+	    return;
+	}
 	if(!entry.getResource().isStoredFile()) return;
-
 	String theFile = entry.getResource().getPath();
 	Image image = ImageUtils.readImage(theFile);
+	int imageWidth = image.getWidth(null);
+	int imageHeight = image.getHeight(null);	
+/*
+	System.err.println("image:" + entry + "  " +
+	imageWidth +" x " + imageHeight);*/
+	if(imageWidth>0 && imageHeight>0) {
+	    entry.setValue("image_width",imageWidth);
+	    entry.setValue("image_height",imageHeight);	    
+	    //	    entry.setName(entry.getName() +" " + imageWidth+"x" + imageHeight);
+	}	    
+
+
+	if(!request.get(ARG_IMAGE_RESIZE,false) &&
+	   !request.get(ARG_STRIP_METADATA,false)) return;
 	int width = request.get(ARG_IMAGE_WIDTH,600);
 	if(request.get(ARG_IMAGE_RESIZE,false)) {
 	    if (image.getWidth(null) > width) {
