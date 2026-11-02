@@ -325,8 +325,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 fileArg = MyXmlUtil.getAttribute(node,
 					       "attr" + element.getIndex(), (String) null);
                 if (fileArg == null) {
-                    System.err.println("Could not find attr node:"
-                                       + MyXmlUtil.toString(node));
+		    /*
+                    System.err.println("Could not find attr node: " + "index:" + element.getIndex() +" xml:" +
+                                       MyXmlUtil.toString(node));
+		    */
 
                     continue;
                 }

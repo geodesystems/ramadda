@@ -1492,7 +1492,7 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataTypes(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().sectionOpen(request, sb,"Metadata Types",false);
-	sb.append(HU.center("Click on a button to copy the metadata ID"));
+	//	sb.append(HU.center("Click on a button to copy the metadata ID"));
 	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type','.ramadda-metadata-category','Find Type',true,{focus:true})");
 	Hashtable<String,NamedBuffer> map = new Hashtable<String,NamedBuffer>();
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
@@ -1504,10 +1504,16 @@ public class MetadataManager extends RepositoryManager {
 		map.put(cat,buffer);
 	    }
 	    String corpus = cat +" " + type.getId() + " " + type.getName();
-	    buffer.append(HU.span(type.getName(),HU.attrs("title","Click to copy: " + type.getId(),
-							  "data-corpus",corpus,"data-copy",type.getId(),
-							  "style","margin:4px;","class","ramadda-button ramadda-type-id ramadda-type")));
+	    String url = HU.url(getRepository().getUrlPath("/metadata/type.html"),ARG_METADATA_TYPE,
+				type.getId());
+	    String link = HU.href(url,type.getName());
+
+	    buffer.append(HU.span(link,
+				  HU.attrs("data-corpus",corpus,"data-copy",type.getId(),
+					   "style","margin:4px;","class","ramadda-button ramadda-type-id ramadda-type")));
 	}
+
+
 	for(NamedBuffer buffer: contents) {
 	    HU.open(sb,"div",HU.attrs("class","ramadda-metadata-category"));
 	    HU.div(sb,buffer.getName(),HU.clazz("ramadda-form-header"));
@@ -1515,10 +1521,66 @@ public class MetadataManager extends RepositoryManager {
 	    HU.close(sb,"div");
 	    sb.append("<p>");
 	}
-	HU.script(sb,"Utils.initCopyable('.ramadda-type-id');");
+
+
 	getPageHandler().sectionClose(request, sb);
 	return new Result("Metadata Types",sb);
     }
+
+    public Result processMetadataType(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+        String metadataType     = request.getString(ARG_METADATA_TYPE, "");
+        MetadataHandler handler = findMetadataHandler(metadataType);
+        MetadataType    type    = handler.findType(metadataType,false);	
+	sb.append(HU.center(HU.href(HU.url(getRepository().getUrlPath("/metadata/types.html")),
+				    "List Metadata Types")));
+	if(type==null) {
+	    getPageHandler().sectionOpen(request, sb,"Metadata Type",false);
+	    sb.append(getPageHandler().showDialogError("Unknown metadata type:" + metadataType));
+	    return new Result("Metadata Type",sb);
+	}
+	
+	getPageHandler().sectionOpen(request, sb,"Metadata Type: " + type.getName(),false);
+	sb.append(HU.formTable());
+	sb.append(HU.formEntry("Metadata Type ID:",
+			       HU.span(type.getId(),
+				       HU.attrs("data-copy",type.getId(),
+						"style","margin:4px;","class","ramadda-type-id ramadda-type"))));
+
+	sb.append(HU.formTableClose());
+
+
+	sb.append("<table><tr><td><b>Field</b>&nbsp;&nbsp;</td><td><b>Field Type</b></td><td></td></tr>"); 
+        for (MetadataElement element : type.getChildren()) {
+	    sb.append("<tr valign=top><td>" + element.getName() +"&nbsp;&nbsp;</td><td>" + element.getDataType() +
+		      "</td><td>&nbsp;&nbsp;");
+	    if(element.isEnumeration()) {
+		List<HtmlUtils.Selector> values = element.getValues();
+		if(values!=null && values.size()>0) {
+		    int cnt =0;
+		    for(HtmlUtils.Selector selector:values) {
+			if(stringDefined(selector.getLabel())) {
+			    if(cnt++>0) sb.append(", ");
+			    if(!Misc.equals(selector.getLabel(),selector.getId())) {
+				sb.append(selector.getLabel() +" (" + selector.getId() +")");
+			    } else {
+				sb.append(selector.getLabel());
+			    }
+			}
+				
+		    }
+		}
+		
+	    }
+	    sb.append("</td></tr>");
+	}
+
+	sb.append("</table>");
+	HU.script(sb,"Utils.initCopyable('.ramadda-type-id');");
+	getPageHandler().sectionClose(request, sb);
+	return new Result("Metadata Type",sb);
+    }
+
 
     public void processMetadataXml(Request request,Entry entry, Element entryChild,
 				   Hashtable<String, String> idMap,Hashtable filesMap, EntryManager.INTERNAL isInternal)
