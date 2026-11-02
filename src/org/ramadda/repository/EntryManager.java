@@ -6059,11 +6059,11 @@ public class EntryManager extends RepositoryManager {
 	String error = null;
 	StringBuilder msg = new StringBuilder();
         String entriesXml = null;
-        Hashtable<String, File> origFileToStorage = new Hashtable<String,
-	    File>();
+        Hashtable<String, File> origFileToStorage = new Hashtable<String, File>();
 
+	String importType = request.getString(ARG_IMPORT_TYPE, ""); 
         try {
-            if (file.endsWith(".zip")) {
+            if (!stringDefined(importType) && file.endsWith(".zip")) {
                 ZipInputStream zin =
                     getStorageManager().makeZipInputStream(fis);
                 ZipEntry ze;
@@ -6087,7 +6087,7 @@ public class EntryManager extends RepositoryManager {
                         entriesXml =
                             new String(IOUtil.readBytes(entriesStream, null,
 							false));
-                    } else {
+		    } else {
                         String name = IO.getFileTail(ze.getName());
                         File f = getStorageManager().getTmpFile(name);
                         OutputStream fos =
@@ -6682,6 +6682,9 @@ public class EntryManager extends RepositoryManager {
 	    String sfromDate = Utils.getAttributeOrTag(node,ATTR_FROMDATE,null);
 	    String stoDate = Utils.getAttributeOrTag(node,ATTR_TODATE,null);	    
 	    Date fromDate = stringDefined(sfromDate) ? getDateHandler().parseDate(sfromDate): null;
+	    //	    if(stringDefined(sfromDate)) {
+		//		System.err.println("date:" +sfromDate +" parsed:" + getDateHandler().formatDate(fromDate));
+	    //	    }
 	    if(fromDate==null && !typeHandler.getNullDateOk()) fromDate = createDate;
 	    Date toDate = stringDefined(stoDate) ? getDateHandler().parseDate(stoDate): fromDate;	
 
