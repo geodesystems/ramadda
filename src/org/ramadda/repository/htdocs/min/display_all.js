@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Oct 22 08:03:56 MDT 2026";
+var build_date="RAMADDA build date: Wed Nov  4 06:30:11 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -26933,7 +26933,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.labelFields = this.getFieldsByIds(fields, this.getPropertyLabelFields());
             let thumbField = this.getFieldById(fields, this.getProperty("thumbField", "thumb")) || this.imageField;
 	    let thumbWidth = parseFloat(this.getProperty("thumbWidth",100));
-	    let height=this.getHeightForStyle();
+	    let height=this.getHeightForStyle('70vh');
 	    let imageWidth = this.getProperty("imageWidth",500);
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
@@ -26967,7 +26967,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 				     ATTR_WIDTH,HU.perc(100)],
 				    HU.tr([ATTR_VALIGN,CSS_TOP],
 					  HU.td([ATTR_WIDTH,HU.perc(2)],
-						HU.div([ATTR_ID,this.domId(ID_THUMBS),
+						HU.div([ATTR_CLASS,'display-imagezoom-thumbs',
+							ATTR_ID,this.domId(ID_THUMBS),
 							ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,height,
 									  CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 									  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],"")) +
@@ -26975,6 +26976,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 						imageDiv)));
 	    let thumbsHtml = "";
 	    let first = null;
+
+	    
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 let row = this.getDataValues(records[rowIdx]);
 		let image = row[this.imageField.getIndex()];
@@ -40932,7 +40935,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 		    _this.loadEntry(entry);
 		});
 		HU.initSelect(menu,{ autoWidth: true,  'max-height':HU.px(100)});
-		HU.makeSelectTagPopup(menu,{icon:true,single:true,makeButtons:false});
+		HU.makeSelectTagPopup(menu,{closeDialog:false,icon:true,single:true,makeButtons:false});
 		if(this.sourceEntry)
 		    this.displayEntryBreadcrumbs(this.sourceEntry,this.domId('entry_breadcrumbs'),4);		    
 	    }
@@ -41866,13 +41869,20 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    return layer;
 	},
 
-	getBaseLayersSelect:function() {
-	    if(this.map.baseLayers) {
+	getBaseLayersSelect:function(args) {
+	    let opts = {
+		id:null,
+		selected:null,
+		layers:null
+	    };
+	    if(args) $.extend(opts,args);
+	    let layers = this.map.baseLayers;
+	    if(layers) {
 		let items = [];
 		let on = false;
 		let category =null;
-		for(a in this.map.baseLayers) {
-		    let layer = this.map.baseLayers[a];
+		for(a in layers) {
+		    let layer = layers[a];
 		    if(!layer.isBaseLayer) continue;
 		    if(layer.getVisibility()) on = a;
 		    let ramaddaMapLayer = layer.ramaddaMapLayer;
@@ -41884,10 +41894,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		}
 		let prefix = this.getBaseLayerSelectLabel();
 		if(prefix) prefix=HU.boldLabel(prefix);
+		let id = opts.id ??this.domId(ID_BASELAYERS);
 		return  HU.span([ATTR_TITLE,"Choose base layer",
 				 ATTR_CLASS,"display-filter"],
 				(prefix??'') +
-				HU.select("",[ATTR_ID,this.domId(ID_BASELAYERS)],items,on));
+				HU.select("",[ATTR_ID,id],items,opts.selected??on));
 	    }
 	    return '';
 	},
@@ -42336,6 +42347,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    }
 		    return url;
 		};
+
 
 		let name = args['name'] ?? type;
 		let isBaseLayer = Utils.isDefined(args.baseLayer)?args.baseLayer:false;
@@ -50018,7 +50030,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					       {label:'Distance (miles)',value:'distance'}],
 					      this.isolineType));	    
 	    html+=HU.formTableClose();
-	    let buttons  =HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
+	    let buttons  =
+		HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK) + SPACE2 +
 		HU.div([ATTR_CLASS, HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL);	    
 	    html+=HU.div([ATTR_STYLE, HU.css(CSS_TEXT_ALIGN,ALIGN_RIGHT,CSS_MARGIN_TOP,HU.px(5))], buttons);
 	    html=HU.div([ATTR_STYLE, HU.css(CSS_MARGIN,HU.px(5))],html);
@@ -50318,33 +50331,59 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    labelStyle[a] = style[a];
 		}
 	    }
-	    for(let idx=radii.length-1;idx>=0;idx--) {
-		let km =radii[idx];
-		if(km==null) continue;
-		let skm = String(km).trim();
-		if(skm.endsWith(UNIT_MILES)) {
+
+	    let lastUnit=UNIT_KM;
+	    let check = (value,unit)=>{
+		value = value.toLowerCase();
+		if(value.endsWith(unit)) {
+		    lastUnit=unit;
+		    return true;
+		}
+		return false;
+	    }
+	    let convert = (value,firstCall) =>{
+		let skm = String(value).trim();
+		let km=skm;
+		if(check(skm,UNIT_MILES)) {
 		    km = 1.60934*parseFloat(skm.replace(UNIT_MILES,''));
-		} else if(skm.endsWith(UNIT_NM)) {
+		} else if(check(skm,UNIT_NM)) {
 		    km = 1.852*parseFloat(skm.replace(UNIT_NM,''));
-		} else if (skm.endsWith(UNIT_FT)) {
+		} else if (check(skm,UNIT_FT)) {
 		    km = 0.0003048*parseFloat(skm.replace(UNIT_FT,''));
-		} else if (skm.endsWith(UNIT_KM)) {
+		} else if (check(skm,UNIT_KM)) {
 		    km = skm.replace(UNIT_KM,'');
-		} else if (skm.endsWith(UNIT_M)) {
+		} else if (check(skm,UNIT_M)) {
 		    km = parseFloat(skm.replace(UNIT_M,''))/1000;
 		} else {
-		    //console.log('unknown unit:' + skm);
+		    if(firstCall) {
+//			console.log('convert:' + value +' unit:' + lastUnit);
+			return convert(value+lastUnit,false);
+		    }
+		    console.log('unknown unit:' + skm);
 		}
+		return km;
+	    }
+
+	    let values = radii.map(km=>{
+		let label = km;
+		if(!Utils.stringDefined(km)) return null;
+		return {label:label,km:convert(km,true)};
+	    });
+
+	    for(let idx=values.length-1;idx>=0;idx--) {
+		let ring = values[idx];
+		let label = ring.label;
+		let skm = String(ring.km).trim();
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
-		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)&& !isNaN(angle)?angle:90+45,km);
+		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)&& !isNaN(angle)?angle:90+45,ring.km);
 		if(p2==null) {
-		    console.error("Could not create range rings with center:",center,p2,km);
+		    console.error("Could not create range rings with center:",center,p2,ring.km);
 		    return null;
 		}
 		p1 = this.getMap().transformLLPoint(p1);
 		p2 = this.getMap().transformLLPoint(p2);
 		let dist = Utils.distance(p1.lon,p1.lat,p2.lon,p2.lat);
-		let ring = OpenLayers.Geometry.Polygon.createRegularPolygon({x:p1.lon,y:p1.lat},
+		let polygon = OpenLayers.Geometry.Polygon.createRegularPolygon({x:p1.lon,y:p1.lat},
 									    dist, 100,0);
 		let _style = $.extend({},style??{strokeWidth:2,strokeColor:'blue',fillColor:COLOR_TRANSPARENT});
 		if(ringStyle['*']) {
@@ -50366,18 +50405,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    $.extend(_style,ringStyle['N']);
 		}
 
-		rings.push(MapUtils.createVector(ring,null,_style));
+		rings.push(MapUtils.createVector(polygon,null,_style));
 		p2 = MapUtils.createPoint(p2.lon,p2.lat);
 		let s = $.extend({},labelStyle);
 		if(!isNaN(angle)) {
 		    if(labels && idx<labels.length) {
 			s.label = labels[idx].replace("${d}",skm);
 		    } else {
-			s.label=skm;
+			s.label=label;
 		    }
 		}
-		let label = MapUtils.createVector(p2,null,s);
-		rings.push(label);
+		let labelFeature = MapUtils.createVector(p2,null,s);
+		rings.push(labelFeature);
 	    }
 	    return rings;
 	},
@@ -50592,64 +50631,88 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let wmtHtml = '';
-		wmtHtml+=HU.br();
-		wmtHtml+=HU.br()+'Or enter either a TMS/WMS server URL with a layer name:';
-		let form = (label,name,size)=>{
-		    wmtHtml+=HU.formEntryLabel(label,HU.input('',this.cache[name]??'',
-							      [ATTR_ID,this.domId(name),ATTR_SIZE,size??60]));
+		wmtHtml+=HU.b('Enter a WMS or WMTS server URL:');
+		let form = (label,name,size,suffix)=>{
+		    let widget = HU.input('',this.cache[name]??'',
+					  [ATTR_ID,this.domId(name),ATTR_SIZE,size??60]);
+		    if(suffix) {
+			widget+=HU.space(2) +suffix;
+		    }
+		    wmtHtml+=HU.formEntryLabel(label,widget);
 		}
 		let args = [
 		    ['Name','servername'],
-		    ['Server URL','serverurl'],
-		    ['WMS Layer','wmslayer','20'],
+		    ['Server URL','serverurl',null,
+		     HU.popupHelp('e.g. for WMTS https://map.gov/.../tile/${z}/${y}/${x}')],
+		    ['WMS Layer','wmslayer','20','If using a WMS server'],
 		    ['Legend URL','maplegend']
 		];
 
 		this.cache = this.cache??{};
 		wmtHtml +=  HU.formTable();
 		args.forEach(a=>{
-		    form(a[0],a[1],a[2]);
+		    form(a[0],a[1],a[2],a[3]);
 		});
 		wmtHtml+=HU.close(TAG_TABLE);
-		wmtHtml+=HU.br()+'Or enter Tile JSON URL:';
-		wmtHtml +=  HU.formTable();
-		form("Tile JSON",'tilejson',60);
-		wmtHtml+=HU.close(TAG_TABLE);
+
+		let tileJson = HU.b('Enter Tile JSON URL:')
+		tileJson +=  HU.formTable();
+		tileJson += HU.formEntryLabel('Tile JSON',
+					       HU.input('',this.cache['tilejson']??'',
+							[ATTR_ID,this.domId('tilejson'),ATTR_SIZE,60]));
+		tileJson+=HU.close(TAG_TABLE);
 
 		let contents = [];
-		let ids =Utils.mergeLists([{value:'',label:'Select'}],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
+		let ids =Utils.mergeLists([{value:'',label:'Select'}],
+					  this.getMapMenuOptions());
 		let predefined =  HU.select('',
 					    [ATTR_ID,this.domId('predefined')],ids,this.cache['predefined']);	
 
-		let html = HU.boldLabel('Pre-defined layer') + predefined;
-		html+=wmtHtml;
+		predefined = HU.span([ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_INLINE_BLOCK,
+							CSS_WIDTH,HU.px(300),
+							CSS_MAX_WIDTH,HU.px(300))],predefined);
+		let html = HU.boldLabel('Layer') + predefined;
 		setTimeout(()=>{
-		    HU.makeSelectTagPopup('#'+this.domId('predefined'),{after:true,icon:true,single:true});
+		    HU.initSelect2(this.jq('predefined'));
+//		    HU.makeSelectTagPopup('#'+this.domId('predefined'),
+//					  {after:true,icon:true,single:true,showCategories:true});
 		},1);
+		let buttons = (type) =>{
+		    return HU.buttons([
+			HU.div([ATTR_CLASS,HU.classes(type,CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
+			HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)
+		    ]);
+		};
+		let addLayer = (type,label,inner) =>{
+		    inner +=buttons(type);
+		    contents.push({label:label,contents:inner});
+		};
 
-
-		let buttons = HU.buttons([
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_OK,CLASS_DISPLAY_BUTTON)], LABEL_OK),
-		    HU.div([ATTR_CLASS,HU.classes(CLASS_BUTTON_CANCEL,CLASS_DISPLAY_BUTTON)], LABEL_CANCEL)]);
-		html+=buttons;
-		contents.push({label:'WMS/WMTS',contents:html});
-
+		addLayer('predefined','Layers',html);
+		addLayer('wms','WMS/WMTS',wmtHtml);
+		addLayer('tilejson','Tile JSON',tileJson);		
 
 		let showStac = false;
 		let tabs;
 		if(showStac) {
 		    let stac = HU.div([ATTR_ID,this.domId('stac_contents')]);
 		    contents.push({label:'STAC',contents: stac});
-		    tabs = HU.makeTabs(contents)
-		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
-						   CSS_MIN_HEIGHT,HU.px(400),
-						   CSS_MARGIN,HU.px(10))], tabs.contents);
-		} else {
-		    let tabs = HU.div([],HU.b(HU.center(contents[0].label))) +    contents[0].contents;
+		} 
+		tabs = HU.makeTabs(contents,
+				   {contentsStyle:
+				    HU.css(CSS_MIN_HEIGHT,HU.em(14),
+					   CSS_MIN_WIDTH,HU.px(600))});
+		html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(800),
+					       CSS_MIN_HEIGHT,HU.px(400),
+					       CSS_MARGIN,HU.px(10))], tabs.contents);
+
+		/*
+		    let tabs = HU.div([],HU.b(HU.center(contents[0].label))) +
+			contents[0].contents;
 		    html=HU.div([ATTR_STYLE,HU.css(CSS_MIN_WIDTH,HU.px(600),
 						   CSS_MIN_HEIGHT,HU.px(400),
 						   CSS_MARGIN,HU.px(10))], tabs);
-		}
+		*/
 
 		let dialog = this.mapServerDialog =
 		    HU.makeDialog({remove:false,content:html,title:'Map Server',
@@ -50659,7 +50722,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove= () =>{
 		    dialog.hide();
 		}
-		if(showStac) {
+		if(tabs) {
 		    tabs.init();
 		}
 
@@ -50676,7 +50739,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapOptions.legendText = args.legendText;
 		    this.clearCommands();
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,this.jq('predefined').val());
+		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,
+					     args.predefined);
 		    mapGlyph.checkMapServer();
 		    this.lastCreatedGlyph=mapGlyph;
 		    this.addGlyph(mapGlyph);
@@ -50686,13 +50750,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			mapGlyph.panMapTo();
 		    }
 		}
-		let ok = ()=>{
+		let ok = (button)=>{
 		    args.forEach(a=>{
 			this.cache[a[1]] =  this.jq(a[1]).val().trim();
 		    });
 		    let predefined = this.jq('predefined').val().trim();
-		    let tileJson = this.jq('tilejson').val();
-		    if(Utils.stringDefined(tileJson)) {
+		    if(button.hasClass('predefined')) {
+			if(!Utils.stringDefined(predefined)) {
+			    alert('Please select a layer');
+			    return;
+			}
+			loadLayer({predefined:this.jq('predefined').val()});
+			return;
+		    }
+		    
+
+		    if(button.hasClass('tilejson')) {
+			let tileJson = this.jq('tilejson').val();
+			if(!Utils.stringDefined(tileJson)) {
+			    alert('Please enter a Tile JSON URL');
+			    return;
+			}
 			$.getJSON(tileJson, (data)=> {
 			    let args = {
 				name:data.name,
@@ -50714,20 +50792,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    let url = this.jq('serverurl').val();
-		    if(!Utils.stringDefined(url) && !Utils.stringDefined(predefined)) {
-			alert('Please enter a map server');
-			return;
+		    if(button.hasClass('wms')) {
+			if(!Utils.stringDefined(url)) {
+			    alert('Please enter a map server URL');
+			    return;
+			}
 		    }
-		    
+		    //replace the wmts indices with macros
+		    url = url.replace(/\/\d\/\d\/\d/, "/${z}/${y}/${x}");
 		    loadLayer({
 			name:this.jq('servername').val(),
 			url:url,
 			layerName:this.jq('wmslayer').val(),
 			legendUrl:this.jq('maplegend').val()
 		    });
-
-		}
-		dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(ok);
+		};
+		dialog.find(HU.dotClass(CLASS_BUTTON_OK)).button().click(
+		    function() {ok($(this));});
 		dialog.find(HU.dotClass(CLASS_BUTTON_CANCEL)).button().click(()=>{
 		    dialog.hide();
 		});
@@ -51040,6 +51121,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
+	getMapMenuOptions:function() {
+	    let layers =[];
+	    let lastCategory;
+	    RAMADDA_MAP_LAYERS.forEach(l=>{
+		if(l.getCategory() && l.getCategory()!=lastCategory) {
+		    lastCategory=l.getCategory();
+		    layers.push({category:lastCategory});
+		}
+		layers.push({value:l.id,label:l.name});
+	    });
+	    return layers;
+	},
+	
+
+
 	loadWmtsEntry:function(attrs) {
 	    getRamadda().getEntry(attrs.entryId, entry=>{
 		//		console.dir(entry);
@@ -56545,6 +56641,8 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
     return false;
 }
 
+
+
 /**
    Copyright (c) 2008-2026 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
@@ -56676,6 +56774,9 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 MapGlyph.prototype = {
     CLASS_NAME:'MapGlyph',
     animationInfo:{},
+    getDisplay: function() {
+	return this.display;
+    },
     domId:function(id) {
 	return this.getId() +'_'+this.display.domId(id);
     },
@@ -57109,6 +57210,7 @@ MapGlyph.prototype = {
     },
 
     addToPropertiesDialog:function(content,style) {
+	this.propertyDialogAppliers = [];
 	let tabs = [];
 	let html='';
 	let layout = (lbl,widget)=>{
@@ -57132,13 +57234,39 @@ MapGlyph.prototype = {
 	    }
 	}	    
 
+	if(this.isMapServer()) {
+	    if(this.attrs.predefinedLayer) {
+		this.baseMapPlaceID=HU.getUniqueId('');
+		let layers =this.getDisplay().getMapMenuOptions();
+		let layerSelect=   HU.select('',
+					      [ATTR_ID,this.domId('maplayermenu')],layers,this.attrs.predefinedLayer);
+
+
+/*		let layerSelect = this.display.getBaseLayersSelect({
+		    id:this.domId('maplayermenu'),
+		    selected:this.attrs.predefinedLayer
+		});*/
+		html+=HU.formEntryLabel('Map Layer',
+					layerSelect
+					//SPACE + HU.span([ATTR_ID,this.baseMapPlaceID])
+				       );
+		this.propertyDialogAppliers.push(()=>{
+		    let layer = this.jq('maplayermenu').val();
+		    if(layer && layer!=this.attrs.predefinedLayer) {
+			this.setMapServerUrl(null,null,null,layer,null,true);
+			this.checkMapServer(false, true);
+		    }});
+	    }
+	}
 	html+=HU.formTableClose();
-
-
 	let level = this.getVisibleLevelRange(true)??{};
 	let visHtml =
 	    HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible');
-	if(this.getMapLayer() || this.imageLayers || this.isImage()) {
+	
+	if(this.isRings() ||
+	   this.getMapLayer() ||
+	   this.imageLayers ||
+	   this.isImage()) {
 	    visHtml+= HU.space(4)+HU.checkbox(this.domId(ID_CANSELECT),[],this.getCanSelect(),'Can Select');
 	}
 	visHtml+=HU.br();	
@@ -57176,6 +57304,7 @@ MapGlyph.prototype = {
 				     HU.div([ATTR_STYLE,HU.css(CSS_MIN_HEIGHT,HU.px(250))],
 					    a.contents);
 				     return a;}));
+
 
 
 	html+=this.propsTabs.contents;
@@ -57375,6 +57504,11 @@ MapGlyph.prototype = {
     applyPropertiesDialog: function(style) {
 	//Clear out any feature infos
 	this.featureInfo=null;
+
+	if(this.propertyDialogAppliers) {
+	    this.propertyDialogAppliers.forEach(func=>func());
+	}
+
 
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq('mapglyphname').val());
@@ -60090,7 +60224,7 @@ MapGlyph.prototype = {
     setShowDataIcons:function(v) {
 	this.attrs[ID_SHOWDATAICONS] = v;
     },
-    setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
+    setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions,force) {
 	//check for wmts
 	if(Utils.stringDefined(url)) {
 	    url = url.replace(/[0-9]+\/[0-9]+\/[0-9]+/,'${z}/${x}/${y}');
@@ -60100,17 +60234,23 @@ MapGlyph.prototype = {
 	this.attrs.wmsLayer = wmsLayer;
 	this.attrs.predefinedLayer = predefined;
 	this.mapServerOptions = mapOptions;
-
 	if(Utils.stringDefined(predefined)) {
-	    if(!Utils.stringDefined(this.attrs.name)) {
+	    if(force || !Utils.stringDefined(this.attrs.name)) {
 		let mapLayer = RAMADDA_MAP_LAYERS_MAP[predefined];
 		if(mapLayer) {
 		    this.attrs.name = mapLayer.name;
+		    this.jq('mapglyphname').val(this.attrs.name);
 		    this.style.legendUrl = mapLayer.opts.legend;
+		    if(force) {
+			this.display.jq('glyphedit_legendUrl').val(this.style.legendUrl??'');
+			this.attrs[ID_LEGEND_TEXT] = '';
+		    }
 		    if(Utils.stringDefined(mapLayer.opts.attribution) &&
 		       !Utils.stringDefined(this.attrs[ID_LEGEND_TEXT])) {
 			this.attrs[ID_LEGEND_TEXT] = mapLayer.opts.attribution;
 		    }
+		    //Resest the legend text text area
+		    this.jq(ID_LEGEND_TEXT).val(this.attrs[ID_LEGEND_TEXT]);
 		}
 	    }
 	} else {
@@ -60168,12 +60308,13 @@ MapGlyph.prototype = {
     },    
     checkMapLayer:function(andZoom,force) {
 	//Only create the map if we're visible
-	if(!this.isMap() || !this.isVisible()) return;
+	if(!this.isMap() || !this.isVisible()) {
+	    return;
+	}
 	if(this.mapLayer!=null && force) {
 	    this.display.getMap().removeLayer(this.mapLayer);
 	    this.mapLayer = null;
 	}
-
 
 	if(this.mapLayer==null) {
 	    if(!Utils.isDefined(andZoom)) {
@@ -60200,7 +60341,8 @@ MapGlyph.prototype = {
     getMapServerUrl:function() {
 	let url=this.attrs.mapServerUrl;
 	//Convert malformed TMS url
-	url = url.replace(/\/{/g,'/${');
+	if(url) 
+	    url = url.replace(/\/{/g,'/${');
 	return url;
     },
 
@@ -60225,8 +60367,21 @@ MapGlyph.prototype = {
 								    false,false,false,opts);
     },
     
-    checkMapServer:function(andZoom) {
+    checkMapServer:function(andZoom,force) {
 	if(!this.isMapServer()) return;
+	if(this.mapServerLayer!=null && force) {
+	    if(Utils.stringDefined(this.attrs.predefinedLayer)) {
+		let mapLayer = RAMADDA_MAP_LAYERS_MAP[this.attrs.predefinedLayer];
+		if(mapLayer) {	
+		    this.mapServerLayer.url = mapLayer.url;
+		    this.getMapServerLayer().setVisibility(false);
+		    this.getMapServerLayer().setVisibility(true);
+		    ImdvUtils.scheduleRedraw(this.getMapServerLayer());
+		}
+	    }
+	    return;
+	}
+
 	if(this.mapServerLayer==null) {
 	    let url=this.attrs.mapServerUrl;
 	    let wmsLayer=this.attrs.wmsLayer;
@@ -60244,7 +60399,7 @@ MapGlyph.prototype = {
 		this.createMapServer();
 	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
 		let mapLayer = RAMADDA_MAP_LAYERS_MAP[this.attrs.predefinedLayer];
-		if(mapLayer) {
+		if(mapLayer) {	
 		    this.mapServerLayer = this.display.getMap().makeMapLayer(this.attrs.predefinedLayer);
 		} else {
 		    console.error('Unknown map layer:' +this.attrs.predefinedLayer);
@@ -60544,6 +60699,12 @@ MapGlyph.prototype = {
     },
 
     initPropertiesComponent: function(dialog) {
+	if(this.baseMapPlaceID) {
+	    HU.initSelect2(this.jq('maplayermenu'));
+//	    HU.makeSelectTagPopup('#'+this.domId('maplayermenu'),
+//				  {location:this.baseMapPlaceID,icon:true,single:true});
+	}
+
 	if(this.propsTabs) {
 	    this.propsTabs.init();
 	}
@@ -60958,7 +61119,7 @@ MapGlyph.prototype = {
 	});
     },
     showFeaturesTable:function(anchor) {
-	if(this.featuresTableDialog)
+	if(this.featuresTableDialog) 
 	    this.featuresTableDialog.remove();
 	let html =  HU.div([ATTR_ID,this.domId('downloadfeatures'),ATTR_CLASS,CLASS_CLICKABLE],'Download Table');
 	html+=HU.div([ATTR_ID,this.domId('featurestable')]);
@@ -62851,9 +63012,12 @@ MapGlyph.prototype = {
 	    });
 	}
 	let labels = [];
-	if(Utils.stringDefined(this.attrs.rangeRingLabels))
+	if(Utils.stringDefined(this.attrs.rangeRingLabels)) {
 	    labels = Utils.split(this.attrs.rangeRingLabels);
-	this.setExtraFeatures(this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,labels));
+	}
+	this.setExtraFeatures(this.display.makeRangeRings(center,this.getRadii(),
+							  this.style,this.attrs.rangeRingAngle,
+							  ringStyle,labels));
     },
     setExtraFeatures:function(features) {
 	this.extraFeatures = features;
