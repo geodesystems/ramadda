@@ -1,28 +1,47 @@
 #!/usr/bin/env bash
-#
+####################################################################################################
 # ramadda_aws.sh
 #
 # Single helper script for setting up RAMADDA AWS aliases and for scp put/get.
 #
 # Alias setup, usually sourced from .bashrc:
-#   source ${RAMADDA_BIN}/ramadda_aws.sh ramadda <IP> -pem ${RAMADDA_PEM}
-#   source ${RAMADDA_BIN}/ramadda_aws.sh ramadda <IP> -pem ${RAMADDA_PEM} -user ec2-user -dir /mnt/ramadda/ramaddainstall
+#   source /path/to/ramadda_aws.sh <ALIAS SUFFIX> <IP> -pem <PEM FILE>
+# e.g.:
+#   source /path/to/ramadda_aws.sh ramadda 123.456.789.123  -pem /path/to/ramadda.pem
 #
-# Direct put:
+# Or to specify a different user and/or RAMADDA install directory
+#   source /path/to/ramadda_aws.sh <ALIAS SUFFIX> <IP> -pem <PEM FILE> -user ec2-user -dir /mnt/ramadda/ramaddainstall
+#
+#
+# This generates a number of aliases for the ALIAS SUFFIX, e.g. with "ramadda":
+# print out the IP address
+##   ip_ramadda
+
+# ssh to your server
+##   goramadda
+
+# scp a file to/from your server
+##   putramadda <local file/dir> [-dest <remote dest>]
+##   getramadda <remote file/dir>
+
+# Update your RAMADDA install with the latest RAMADDA release at
+# https://ramadda.org/repository/a/release
+##   updateramadda
+
+# Update your RAMADDA install with the latest development 
+##   devupdateramadda
+
+
+# restart your RAMADDA
+##   startramadda
+
+# This can also be used to put/get files directly
 #   ramadda_aws.sh -put <DEST_IP> <SOURCE_FILE_OR_DIR> -pem <pem file> -user <user> -dest <remote dest dir/file>
 #   ramadda_aws.sh -put <DEST_IP> <SOURCE_FILE_OR_DIR> <remote dest dir/file>
 #
 # Direct get:
 #   ramadda_aws.sh -get <SOURCE_IP> <REMOTE_FILE_OR_DIR> -pem <pem file> -user <user>
-#
-# Generated aliases for ID, e.g. ramadda:
-#   ip_ramadda
-#   goramadda
-#   putramadda <local file/dir> [-dest <remote dest>]
-#   getramadda <remote file/dir>
-#   updateramadda
-#   devupdateramadda
-#   startramadda
+####################################################################################################
 
 usage() {
     cat <<'USAGE'
