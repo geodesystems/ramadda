@@ -127,20 +127,26 @@ public class ServiceOutputHandler extends OutputHandler {
             return;
         }
 
+	//	boolean debug = this.service.toString().toLowerCase().indexOf("convert image")>=0;
+	boolean debug = false;
+	if(debug) System.err.println("ServiceOutputHandler:" + this.service);
         if (state.group != null) {
             //Not sure what to do here. If its search results then return
             if (state.group.isDummy()) {
                 return;
             }
+	    if(debug) System.err.println("\thas group");
             if (service.isApplicable(state.entries)) {
+		if(debug) System.err.println("\tis applicable to entries:" + state.entries);
                 links.add(makeLink(request, state.getEntry(),
                                    groupOutputType));
             }
             if (state.entries != null) {
                 for (Entry entry : state.entries) {
                     if (service.isApplicable(entry)) {
+			if(debug) System.err.println("\tone is applicable:" + entry);
                         links.add(makeLink(request, state.getEntry(),
-                                           groupOutputType));
+					   groupOutputType));
 
                         return;
                     }
@@ -326,7 +332,9 @@ public class ServiceOutputHandler extends OutputHandler {
         List<Entry>         outputEntries = new ArrayList<Entry>();
         List<ServiceOutput> outputs       = new ArrayList<ServiceOutput>();
         for (ServiceInput serviceInput : serviceInputs) {
+	    System.err.println("eval-start:" + serviceInput);
             ServiceOutput output = evaluateService(request, null,service,   serviceInput);
+	    System.err.println("eval-end:");
             outputs.add(output);
 
             if ( !output.isOk()) {

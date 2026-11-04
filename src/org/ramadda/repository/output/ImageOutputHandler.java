@@ -267,33 +267,25 @@ public class ImageOutputHandler extends OutputHandler {
             }
         }
 
-        List<Entry> entries = state.getAllEntries();
-        if (entries.size() == 0) {
-            return;
-        }
-
-        boolean ok = false;
-        if (entries.size() > 0) {
+        boolean hasImageEntries = false;
+        List<Entry> entries = state.entries;
+        if (entries!=null && entries.size()>0)  {
             for (Entry child : entries) { 
                if (child.isImage()) {
-                    ok = true;
-
+                    hasImageEntries = true;
                     break;
                 }
             }
-            if ( !ok) {
+            if ( !hasImageEntries) {
                 return;
             }
         }
-        boolean ok2 = (state.getEntry() != null)
-                      && state.getEntry().isImage();
-        if (ok || ok2) {
+        boolean isImageEntry = entry!= null   && entry.isImage();
+        if (hasImageEntries) {
             //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
-	    Link hr = new Link(true,OutputType.TYPE_VIEW);		    
-	    links.add(hr);
+	    links.add(LINK_HR);
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_INSPECTOR));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_FLIPCARDS));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
@@ -301,8 +293,11 @@ public class ImageOutputHandler extends OutputHandler {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_ANIMATEDGIF));
             }
-        }
-        if (ok2) {
+            links.add(makeLink(request, state.getEntry(), OUTPUT_LABELER));
+	}
+	if(isImageEntry) {
+	    links.add(LINK_HR);
+            links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_LABELER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_B64));
         }
@@ -831,7 +826,7 @@ public class ImageOutputHandler extends OutputHandler {
             getPageHandler().entrySectionOpen(request, group, sb,
                     "Image Inspector");
             String inspectorTemplate =
-                "{{display_imagezoom height=\"300\" doEntries=\"true\" addImages=\"true\" }}";
+                "{{display_imagezoom xxxheight=\"300\" doEntries=\"true\" addImages=\"true\" }}";
             sb.append(getWikiManager().wikifyEntry(request, group,
                     inspectorTemplate));
             getPageHandler().entrySectionClose(request, group, sb);
