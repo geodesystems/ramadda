@@ -14,7 +14,7 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 
 <!-- Columns-->
 <column  name="project_id"  label="Project ID"  type="string" />
-<column  name="project_type"  label="Project Type"  type="enumerationplus"   cansearch="true"  default="geologic _project"  values="file:/org/ramadda/geodata/geo/project_types.txt" />
+<column  name="project_type"  label="Project Type"  type="enumerationplus"   cansearch="true"  default="geologic_project"  values="file:/org/ramadda/geodata/geo/project_types.txt" />
 <column  name="project_status"  label="Project Status"  type="enumerationplus"   cansearch="true" values="Active,Inactive" default="Active" />
 <column  name="show_map"  label="Show Map"  type="boolean"   showinhtml="false" default="true"  group="Display" />
 <column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="true" />

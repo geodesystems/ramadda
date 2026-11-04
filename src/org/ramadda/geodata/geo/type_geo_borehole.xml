@@ -1,0 +1,23 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_geo_borehole.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_geo_borehole" 
+ description="Geo Borehole" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ supercategory="Geoscience" 
+ category="Core Data" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="search.tabs"  value="list,map,display" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="date.nullok"  value="true" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.time.show"  value="false" />
+</type>
+</types>
