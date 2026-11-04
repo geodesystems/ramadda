@@ -2587,6 +2587,10 @@ font-weight:bold;
     text-align:center;
 }
 
+.display-imagezoom-inner {
+    border:var(--basic-border);
+}
+
 .display-imagezoom-thumb {
     border:1px solid #ccc;
     margin-bottom:4px;

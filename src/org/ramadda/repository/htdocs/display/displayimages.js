@@ -794,7 +794,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.labelFields = this.getFieldsByIds(fields, this.getPropertyLabelFields());
             let thumbField = this.getFieldById(fields, this.getProperty("thumbField", "thumb")) || this.imageField;
 	    let thumbWidth = parseFloat(this.getProperty("thumbWidth",100));
-	    let height=this.getHeightForStyle();
+	    let height=this.getHeightForStyle('70vh');
 	    let imageWidth = this.getProperty("imageWidth",500);
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
@@ -828,7 +828,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 				     ATTR_WIDTH,HU.perc(100)],
 				    HU.tr([ATTR_VALIGN,CSS_TOP],
 					  HU.td([ATTR_WIDTH,HU.perc(2)],
-						HU.div([ATTR_ID,this.domId(ID_THUMBS),
+						HU.div([ATTR_CLASS,'display-imagezoom-thumbs',
+							ATTR_ID,this.domId(ID_THUMBS),
 							ATTR_STYLE,HU.css(CSS_MAX_HEIGHT,height,
 									  CSS_OVERFLOW_Y,OVERFLOW_AUTO,
 									  CSS_DISPLAY,DISPLAY_INLINE_BLOCK)],"")) +
@@ -836,6 +837,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 						imageDiv)));
 	    let thumbsHtml = "";
 	    let first = null;
+
+	    
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 let row = this.getDataValues(records[rowIdx]);
 		let image = row[this.imageField.getIndex()];
