@@ -455,8 +455,10 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                 request.makeUrl(
                                     getRepository().URL_ENTRY_GET) + "/"
                                         + f.getName(), ARG_ENTRYID, id);
-                        html.append(HU.row(HU.td(HtmlUtils.href(getUrl, "<span><i class='fas fa-download'></i></span>"+" Download",
-								HU.attrs("class", "ramadda-button")))));
+
+                        html.append(HU.row(HU.colspan(HtmlUtils.href(getUrl,
+								     "<span><i class='fas fa-download'></i></span>&nbsp;"+"Download",
+								     HU.attrs("class", "ramadda-button")),2)));
 
                         if (request.getUser().getAdmin()) {
                             HU.formEntry(html,"File on server:",
