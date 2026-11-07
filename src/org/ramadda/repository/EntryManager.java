@@ -6782,6 +6782,13 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
+	    if(request.get(ARG_UNIQUE_METADATA,false)) {
+		//This can get set by the CsvImporter
+		getMetadataManager().uniquifyMetadata(request,entry);
+	    }
+
+
+
             entry.setXmlNode(node);
             entry.getTypeHandler().initializeEntryFromXml(request, entry,
 							  node, filesMap);
