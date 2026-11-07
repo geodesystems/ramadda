@@ -1195,6 +1195,17 @@ public class MetadataManager extends RepositoryManager {
         return addMetadata(request,entry, value, CHECK_UNIQUE_FALSE);
     }
 
+    public void uniquifyMetadata(Request request,Entry entry) throws Exception {
+	List<Metadata> existingMetadata = getMetadata(null,entry);
+	List<Metadata> uniqueMetadata = new ArrayList<Metadata>();
+	for(Metadata metadata: existingMetadata) {
+	    if (!uniqueMetadata.contains(metadata)) {
+		uniqueMetadata.add(metadata);
+	    } 
+	}
+	entry.setMetadata(uniqueMetadata);
+    }
+
     public Metadata addMetadata(Request request, Entry entry, Metadata value, boolean checkUnique)
             throws Exception {
 	//Pass in result=null so we get the actual list
