@@ -114,6 +114,11 @@ public class MetadataHandler extends RepositoryManager {
 	}
 	metadata.setMetadataType(getMetadataManager().findType(type,true));
 
+	//	boolean debug  = entry.getName().equals("Montana Lake Reconnaissance");
+	boolean debug  = false;
+	if(debug)
+	    System.out.println("mtd:" + type);
+			   
         int attrIndex = Metadata.INDEX_BASE - 1;
         while (true) {
             attrIndex++;
@@ -121,9 +126,9 @@ public class MetadataHandler extends RepositoryManager {
                 break;
             }
 
-            metadata.setAttr(attrIndex,
-                             MyXmlUtil.getAttribute(node,
-                                 ATTR_ATTR + attrIndex, ""));
+	    String attr = MyXmlUtil.getAttribute(node,
+						 ATTR_ATTR + attrIndex, "");
+            metadata.setAttr(attrIndex,attr);
         }
         metadata.setExtra(extra);
 
@@ -138,6 +143,8 @@ public class MetadataHandler extends RepositoryManager {
             if (MyXmlUtil.getAttribute(childNode, "encoded", true)) {
                 text = new String(Utils.decodeBase64(text));
             }
+	    if(debug)
+		System.out.println("\t" + text);
             text = metadata.trimToMaxLength(text);
             metadata.setAttr(index, text);
         }
