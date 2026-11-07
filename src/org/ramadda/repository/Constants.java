@@ -232,6 +232,7 @@ public interface Constants {
     public static final String ARG_EAST = "east";
     public static final String ARG_ELEMENT = "element";
     public static final String ARG_EDIT_METADATA = "edit.metadata";
+    public static final String ARG_UNIQUE_METADATA = "uniquemetadata";
     public static final String ARG_EMBEDDED = "embedded";
     public static final String ARG_ENTRYID = "entryid";
     public static final String ARG_SELENTRY = "selentry";
