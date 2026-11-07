@@ -41,7 +41,7 @@
       <element id="funding_id" name="ID"/>
       <element id="funding_url" datatype="url" name="URL"/>
       <element id="notes" name="Notes" rows="5"/>
-      <template type="html"><![CDATA[<a href="${funding_url}">${funding_title}</a> ID: ${funding_id} ${notes} ]]></template>
+      <template type="html"><![CDATA[<a href="${funding_url}">${funding_title}</a> ${agency} ${funding_id} ${notes} ]]></template>
     </type>
 
 
