@@ -85,9 +85,7 @@ public class CsvImporter extends ImportHandler {
                                  String fileName, InputStream stream,
 				 StringBuilder message)
 	throws Exception {
-	System.err.println("csv-1");
         if (!isMine(request)) {
-	System.err.println("csv- - not mine");
             return null;
         }
 	Request lookupRequest = new Request(getRepository(),request.getUser());
@@ -170,7 +168,7 @@ public class CsvImporter extends ImportHandler {
 	    String currentType="";
 	    String currentParent = "";
 	    String defaultType=null;
-
+	    boolean uniqueMetadata= false;
 	    TypeHandler  currentTypeHandler=null;
 	    int cnt=0;
 	    @Override
@@ -191,6 +189,10 @@ public class CsvImporter extends ImportHandler {
 			String extra = request.getString("extra",null);
 			if(stringDefined(extra)) {
 			    defaultType = StringUtil.findPattern(extra,"\\btype\\s*=\\s*([^\\s,]+)");
+			    if(extra.matches("uniqueMetadata *= *true")) {
+				uniqueMetadata = true;
+				request.put(ARG_UNIQUE_METADATA,"true");
+			    }
 			}
 
 			//maybe only do this if there is just one child type
@@ -236,7 +238,7 @@ public class CsvImporter extends ImportHandler {
 			    } else if(_field.startsWith("new:")) {
 				String type= _field.substring("new:".length()).trim();
 				newIdx.add(new Index(type,i));				    
-			    } else if(_field.startsWith("metadata:")) {
+			    } else if(_field.startsWith("metadata:") || _field.startsWith("metadata_")) {
 				String mtd= _field.substring("metadata:".length()).trim();
 				if(!getMetadataManager().isValidType(mtd)) {
 				    getSessionManager().addSessionMessage(request,
