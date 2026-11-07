@@ -265,6 +265,18 @@
 
 
     <type
+       searchable="true" browsable="true"
+       name="Alternate Name"
+       id="content.alternatename"
+       displaycategory="AKA"
+       >
+      <element name="Name" />
+    </type>
+
+
+
+
+    <type
        name="Entry Icon"
        id="content.icon">
       <element name="Icon File" datatype="file" thumbnail="false"/>
@@ -457,7 +469,7 @@ View help <a target=_help href="${root}/userguide/wiki/sortorder.html">here</a>
 
     <type
 	tag="internal" 	     showinhtml="false"
-       searchable="false" browsable="false"
+	searchable="false" browsable="false"
        name="Prevent deletion"
        id="preventdeletion"
        >
