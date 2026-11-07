@@ -250,5 +250,24 @@ the linked to entry based on name by adding a "name:" prefix to the column heade
 </table>
 
 
+:heading Importing Multiple Files
+You can import multiple CSV files at one time by zipping them up in the order you want them to be processed,
+then in the upload form select CSV Import. You can use this, for example, if you were importing a mix of different
+entry types and there was parent/child fields specified. 
+
+:heading Upload Form
+There are two extra flags you can specify in the Extra field in the upload form.
+:p
+If your CSV/XLS file does not have a <i>type</i> column you can specify the type in the extra form:
++pre
+type=some entry type
+-pre
+
+Specifying uniqueMetadata will only add unique entry metadata.
++pre
+uniqueMetadata=true
+-pre
+
+
 
 [ht::foot]

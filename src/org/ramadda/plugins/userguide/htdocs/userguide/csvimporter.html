@@ -45,7 +45,7 @@ The steps are:
 <li> Press Submit
 </ul>
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=563"><img  src="images/csvimporter.png?version=563"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=846"><img  src="images/csvimporter.png?version=846"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
 :p
 
 :heading The Spreadsheet
@@ -279,6 +279,25 @@ the linked to entry based on name by adding a "name:" prefix to the column heade
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Some entry name 1</td></tr>
 <tr><td></td><td>collection 2</td><td>Some entry name 2</td></tr>
 </table>
+
+
+:heading Importing Multiple Files
+You can import multiple CSV files at one time by zipping them up in the order you want them to be processed,
+then in the upload form select CSV Import. You can use this, for example, if you were importing a mix of different
+entry types and there was parent/child fields specified. 
+
+:heading Upload Form
+There are two extra flags you can specify in the Extra field in the upload form.
+:p
+If your CSV/XLS file does not have a <i>type</i> column you can specify the type in the extra form:
++pre
+type=some entry type
+-pre
+
+Specifying uniqueMetadata will only add unique entry metadata.
++pre
+uniqueMetadata=true
+-pre
 
 
 
