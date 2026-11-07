@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-  <handler category="Geo" 	searchable="true" browsable="true">
+  <handler category="Geo"
+	   searchable="true" browsable="true">
 
     <type id="geo_project" name="Geo Project"> 
       <element id="project" name="Project" datatype="enumerationplus" />
+    </type>
+
+    <type id="geo_organization" name="Geo Organization"> 
+      <element name="Organization"/>
+      <element name="Type" datatype="enumerationplus"
+	       values="Lab,Repository"/>
+    </type>
+
+    <type id="geo_project_id" name="Alternate Project ID"> 
+      <element id="project" name="Project ID" datatype="enumerationplus" />
     </type>
 
 
@@ -29,6 +40,30 @@
 	       values="file:/org/ramadda/geodata/geo/resources/stratigraphy.txt"/>      
     </type>    
     
+    <type id="geo_technique" name="Geo Technique"> 
+      <element id="technique" name="Technique" datatype="enumerationplus"
+	       values="file:/org/ramadda/geodata/geo/resources/techniques.txt"/>      
+      />
+    </type>
+
+
+
+
+    <type id="geo_discipline" name="Geo Discipline"> 
+      <element id="discipline" name="Discipline" datatype="enumerationplus"
+	       values="file:/org/ramadda/geodata/geo/resources/disciplines.txt"/>      
+      />
+    </type>
+
+    <type id="geo_outreach" name="Geo Outreach"> 
+      <element id="outreach" name="Outreach" datatype="enumerationplus"
+	       values="file:/org/ramadda/geodata/geo/resources/outreach.txt"/>      
+      />
+    </type>            
+
+
+
+
     <type id="geo_core_annotation" name="Geo Core Annotation"> 
       <element id="label" name="Label" datatype="string"/>
       <element name="Depth" datatype="double"/>
