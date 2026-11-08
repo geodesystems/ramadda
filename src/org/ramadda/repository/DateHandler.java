@@ -61,7 +61,7 @@ public class DateHandler extends RepositoryManager {
         new Hashtable<String, SimpleDateFormat>();
 
     protected static List<SimpleDateFormat> parseFormats;
-    //    protected static List<MyDateFormat> _parseFormats;    
+    protected static List<MyDateFormat> _parseFormats;    
 
     public DateHandler(Repository repository) {
         super(repository);
@@ -571,7 +571,7 @@ public class DateHandler extends RepositoryManager {
 
         }
 
-	/*
+
         if (_parseFormats == null) {
             List<MyDateFormat> tmp = new ArrayList<MyDateFormat>();
             tmp.add(new MyDateFormat("yyyy-MM-dd HH:mm:ss z"));
@@ -582,7 +582,20 @@ public class DateHandler extends RepositoryManager {
             tmp.add(new MyDateFormat("yyyy-MM"));
             tmp.add(new MyDateFormat("yyyy"));	    
             _parseFormats = tmp;
-	    }*/
+	}
+
+
+	System.err.println("parseDate:" + dttm);  
+        for (MyDateFormat fmt : _parseFormats) {
+            try {
+                synchronized (fmt) {
+		    Date d = fmt.parse(dttm);
+		    System.err.println("\tparsed:" + d);
+                    return d;
+                }
+            } catch (Exception noop) {
+	    }
+        }
 
 
         for (SimpleDateFormat fmt : parseFormats) {
