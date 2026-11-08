@@ -12,7 +12,9 @@ import org.ramadda.util.MyDateFormat;
 
 import ucar.unidata.util.DateUtil;
 
+
 import java.text.SimpleDateFormat;
+import java.text.ParsePosition;
 
 import java.util.ArrayList;
 
@@ -567,36 +569,13 @@ public class DateHandler extends RepositoryManager {
             tmp.add(RepositoryUtil.makeDateFormat("MM-dd-yyyy"));	    
             tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM"));
             tmp.add(RepositoryUtil.makeDateFormat("yyyy"));	    
-            parseFormats = tmp;
 
-        }
-
-
-        if (_parseFormats == null) {
-            List<MyDateFormat> tmp = new ArrayList<MyDateFormat>();
-            tmp.add(new MyDateFormat("yyyy-MM-dd HH:mm:ss z"));
-            tmp.add(new MyDateFormat("yyyy-MM-dd HH:mm:ss"));
-            tmp.add(new MyDateFormat("yyyy-MM-dd HH:mm"));
-            tmp.add(new MyDateFormat("yyyy-MM-dd"));
-            tmp.add(new MyDateFormat("MM-dd-yyyy"));	    
-            tmp.add(new MyDateFormat("yyyy-MM"));
-            tmp.add(new MyDateFormat("yyyy"));	    
-            _parseFormats = tmp;
-	}
-
-
-	System.err.println("parseDate:" + dttm);  
-        for (MyDateFormat fmt : _parseFormats) {
-            try {
-                synchronized (fmt) {
-		    Date d = fmt.parse(dttm);
-		    System.err.println("\tparsed:" + d);
-                    return d;
-                }
-            } catch (Exception noop) {
+	    for(SimpleDateFormat sdf: tmp) {
+		sdf.setLenient(false);
 	    }
-        }
 
+            parseFormats = tmp;
+        }
 
         for (SimpleDateFormat fmt : parseFormats) {
             try {
@@ -609,6 +588,17 @@ public class DateHandler extends RepositoryManager {
         }
 
         throw new IllegalArgumentException("Unable to parse date:" + dttm);
+    }
+
+    public static void main(String[]args) throws Exception {
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	sdf = new SimpleDateFormat("MM-dd-yyyy");	
+	sdf.setLenient(false);
+	ParsePosition pp = new ParsePosition(0);
+	for(String d:args) {
+	    Date dttm = sdf.parse(d,pp);
+	    System.err.println("date:" + d +" parsed:" + dttm);
+	}
     }
 
 }
