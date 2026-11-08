@@ -2772,6 +2772,7 @@ public class Utils extends IO {
         new DateFormat("yyyy-MM-dd", true),
         new DateFormat("yyyy/MM/dd", true),
         new DateFormat("MM/dd/yyyy", true),
+	new DateFormat("MM-dd-yyyy",true),
 	new DateFormat("yyyy-MM", true),
         new DateFormat("yyyy/MM", true),
 	new DateFormat("yyyyMMdd", true),
