@@ -2845,6 +2845,8 @@ public class Seesv implements SeesvCommands {
 			ATTR_TYPE, TYPE_ENUMERATION,ATTR_VALUES,"red,green,yellow,blue,purple,cyan")),	
         new Cmd(CMD_PRINTHEADER, "Print header",
 		ARG_LABEL,"Print Header"),
+        new Cmd("-attrs", "Print attributes",
+		ARG_LABEL,"Print Attributes"),
         new Cmd(CMD_RAW, "Print the file raw"),
         new Cmd(CMD_TABLE, "Print HTML table and stats"),
         new Cmd(CMD_COLS, "Set the width of the columns for output. Use with -p",
@@ -5630,6 +5632,10 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.PrintHeader());
 		return i;
 	    });
+	defineFunction(new String[]{"-attrs"},0,(ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.PrintAttrs());
+		return i;
+	    });	
 
 	defineFunction(CMD_POINTHEADER,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PrintHeader(true));

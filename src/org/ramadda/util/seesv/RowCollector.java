@@ -363,6 +363,84 @@ public class RowCollector extends Processor {
 
 
 
+    private static class AttrInfo {
+	String id;
+	String label;	
+	String sample="";
+	String type="";
+	StringBuffer attrs = new StringBuffer();
+    }
+
+    public static class PrintAttrs extends RowCollector {
+
+        public PrintAttrs() {
+        }
+
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+	    List<Row> newRows = new ArrayList<Row>();
+	    rows = getRows();
+	    Row header = rows.get(0);
+	    List<AttrInfo> columns  = new ArrayList<AttrInfo>();
+	    List<String> types = new ArrayList<String>();
+	    List<String> samples = new ArrayList<String>();
+	    for(int colIdx=0;colIdx<header.size();colIdx++) {
+		AttrInfo info = new AttrInfo();
+		columns.add(info);
+		String type = "string";
+                String col = header.getString(colIdx);
+		for(int rowIdx=1;rowIdx<rows.size();rowIdx++) {
+		    Row row = rows.get(rowIdx);
+		    if(!row.indexOk(colIdx)) continue;
+		    info.sample = row.getString(colIdx);
+		    if(Utils.stringDefined(info.sample)) break;
+		}
+                col = col.replaceAll("\n", " ");
+		info.label = 
+		    Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
+		info.id = Utils.makeID(info.label,false);
+		String unit = StringUtil.findPattern(col,
+						     ".*?\\(([^\\)]+)\\).*");
+
+		if (unit != null) {
+		    info.attrs.append(" unit=\"" + unit + "\" ");
+		}
+		String id = Utils.makeID(info.label,false);
+		if (id.indexOf("date") >= 0) {
+		    info.type="date";
+		} else if (id.indexOf("type") >= 0) {
+		    info.type="enumerationplus";
+		}  else if(info.id.matches("(?i)country")) {
+		    info.type="enumerationplus";
+		}  else if(info.id.matches("(?i)(country|state|county)")) {
+		    info.type="enumerationplus";
+		} else if(info.sample.matches("-?\\d+(\\.\\d+)?")) {
+		    info.type="double";
+		} else if(Utils.findDateFormat(info.sample)!=null) {
+		    info.type="date";
+		} else if(Utils.stringDefined(info.sample)) {
+		    System.err.println("* no type:" + info.id+": sample:" + info.sample+":");
+		    info.type = "string";
+		}
+		//		System.err.println("* " + info.label+" type:" + info.type+  " sample:" + info.sample);
+	    }
+
+
+            PrintWriter writer    = ctx.getWriter();
+	    for(AttrInfo info: columns) {
+		writer.println(info.label+","+info.id+"," + info.type+",  cansearch=true " + info.attrs);
+            }
+            writer.flush();
+            writer.close();
+            ctx.stopRunning();
+            return newRows;
+        }
+
+    }
+
+
+
     public static class FirstLast extends RowCollector {
         boolean atStart;
         String pattern;
@@ -1156,10 +1234,8 @@ public class RowCollector extends Processor {
     }
 
     public static class Dups extends RowCollector {
-        private List<String> columns;
-
         public Dups(TextReader ctx, List<String> columns) {
-            this.columns = columns;
+	    super(columns);
         }
 
         @Override
@@ -1167,7 +1243,8 @@ public class RowCollector extends Processor {
 	    throws Exception {
             List<Row>     newRows = new ArrayList<Row>();
             List<Row>     allRows = getRows();
-            List<Integer> cols    = Utils.toInt(columns);
+            List<Integer> cols = getIndices(ctx);
+	    //            List<Integer> cols    = Utils.toInt(columns);
             newRows.add(allRows.get(0));
             Hashtable<String, Row> seen     = new Hashtable<String, Row>();
             HashSet                seenKeys = new HashSet();
