@@ -2023,6 +2023,25 @@ public class Utils extends IO {
         return sb.toString().trim();
     }
 
+    public static String nameCaseSplit(String input) {
+	StringBuilder sb = new StringBuilder();
+	int cnt =0;
+	for(String tok: split(input," ")) {
+	    if(cnt>0) sb.append(" ");
+	    if(tok.matches("^[A-Z0-9]+$")) {
+		//		System.err.println("TOK:" + tok);
+	    } else {
+
+		tok  = nameCase(tok);
+	    }
+
+	    sb.append(tok);
+	    cnt++;
+	}
+	return sb.toString();
+    }
+
+
     public static String nameCase(String input) {
         if (input == null || input.isEmpty()) {
             return input;
@@ -3790,12 +3809,17 @@ public class Utils extends IO {
     public static final String CASE_CAMEL ="camel";
     public static final String CASE_PROPER ="proper";    
     public static final String CASE_CAPITALIZE ="capitalize";            
+    public static final String CASE_SPLIT = "split";
+
 
     public static String applyCase(String caseType, String s) {
 	if (caseType.equals(CASE_LOWER)) {
 	    return s.toLowerCase();
 	} else if (caseType.equals(CASE_UPPER)) {
 	    return s.toUpperCase();
+	} else if (caseType.equals(CASE_SPLIT)) {
+	    return  Utils.nameCaseSplit(s);
+
 	} else if (caseType.equals(CASE_PROPER)) {
 	    return  Utils.nameCase(s);
 	} else if (caseType.equals(CASE_CAMEL)) {
