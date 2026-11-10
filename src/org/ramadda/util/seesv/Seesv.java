@@ -2261,7 +2261,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_CASE, "Change case of column - type:lower,upper,proper,capitalize",
 		ARG_LABEL,"Change Case",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-                new Arg("type", "", ATTR_VALUES, "lower,upper,proper,capitalize")),
+                new Arg("type", "", ATTR_VALUES, "lower,upper,proper,capitalize,split")),
         new Cmd(CMD_TOID, "Convert the column(s) into IDS (lowercase, no space, a-z0-9_)",
 		ARG_LABEL,"TOID",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),

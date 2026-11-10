@@ -369,6 +369,7 @@ public class RowCollector extends Processor {
 	String sample="";
 	String type="";
 	StringBuffer attrs = new StringBuffer();
+	HashSet<String> samples = new HashSet<String>();
     }
 
     public static class PrintAttrs extends RowCollector {
@@ -379,6 +380,8 @@ public class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
+	    boolean printValues = false;
+            PrintWriter writer    = ctx.getWriter();
 	    List<Row> newRows = new ArrayList<Row>();
 	    rows = getRows();
 	    Row header = rows.get(0);
@@ -393,8 +396,14 @@ public class RowCollector extends Processor {
 		for(int rowIdx=1;rowIdx<rows.size();rowIdx++) {
 		    Row row = rows.get(rowIdx);
 		    if(!row.indexOk(colIdx)) continue;
-		    info.sample = row.getString(colIdx);
-		    if(Utils.stringDefined(info.sample)) break;
+		    String sample =  row.getString(colIdx);
+		    if(!Utils.stringDefined(sample)) {
+			continue;
+		    }
+		    info.samples.add(sample);
+		    if(!Utils.stringDefined(info.sample)) {
+			info.sample  = sample;
+		    }
 		}
                 col = col.replaceAll("\n", " ");
 		info.label = 
@@ -403,6 +412,7 @@ public class RowCollector extends Processor {
 		String unit = StringUtil.findPattern(col,
 						     ".*?\\(([^\\)]+)\\).*");
 
+		boolean isLoc = false;
 		if (unit != null) {
 		    info.attrs.append(" unit=\"" + unit + "\" ");
 		}
@@ -411,26 +421,43 @@ public class RowCollector extends Processor {
 		    info.type="date";
 		} else if (id.indexOf("type") >= 0) {
 		    info.type="enumerationplus";
-		}  else if(info.id.matches("(?i)country")) {
-		    info.type="enumerationplus";
 		}  else if(info.id.matches("(?i)(country|state|county)")) {
 		    info.type="enumerationplus";
+		    isLoc = true;
 		} else if(info.sample.matches("-?\\d+(\\.\\d+)?")) {
 		    info.type="double";
 		} else if(Utils.findDateFormat(info.sample)!=null) {
 		    info.type="date";
 		} else if(Utils.stringDefined(info.sample)) {
-		    System.err.println("* no type:" + info.id+": sample:" + info.sample+":");
+		    //		    System.err.println("* no type:" + info.id+": sample:" + info.sample+":");
 		    info.type = "string";
 		}
-		//		System.err.println("* " + info.label+" type:" + info.type+  " sample:" + info.sample);
+		if(!isLoc && info.type.startsWith("enumeration")) {
+		    if(printValues)
+			System.out.println(info.label);
+		    StringBuilder values = new StringBuilder();
+		    for (String value : info.samples) {
+			if(values.length()>0) {
+			    values.append("\\,");
+			}
+			if(printValues)
+			    System.out.println("\t"+value);
+			value = value.replace(",","_comma_");
+			values.append(value);
+
+		    }
+		    info.attrs.append(" values=\"" + values+"\" ");
+		}
 	    }
 
 
-            PrintWriter writer    = ctx.getWriter();
-	    for(AttrInfo info: columns) {
-		writer.println(info.label+","+info.id+"," + info.type+",  cansearch=true " + info.attrs);
-            }
+
+	    if(!printValues)  {
+		for(AttrInfo info: columns) {
+		    writer.println(info.label+","+info.id+"," + info.type+",  cansearch=true " + info.attrs);
+		}
+	    }
+
             writer.flush();
             writer.close();
             ctx.stopRunning();
