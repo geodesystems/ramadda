@@ -419,8 +419,11 @@ var CreateType  = {
 	    let label = toks[1];
 	    let type = toks[2];	    
 	    let extra = toks[3];
-	    if(extra)
+	    if(extra) {
 		extra = extra.replace(/_comma_/g,',');
+		extra = extra.replace(/_comma2_/g,'_comma_');		
+	    }
+
 	    if(!Utils.stringDefined(id)) id = Utils.makeID(label);
 	    if(!Utils.stringDefined(label)) label = Utils.makeLabel(id);
 	    HU.jqname('column_name_' + theIdx).val(id);
