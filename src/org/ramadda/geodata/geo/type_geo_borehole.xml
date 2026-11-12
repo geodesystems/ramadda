@@ -12,20 +12,20 @@ into some types.xml file
 >
 
 <!-- Columns-->
-<column  name="location"  label="Location"  type="string"  cansearch="true" />
-<column  name="location_type"  label="Location Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/locationtypes.txt" />
-<column  name="location_id"  label="Location Id"  type="string"  cansearch="true" />
 <column  name="hole"  label="Hole"  type="string"  cansearch="true" />
 <column  name="hole_id"  label="Hole Id"  type="string"  cansearch="true" />
+<column  name="location"  label="Location"  type="string"  cansearch="true"   group="Location" />
+<column  name="location_type"  label="Location Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/locationtypes.txt" />
+<column  name="location_id"  label="Location Id"  type="string"  cansearch="true" />
 <column  name="country"  label="Country"  type="enumerationplus"  cansearch="true" />
-<column  name="state_province"  label="State Province"  type="string"  cansearch="true" />
-<column  name="county_region"  label="County Region"  type="string"  cansearch="true" />
+<column  name="state_province"  label="State Province"  type="enumerationplus"  cansearch="true" />
+<column  name="county_region"  label="County Region"  type="enumerationplus"  cansearch="true" />
 <column  name="position"  label="Position"  type="string"  cansearch="true" />
-<column  name="sample_type"  label="Sample Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/sampletypes.txt" />
-<column  name="platform"  label="Platform"  type="string"  cansearch="true" />
+<column  name="sample_type"  label="Sample Type"  type="enumerationplus"  group="Sample" cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/sampletypes.txt" />
+<column  name="platform"  label="Platform"  type="string"  cansearch="true" group="Drilling Platform" />
 <column  name="platform_name"  label="Platform Name"  type="string"  cansearch="true" />
 <column  name="platform_type"  label="Platform Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/platformtypes.txt" />
-<column  name="water_depth"  label="Water Depth"  type="double"  cansearch="true" />
+<column  name="water_depth"  label="Water Depth"  type="double"  cansearch="true" group="Hole" />
 <column  name="depth_of_sample_top"  label="Depth Of Sample Top"  type="double"  cansearch="true" />
 <column  name="sections_minimum_mblf_t"  label="Sections Minimum Mblf T"  type="double"  cansearch="true" />
 <column  name="depth_of_sample_bottom"  label="Depth Of Sample Bottom"  type="double"  cansearch="true" />

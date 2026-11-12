@@ -1,17 +1,17 @@
-ground
-wetland
-upland
-terrestrial, undifferentiated
-playa
-outcrop
-fjord
-estuary
-lagoon
-channel, river, or stream
-fluvial, floodplain
-reservoir
-lake
-paleochannel
-paleoestuary
-paleolake
+ground:Ground
+wetland:Wetland
+upland:Upland
+terrestrial, undifferentiated:Terrestrial, Undifferentiated
+playa:Playa
+outcrop:Outcrop
+fjord:Fjord
+estuary:Estuary
+lagoon:Lagoon
+channel,river, or stream:Channel,River, or Stream
+fluvial, floodplain:Fluvial, Floodplain
+reservoir:Reservoir
+lake:Lake
+paleochannel:Paleochannel
+paleoestuary:Paleoestuary
+paleolake:Paleolake
 
