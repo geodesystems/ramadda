@@ -787,14 +787,14 @@ public class GenericTypeHandler extends TypeHandler {
 				 HashSet<String> seen) throws Exception {
 	String dateBeforeColumn = getTypeProperty(PROP_DATE_BEFORE,null);
 	String dateAfterColumn = getTypeProperty(PROP_DATE_AFTER,null);
-
 	Object[]      values = getEntryValues(entry);
 	if (values != null) {
 	    for (Column column : getMyColumns()) {
 		if ( !column.getCanShow()) {
 		    continue;
 		}
-		if(seen.contains(column.getName())) {
+		String key = "column_"+column.getName();
+		if(seen.contains(key)) {
 		    continue;
 		}
 		if(column.getAdminOnly() &&
