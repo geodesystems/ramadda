@@ -22,7 +22,7 @@ into some types.xml file
 <column  name="county_region"  label="County Region"  type="enumerationplus"  cansearch="true" />
 <column  name="position"  label="Position"  type="string"  cansearch="true" />
 <column  name="sample_type"  label="Sample Type"  type="enumerationplus"  group="Sample" cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/sampletypes.txt" />
-<column  name="platform"  label="Platform"  type="string"  cansearch="true" group="Drilling Platform" />
+<column  name="platform"  label="Platform"  type="enumerationplus"  cansearch="true" group="Drilling Platform" />
 <column  name="platform_name"  label="Platform Name"  type="string"  cansearch="true" />
 <column  name="platform_type"  label="Platform Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/platformtypes.txt" />
 <column  name="water_depth"  label="Water Depth"  type="double"  cansearch="true" group="Hole" />
