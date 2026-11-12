@@ -1,0 +1,17 @@
+ground
+wetland
+upland
+terrestrial, undifferentiated
+playa
+outcrop
+fjord
+estuary
+lagoon
+channel, river, or stream
+fluvial, floodplain
+reservoir
+lake
+paleochannel
+paleoestuary
+paleolake
+
