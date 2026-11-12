@@ -29,13 +29,13 @@ childtypes="type_display_children,type_geo_core_images"
 
 <!-- Wiki text-->
 <wiki><![CDATA[
-+section title={{name}}
++section title="Site: {{name}}"
 :navtop
 +row
 +col-8
 {{description wikify="true"}}
 :heading Data
-{{tabletree  message="No data available" orderby=name ascending=true showType=false showSize=false}}
+{{tabletree  message="No data available" orderby=name ascending=true showType=true showSize=false}}
 -col
 +col-4
 +center

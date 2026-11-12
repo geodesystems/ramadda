@@ -58,15 +58,17 @@ orderby=entryorder_up ascending=true}}
 {{field  name="project_type"  row.label="Project Type:"  }} 
 {{field  name="project_status"  row.label="Project Status:"  }}
 </table>
+----
 +center
 {{image  inherited="false" showCaption=true multiples=true popup=true
 message="" width="80%"  useThumbnail="true" }}
 -center
-:vspace 1em
 +div style="max-height:80vh;overflow-y:auto;"
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 {{properties message="" inherited="true" metadata.types="project_pi" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="geo_organization" includeTitle=true}}
 {{properties message="" inherited="true" metadata.types="project_funding" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="geo_discipline,geo_technique" includeTitle=true}}
 {{properties message="" inherited="true" metadata.types="dif.usecontraints,content.citation" includeTitle=true}}
 {{properties message="" inherited="true" metadata.types="project_person" includeTitle=true}}
 {{properties message="" inherited="true" metadata.types="enum_tag" includeTitle=true}}

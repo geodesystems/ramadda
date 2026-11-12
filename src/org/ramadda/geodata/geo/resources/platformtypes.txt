@@ -1,0 +1,54 @@
+Airboat
+Alpaka Pack Raft
+Barge
+Boat
+Bucket Raft 
+Canoe
+Canoe And Rowboat
+Canoes
+Catamaran
+Catarafat
+Cataraft
+Fallen Tree
+Floating
+Floating Platform
+Freight Barge
+Ground
+Ice
+Inflatable Canoe
+Inflatable Pontoon
+Inflatable Raft
+Jon Boat
+Kayak
+Kayaks
+Misson Specidic Platform
+Mobile Platform
+Modified Cataraft
+Motor Boat
+Motorboat
+None
+Pontoon
+Pontoon Boat
+ROV
+RV Zodiac 230
+Raft
+Row Boat
+Rowboat
+Rowboats
+Rubber Boat
+SCWRS New Polaris
+Segmented Drill Barge
+Ship
+Small Craft
+Spud Barge
+UWITEC Platform
+Unknown
+Uwitec
+Wood Tripod
+Wooden Platform
+XPAD2
+XPAD3
+XPAD4
+Zodiac
+Zodiacs
+Zodic

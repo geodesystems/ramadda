@@ -10,6 +10,28 @@ into some types.xml file
  supercategory="Geoscience" 
  category="Core Data" 
 >
+
+<!-- Columns-->
+<column  name="location"  label="Location"  type="string"  cansearch="true" />
+<column  name="location_type"  label="Location Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/locationtypes.txt" />
+<column  name="location_id"  label="Location Id"  type="string"  cansearch="true" />
+<column  name="hole"  label="Hole"  type="string"  cansearch="true" />
+<column  name="hole_id"  label="Hole Id"  type="string"  cansearch="true" />
+<column  name="country"  label="Country"  type="enumerationplus"  cansearch="true" />
+<column  name="state_province"  label="State Province"  type="string"  cansearch="true" />
+<column  name="county_region"  label="County Region"  type="string"  cansearch="true" />
+<column  name="position"  label="Position"  type="string"  cansearch="true" />
+<column  name="sample_type"  label="Sample Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/sampletypes.txt" />
+<column  name="platform"  label="Platform"  type="string"  cansearch="true" />
+<column  name="platform_name"  label="Platform Name"  type="string"  cansearch="true" />
+<column  name="platform_type"  label="Platform Type"  type="enumerationplus"  cansearch="true"  values="file:/org/ramadda/geodata/geo/resources/platformtypes.txt" />
+<column  name="water_depth"  label="Water Depth"  type="double"  cansearch="true" />
+<column  name="depth_of_sample_top"  label="Depth Of Sample Top"  type="double"  cansearch="true" />
+<column  name="sections_minimum_mblf_t"  label="Sections Minimum Mblf T"  type="double"  cansearch="true" />
+<column  name="depth_of_sample_bottom"  label="Depth Of Sample Bottom"  type="double"  cansearch="true" />
+<column  name="sections_maximum_mblf_b"  label="Sections Maximum Mblf B"  type="double"  cansearch="true" />
+<column  name="azimuth"  label="Azimuth"  type="double"  cansearch="true" />
+<column  name="dip"  label="Dip"  type="double"  cansearch="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/drilling-rig.png" />
@@ -19,5 +41,53 @@ into some types.xml file
 <property  name="date.nullok"  value="true" />
 <property  name="form.resource.show"  value="false" />
 <property  name="form.time.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="Borehole: {{name}}"
+:navtop
++row
++col-8
+{{description wikify="true"}}
+:heading Data
+{{tabletree  message="No data available" orderby=name ascending=true showType=false showSize=false}}
+-col
++col-4
++center
+{{image  inherited="false" showCaption=true multiples="true" popup=true
+message="" width="80%"  useThumbnail="true" }}
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+:vspace 1em
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+-center
+-col
+-row
++if property=show_type_summary
+----
+:vspace 1em
+:heading Data Type Summary
++center
+{{typecount    addPageSearch=true doColor=false message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+-center
+-if
++if property=show_search
+----
+:vspace 1em
+:heading Search Site
+{{display_entrylist   startWithAny=true  startWithAny=true  addAnyType=true  addAllTypes=true 
+showEntryType=true
+showAncestor=true ancestor=this
+metadataTypes=""
+entryTypes="super:type_core_base,type_data_file,type_geo_site,super:type_document,group,type_map_folder,type_display_children"  
+orderByTypes="name,relevant,createdate,date,size"  
+displayTypes="list,images,map,display" 
+includeNonImages=false
+}}
+-if
+----
+:heading Information
+{{information details=true}}
+-section]]></wiki>
 </type>
 </types>
