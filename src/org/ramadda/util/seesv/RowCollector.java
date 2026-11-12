@@ -454,7 +454,7 @@ public class RowCollector extends Processor {
 
 	    if(!printValues)  {
 		for(AttrInfo info: columns) {
-		    writer.println(info.label+","+info.id+"," + info.type+",  cansearch=true " + info.attrs);
+		    writer.println(info.id+","+info.label+"," + info.type+",  cansearch=true " + info.attrs);
 		}
 	    }
 
