@@ -160,7 +160,8 @@ public class CsvImporter extends ImportHandler {
 	    int dateRangeIdx=-1;
 	    int dateIdxTo=-1;		
 	    int latitudeIdx=-1;
-	    int longitudeIdx=-1;		
+	    int longitudeIdx=-1;
+	    int altitudeIdx=-1;			    
 	    List<Index> metadataIdx= new ArrayList<Index>();
 	    List<Index> newIdx= new ArrayList<Index>();
 	    Hashtable<String,Integer> thumbnailIdx= new Hashtable<String,Integer>();
@@ -225,8 +226,11 @@ public class CsvImporter extends ImportHandler {
 				dateRangeIdx = i;				    
 			    } else if(_field.equals("latitude")) {
 				latitudeIdx = i;
+
 			    } else if(_field.equals("longitude")) {
-				longitudeIdx = i;				    
+				longitudeIdx = i;
+			    } else if(_field.equals("altitude") || _field.equals("elevation")) {
+				altitudeIdx = i;				    				
 			    } else if(_field.equals("private")) {
 				privateIdx=i;				    
 			    } else if(_field.equals("description")) {
@@ -382,6 +386,12 @@ public class CsvImporter extends ImportHandler {
 			    attrs+=XU.attrs(ATTR_LONGITUDE,v);
 			}
 		    }			
+		    if(altitudeIdx>=0) {
+			String v = row.getString(altitudeIdx,"");
+			if(stringDefined(v)) {
+			    attrs+=XU.attrs(ATTR_ALTITUDE,v);
+			}
+		    }
 
 
 		
