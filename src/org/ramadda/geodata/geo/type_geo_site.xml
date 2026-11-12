@@ -36,6 +36,13 @@ childtypes="type_display_children,type_geo_core_images"
 {{description wikify="true"}}
 :heading Data
 {{tabletree  message="No data available" orderby=name ascending=true showType=true showSize=false}}
++if property=show_type_summary
+:vspace 1em
+:heading Data Type Summary
++center
+{{typecount    addPageSearch=true doColor=false message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+-center
+-if
 -col
 +col-4
 +center
@@ -48,14 +55,6 @@ message="" width="80%"  useThumbnail="true" }}
 -center
 -col
 -row
-+if property=show_type_summary
-----
-:vspace 1em
-:heading Data Type Summary
-+center
-{{typecount    addPageSearch=true doColor=false message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
--center
--if
 +if property=show_search
 ----
 :vspace 1em

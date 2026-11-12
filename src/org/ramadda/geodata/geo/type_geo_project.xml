@@ -51,6 +51,14 @@ orderby=entryorder_up,name_up
 {{tabletree  message="No project contents"  simple="false"  #maxHeight="500px"  showSize=false
 showCreateDate=false showDate=false
 orderby=entryorder_up ascending=true}} 
++if property=show_type_summary
+:vspace 1em
+:heading Data Type Summary
++center
+{{typecount   addPageSearch=true doColor=false
+message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
+-center
+-if
 -col
 +col-4
 <table class="formtable"> 
@@ -77,15 +85,6 @@ message="" width="80%"  useThumbnail="true" }}
 -col
 -row
 :vspace 1em
-+if property=show_type_summary
-----
-:vspace 1em
-:heading Data Type Summary
-+center
-{{typecount   addPageSearch=true doColor=false
-message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true addSearchLink=true}}
--center
--if
 +if property=show_search
 ----
 :vspace 1em
