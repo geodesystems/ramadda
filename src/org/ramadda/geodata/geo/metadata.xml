@@ -7,10 +7,10 @@
       <element id="project" name="Project" datatype="enumerationplus" />
     </type>
 
-    <type id="geo_organization" name="Geo Organization"> 
+    <type id="geo_organization" name="Geo Organization"  displaygroup="Organizations"> 
       <element name="Organization"/>
       <element name="Type" datatype="enumerationplus"
-	       values="Lab,Repository"/>
+	       values="lab:Lab,repository:Repository"/>
     </type>
 
     <type id="geo_project_id" name="Alternate Project ID"> 
