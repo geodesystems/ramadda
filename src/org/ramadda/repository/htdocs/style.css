@@ -3935,12 +3935,18 @@ pre {
 
 .metadata-row-odd {
     margin-bottom:2px;
-    background-color:#f8f8f8;    
+    border-top:1px solid #efefef;
 }
 
 .ramadda-metadata-heading {
     font-weight:bold;
+    background: #efefef;
+    padding:2px;
+    padding-left:4px;
 }    
+
+
+
 
 .metadata-group {
     max-height:300px;
@@ -3958,6 +3964,10 @@ pre {
 
 .metadata-block {
     margin-left:15px;
+}
+
+.metadata-block .formlabel {
+    font-weight:normal;
 }
 
 .hideshowblock .metadata-block {
