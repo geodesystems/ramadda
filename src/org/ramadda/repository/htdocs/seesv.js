@@ -297,10 +297,6 @@ function  SeesvForm(inputId, entry,params) {
 					ATTR_ID,_this.domId(ID_DO_COMMANDS)],_this.doCommands,'Do commands') +HU.br();
 		html += HU.checkbox('',[ATTR_TITLE,'Apply this set of commands to all of the siblings of this entry',
 					ATTR_ID,_this.domId(ID_APPLY_TO_SIBLINGS)], _this.applyToSiblings, 'Apply to siblings');
-		html+=HU.div([ATTR_CLASS,CLASS_CLICKABLE],
-			     HU.href(RamaddaUtils.getUrl('/userguide/seesv.html'),
-				     'Main Help',[ATTR_TARGET,'_help']));
-
 		html = HU.div([ATTR_STYLE,HU.css(CSS_MARGIN,HU.px(10))],html);
 
 		let dialog = HU.makeDialog({content:html,my:POS_RIGHT_TOP,at:POS_RIGHT_BOTTOM,
@@ -923,6 +919,10 @@ function  SeesvForm(inputId, entry,params) {
 	    }
 	    this.insertCommand(field +value);
 	},
+	getHelp:function() {
+	    return   HU.href(RamaddaUtils.getUrl('/userguide/seesv.html'),
+			     'Main Help',[ATTR_TARGET,'_help']);
+	},
 	call:function(cmds,args) {
 	    let _this =this;
 	    if (!args)  {
@@ -1136,10 +1136,15 @@ function  SeesvForm(inputId, entry,params) {
 			result = tmp;
 			let preId = HU.getUniqueId();
 			let id2 = HU.getUniqueId();
-			let html = printHeader?result:HU.span([ATTR_ID,id2])+
+
+			let help = this.getHelp();
+			let html = printHeader?result:HU.span([ATTR_ID,id2])+HU.space(2) +help +
 			    HU.tag(TAG_PRE,[ATTR_ID,preId], result);
 			output.html(html);
-			HU.initPageSearch('#' + preId +' .seesv-help-line',null,'Search help',null,{target:'#'+id2});
+			HU.initPageSearch('#' + preId +' .seesv-help-line',
+					  null,
+					  'Search help'+HU.space(2),
+					  null,{target:'#'+id2});
 			return;
 		    } else if(isDb) {
 			let db = result.replace(/<tables>[ \n]/,"Database:");
