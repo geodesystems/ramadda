@@ -99,7 +99,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
     public Result outputConvertForm(Request request, Entry entry)
             throws Exception {
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb, "");
+        getPageHandler().entrySectionOpen(request, entry, sb, "SeeSV Form");
         makeSeesvForm(request, entry, sb, new Hashtable());
         getPageHandler().entrySectionClose(request, entry, sb);
 
