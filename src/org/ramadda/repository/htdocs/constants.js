@@ -115,6 +115,10 @@ var UNIT_KM='km';
 var UNIT_M='m';
 var UNIT_M_FULL='meters';
 var UNIT_NM='nm';
+var UNIT_ACRES='acres';
+var UNIT_SQFT='sqft';
+var UNIT_SQKM='sqkm';
+
 
 var CLASS_SEARCH_HEADER_ENABLED='display-search-header-enabled';
 var CLASS_SEARCH_HEADER_DISABLED='display-search-header-disabled';
