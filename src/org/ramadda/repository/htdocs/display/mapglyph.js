@@ -617,11 +617,9 @@ MapGlyph.prototype = {
 	let level = this.getVisibleLevelRange(true)??{};
 	let visHtml =
 	    HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible');
-	
-	if(this.isRings() ||
-	   this.getMapLayer() ||
-	   this.imageLayers ||
-	   this.isImage()) {
+
+	/*this.isRings() ||   this.getMapLayer() ||   this.imageLayers ||	   this.isImage()) */
+	if(!this.isGroup() &&this.hasChildren()) {
 	    visHtml+= HU.space(4)+HU.checkbox(this.domId(ID_CANSELECT),[],this.getCanSelect(),'Can Select');
 	}
 	visHtml+=HU.br();	
@@ -2805,7 +2803,6 @@ MapGlyph.prototype = {
 
 	let distances;
 	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
-	    //getDistances:function(geometry,glyphType,justDistance,forceAcres,asObject) {
 	    distances = this.getDistances();
 	    item(distances?.label,true,true);
 	}
@@ -2891,7 +2888,10 @@ MapGlyph.prototype = {
 	let distances=
 	    this.display.getDistances(this.getGeometry(),
 				      this.getType(),
-				      false,false,true);
+				      {unit:this.getProperty('unit'),
+				       areaUnit:this.getProperty('area.unit',
+								 this.getProperty('unit')),
+				       asObject:true});
 	return distances;
     },
     updateLineLabels:function(distance) {
@@ -4855,7 +4855,7 @@ MapGlyph.prototype = {
 		this.indexToFeature[idx] = feature;
 		//		if(idx>10) return
 		if(idx>limit) return;
-		let distance = this.display.getDistances(feature.geometry,GLYPH_POLYGON,false,true,true);
+		let distance = this.display.getDistances(feature.geometry,GLYPH_POLYGON,{forceAcres:true,asObject:true});
 		let name=this.getFeatureName(feature.attributes);
 		if(!name) {
 		    name = 'Polygon ' + (idx+1)
@@ -4957,6 +4957,12 @@ MapGlyph.prototype = {
     },
     getExampleFeatures: function() {
 	return this.getExampleMapLayer()?.features;
+    },
+
+    hasChildren:function() {
+	let children = 	this.getChildren();
+	if(!children || children.length==0) return false;
+	return true;
     },
 
     getMapFeatures: function() {

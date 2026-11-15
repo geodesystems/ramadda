@@ -101,6 +101,8 @@ var IMDV_PROPERTY_HINTS= [
     'showLabelInMapWhenVisible=true',
     'showViewInLegend=true',
     'showDistance=true',
+    'unit','meter,foot,km,mile',
+    'areaUnit','acre,hectare,square feet,square km',    
     PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
     'inMapLabel=',			  			  
     'showLegendInMap=true',			  
@@ -1157,6 +1159,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return false;
 	    }
 	    let convert = (value,firstCall) =>{
+		console.log('value',value);
 		let skm = String(value).trim();
 		let km=skm;
 		if(check(skm,UNIT_MILES)) {
@@ -1262,7 +1265,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return pts;
 	},
 
-	getDistances:function(geometry,glyphType,justDistance,forceAcres,asObject) {
+	getDistances:function(geometry,glyphType,args) {
+	    let opts = {
+		justDistance:false,
+		forceAcres:false,
+		asObject:false,
+		unit:null,
+		areaUnit:null
+	    }
+	    if(args) $.extend(opts,args);
+	    
+
+
 	    if(!geometry) return null;
 	    let pts = this.getLatLonPoints(geometry);
 	    if(pts==null) return null;
@@ -1274,7 +1288,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!glyphType) return '';
 	    let distancePrefix = 'Distance: ';
 
-	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX || glyphType == GLYPH_POLYGON || glyphType == GLYPH_TRIANGLE || glyphType == GLYPH_FREEHAND_CLOSED || glyphType==GLYPH_IMAGE) {
+	    if(glyphType == GLYPH_CIRCLE ||
+	       glyphType == GLYPH_BOX ||
+	       glyphType == GLYPH_POLYGON ||
+	       glyphType == GLYPH_TRIANGLE ||
+	       glyphType == GLYPH_FREEHAND_CLOSED ||
+	       glyphType==GLYPH_IMAGE) {
 		sqft = MapUtils.calculateArea(pts);
 		acres = sqft/43560;
 	    }
@@ -1289,8 +1308,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		msg = '';
 		let w = MapUtils.distance(pts[0].y,pts[0].x,pts[1].y,pts[1].x);
 		let h = MapUtils.distance(pts[1].y,pts[1].x,pts[2].y,pts[2].x);		
-		feet = w*2+h*2;
 		let unit = UNIT_FT;
+		feet = w*2+h*2;
 		if(w>5280 || h>5280) {
 		    unit = UNIT_MILES;
 		    w = w/5280;
@@ -1299,7 +1318,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		msg= 'W: ' + Utils.formatNumberComma(w,1) + ' ' + unit +
 		    ' H: ' + Utils.formatNumberComma(h,1) + ' ' + unit;
 	    } else {
-		let segments = '';
 		let total = 0;
 		for(let i=0;i<pts.length-1;i++) {
 		    let pt1 = pts[i];
@@ -1309,42 +1327,38 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			feet+=d;
 		    }
 		    total+=d;
-		    let unit = UNIT_FT;
-		    if(d>5280) {
-			unit = UNIT_MILES;
-			d = d/5280;
-		    }
-		    d = Utils.formatNumberComma(d);
-		    segments+= d +' ' + unit +' ';
 		}
 		let unit = UNIT_FT;
-		if(total>3500) {
+		if(opts.unit) {
+		    total  = UnitConverter.convert(total,unit,opts.unit);
+		    unit = opts.unit;
+		} else if(total>3500) {
 		    unit = UNIT_MILES;
-		    total = total/5280;
+		    total = MapUtils.feetToMiles(total);
 		}
 		msg = distancePrefix + Utils.formatNumberComma(total) +' ' + unit;
-		if(pts.length>2 && pts.length<6)  {
-		}
 		if(pts.length<=1) msg='';
 	    }
-	    if(!justDistance&&sqft>0) {
-		unit=UNIT_FT;
+
+	    if(!opts.justDistance&&sqft>0) {
 		if(sqft>MapUtils.squareFeetInASquareMile) {
 		    unit = UNIT_MILES;
 		    let sqmiles  = sqft/MapUtils.squareFeetInASquareMile;
 		    msg+=   HU.br() +
 			'Area: ' + Utils.formatNumber(sqmiles) +' sq ' + unit;
-		    if(forceAcres) {
+		    if(opts.forceAcres) {
 			msg+=   SPACE + Utils.formatNumber(acres) +' acres';
 		    }
 		} else {
+		    let unit=opts.areaUnit ?? UNIT_ACRES;
+		    let displayValue = UnitConverter.convert(acres,UNIT_ACRES,unit);
 		    msg+=   HU.br() +
-			'Area: ' + Utils.formatNumber(acres) +' acres';
+			Utils.msgLabel('Area') + Utils.formatNumber(displayValue) +
+			HU.space(1) +unit;
 		}
 	    }
 
-
-	    if(asObject) {
+	    if(opts.asObject) {
 		return {
 		    label:msg,
 		    feet:feet,
@@ -5047,7 +5061,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(mapGlyph.getType()!=GLYPH_ROUTE && mapGlyph.getType()!=GLYPH_FREEHAND) return;
 		let feature = mapGlyph.getFeature();
 		if(!feature) return;
-		let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType(),true);
+		let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType(),{justDistance:true});
 		let id = HU.getUniqueId('feature_');
 		feature.legendId = id;
 		map[id] = mapGlyph;
