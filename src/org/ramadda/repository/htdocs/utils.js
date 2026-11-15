@@ -6446,7 +6446,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	let guid = HU.getUniqueId('btn');
 	let btn =HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,CLASS_SELECT_POPUP),
-			  ATTR_STYLE,HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
+//			  ATTR_STYLE,
+//			  HU.css(CSS_MARGIN_RIGHT,HU.px(5)),
 			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid],
 			 opts.buttonLabel)+(opts.addBreak?HU.br():'');
 	btn = opts.wrap.replace('${widget}',btn);
