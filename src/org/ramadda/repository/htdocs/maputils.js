@@ -1400,3 +1400,123 @@ RamaddaBounds.prototype= {
 
     
 };
+
+
+
+
+
+var UNIT_FT='ft';
+var UNIT_FEET='feet';
+var UNIT_MILE='mile';
+var UNIT_MILES='mi';
+var UNIT_MILES_FULL='miles';
+var UNIT_KM='km';
+var UNIT_METER='meter';
+var UNIT_M='m';
+var UNIT_M_FULL='meters';
+var UNIT_NM='nm';
+var UNIT_ACRES='acres';
+var UNIT_SQFT='sqft';
+var UNIT_SQKM='sqkm';
+
+var UnitConverter = {
+
+    // Conversion factors to meters
+    distanceUnits: (function() {
+        var units = {};
+
+        units[UNIT_M] = 1;
+        units[UNIT_M_FULL] = 1;
+        units[UNIT_METER] = 1;
+
+        units[UNIT_FT] = 0.3048;
+        units[UNIT_FEET] = 0.3048;
+        units["foot"] = 0.3048;
+
+        units[UNIT_MILE] = 1609.344;
+        units[UNIT_MILES] = 1609.344;
+        units[UNIT_MILES_FULL] = 1609.344;
+
+        units[UNIT_KM] = 1000;
+        units["kilometer"] = 1000;
+        units["kilometers"] = 1000;
+
+        units[UNIT_NM] = 1852;
+        units["nautical mile"] = 1852;
+        units["nautical miles"] = 1852;
+
+        return units;
+    })(),
+
+    // Conversion factors to square meters
+    areaUnits: (function() {
+        var units = {};
+
+        // Acres
+        units[UNIT_ACRES] = 4046.8564224;
+        units["acre"] = 4046.8564224;
+
+        // Hectares
+        units["ha"] = 10000;
+        units["hectare"] = 10000;
+        units["hectares"] = 10000;
+
+        // Square feet
+        units[UNIT_SQFT] = 0.09290304;
+        units["sq ft"] = 0.09290304;
+        units["sq. ft."] = 0.09290304;
+        units["square foot"] = 0.09290304;
+        units["square feet"] = 0.09290304;
+        units["square ft"] = 0.09290304;
+
+        // Square kilometers
+        units[UNIT_SQKM] = 1000000;
+        units["sq km"] = 1000000;
+        units["sq. km."] = 1000000;
+        units["square km"] = 1000000;
+        units["square kilometer"] = 1000000;
+        units["square kilometers"] = 1000000;
+
+        // Square meters
+        units["sqm"] = 1;
+        units["sq m"] = 1;
+        units["sq. m."] = 1;
+        units["square m"] = 1;
+        units["square meter"] = 1;
+        units["square meters"] = 1;
+        units["m2"] = 1;
+        units["m²"] = 1;
+
+        return units;
+    })(),
+
+    convert: function(value, fromUnit, toUnit) {
+        if (value == null) return null;
+
+        // No target unit specified: return original value
+        if (toUnit == null) return value;
+
+        // Normalize units
+        fromUnit = (fromUnit || UNIT_M).toLowerCase().trim();
+        toUnit = toUnit.toLowerCase().trim();
+
+        var from = this.distanceUnits[fromUnit];
+        var to = this.distanceUnits[toUnit];
+
+        // Distance conversion
+        if (from != null && to != null) {
+            return value * from / to;
+        }
+
+        from = this.areaUnits[fromUnit];
+        to = this.areaUnits[toUnit];
+
+        // Area conversion
+        if (from != null && to != null) {
+            return value * from / to;
+        }
+
+        // Unknown or incompatible units
+        return null;
+    }
+};
