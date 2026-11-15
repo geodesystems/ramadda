@@ -34,6 +34,7 @@ var ID_LEGEND_TEXT = 'legendText';
 var ID_MAPFILTERS = 'mapfilters';
 var ID_MAPFILTERS_OUTER = 'mapfiltersouter';
 var ID_MAPLEGEND = 'maplegend';
+var ID_LEGEND_DISTANCE = 'legend_distance';
 
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
@@ -2804,7 +2805,8 @@ MapGlyph.prototype = {
 	let distances;
 	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
 	    distances = this.getDistances();
-	    item(distances?.label,true,true);
+	    let distanceDiv = HU.div([ATTR_ID,this.domId(ID_LEGEND_DISTANCE)], distances?.label);
+	    item(distanceDiv,true,true);
 	}
 	this.updateLineLabels(distances);
 	if(this.isMultiEntry()) {
@@ -2878,6 +2880,17 @@ MapGlyph.prototype = {
 
 	return body;
     },
+    handleDragEvent:function(feature) {
+	this.updateDistances();
+    },
+
+    updateDistances:function() {
+	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
+	    distances = this.getDistances();
+	    this.jq(ID_LEGEND_DISTANCE).html(distances?.label);
+	}
+    },
+
     getDistances: function() {
 	if(this.isMapServer() || this.isMap())  {
 	    if(!this.getProperty('showDistance',false)) {
@@ -3476,6 +3489,7 @@ MapGlyph.prototype = {
 	}	
 	this.applyChildren(mapGlyph=>{mapGlyph.initLegend();});
     },
+
 
     convertPopupText:function(text) {
 	if(this.getImage()) {

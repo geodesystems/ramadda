@@ -6991,6 +6991,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(!mapGlyph) return;
 		    if(!mapGlyph.isSelected()) mapGlyph.select();
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
+		    mapGlyph.handleDragEvent(this.feature);
 		    if(!this.feature.image &&
 		       mapGlyph.getType()!=GLYPH_BOX &&
 		       !mapGlyph.isPolygon() && 
@@ -7075,7 +7076,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
 		createVertices:false,
-		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
+		mode:OpenLayers.Control.ModifyFeature.RESHAPE,
+//		onDrag: function(feature, pixel) {console.log('drag');}
+	    });
 	    let rotator = new MyMover(this.myLayer, {
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
