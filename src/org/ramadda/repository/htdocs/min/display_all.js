@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Nov 12 05:47:52 MST 2026";
+var build_date="RAMADDA build date: Mon Nov 16 05:49:43 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -2664,6 +2664,10 @@ class Mapper {
 	this.gamma = options.gamma ?? 1;
 	this.epsilon = options.epsilon ?? 1e-9;
 
+	// Linear region for log mappings that include zero or negative values.
+	// Conventional log mapping for strictly positive datasets is unchanged.
+	this.linearThreshold = options.linearThreshold ?? 1000;
+
 	this.clipMin = options.clipMin ?? stats.p5Value ?? stats.min;
 	this.clipMax = options.clipMax ?? stats.p95Value ?? stats.max;
 
@@ -2759,36 +2763,67 @@ class Mapper {
 	return this._logTransform(value);
     }
 
+    // Transform values for log mapping:
+    // - strictly positive data: conventional natural logarithm
+    // - data including zero: log1p(value / linearThreshold)
+    // - data containing negatives: symmetric log (symlog)
+    _logTransformValue(value) {
+	const min = this.stats.min;
+
+	if (min > 0) {
+	    return Math.log(value);
+	}
+
+	const L = this.linearThreshold;
+	if (!(L > 0) || !Number.isFinite(L)) {
+	    throw new RangeError("linearThreshold must be a finite number greater than zero");
+	}
+
+	if (min < 0) {
+	    return Math.sign(value) * Math.log1p(Math.abs(value) / L);
+	}
+
+	// The dataset starts at zero and contains no negative values.
+	return Math.log1p(value / L);
+    }
+
+    _logInverseValue(transformedValue) {
+	const min = this.stats.min;
+
+	if (min > 0) {
+	    return Math.exp(transformedValue);
+	}
+
+	const L = this.linearThreshold;
+	if (min < 0) {
+	    return Math.sign(transformedValue) * L * Math.expm1(Math.abs(transformedValue));
+	}
+
+	return L * Math.expm1(transformedValue);
+    }
+
     invertLog(p) {
 	const min = this.stats.min;
 	const max = this.stats.max;
+	if (min === max) return min;
 
-	let offset = 0;
-	if (min <= 0) {
-	    offset = Math.abs(min) + this.epsilon;
-	}
-
-	const lmin = Math.log(min + offset);
-	const lmax = Math.log(max + offset);
+	const lmin = this._logTransformValue(min);
+	const lmax = this._logTransformValue(max);
 	const lv = lmin + p * (lmax - lmin);
 
-	return Math.exp(lv) - offset;
+	return this._logInverseValue(lv);
     }
 
     _logTransform(value) {
 	const min = this.stats.min;
 	const max = this.stats.max;
+	if (min === max) return 0;
 
-	let offset = 0;
-	if (min <= 0) {
-	    offset = Math.abs(min) + this.epsilon;
-	}
+	const logValue = this._logTransformValue(value);
+	const lmin = this._logTransformValue(min);
+	const lmax = this._logTransformValue(max);
 
-	const lv = Math.log(value + offset);
-	const lmin = Math.log(min + offset);
-	const lmax = Math.log(max + offset);
-
-	return Stats.normalize(lv, lmin, lmax, false);
+	return Stats.normalize(logValue, lmin, lmax, false);
     }
 
     percentile(value) {
@@ -3029,6 +3064,7 @@ ValueMapper.prototype = {
 	let method =this.getProperty('Method',this.getProperty('Function', MAPPER_METHOD.LINEAR));
 	this.mapper = new Mapper(this.stats,
 				 {method: method,
+				  linearThreshold: 1000,
 				  clipMin:clipMin,
 				  clipMax:clipMax,
 				  // boosts low values
@@ -3083,8 +3119,32 @@ ValueMapper.prototype = {
 	if(this.inverse) percent = 1-percent;
 	return percent;
     }
+
     
 }
+
+
+
+
+/****
+var debugValueMapping = false;
+var debugCalls =0;
+var debugBuffer='value,log_value,log_min,log_max,percent\n';
+function DebugCallout(mapper,value,offset, logValue,		    lmin,lmax,result,stats) {
+    if(debugValueMapping) {
+	debugCalls++;
+	debugBuffer+=value+','+logValue+','+lmin+','+lmax+','+result+'\n';
+//	console.log(debugCalls,'value:',value,'logValue:',logValue,   lmin,'-',lmax,'result:',result);
+	if(debugCalls==5432) {
+	    console.log('range:',mapper.stats.min,mapper.stats.max);
+	    console.log('value:',value,'logValue:',logValue,   lmin,'-',lmax,'result:',result);
+	    Utils.makeDownloadFile('debug.csv',debugBuffer);
+	}
+
+    }
+
+    }
+*/
 
 function ColorByInfo(display, fields, records,
 		     fieldProperty,colorByMapProp, defaultColorTable,
@@ -3687,6 +3747,7 @@ ColorByInfo.prototype = {
 
 
     getColorInner: function(value, pointRecord,debug) {
+
 	if(this.colorTableSteps) {
 	    for(let i=0;i<this.colorTableSteps.length;i++) {
 		let step = this.colorTableSteps[i];
@@ -3751,7 +3812,9 @@ ColorByInfo.prototype = {
 	    if(isNaN(v)) {
 		return this.nullColor;
 	    }	    
+	    debugValueMapping = true;
 	    percent = this.getValuePercent(v);
+	    debugValueMapping=false;
         }
 
 	let index=0;
@@ -49286,6 +49349,8 @@ var IMDV_PROPERTY_HINTS= [
     'showLabelInMapWhenVisible=true',
     'showViewInLegend=true',
     'showDistance=true',
+    'unit','meter,foot,km,mile',
+    'areaUnit','acre,hectare,square feet,square km',    
     PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
     'inMapLabel=',			  			  
     'showLegendInMap=true',			  
@@ -50342,6 +50407,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return false;
 	    }
 	    let convert = (value,firstCall) =>{
+		console.log('value',value);
 		let skm = String(value).trim();
 		let km=skm;
 		if(check(skm,UNIT_MILES)) {
@@ -50447,7 +50513,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return pts;
 	},
 
-	getDistances:function(geometry,glyphType,justDistance,forceAcres,asObject) {
+	getDistances:function(geometry,glyphType,args) {
+	    let opts = {
+		justDistance:false,
+		forceAcres:false,
+		asObject:false,
+		unit:null,
+		areaUnit:null
+	    }
+	    if(args) $.extend(opts,args);
+	    
+
+
 	    if(!geometry) return null;
 	    let pts = this.getLatLonPoints(geometry);
 	    if(pts==null) return null;
@@ -50459,7 +50536,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!glyphType) return '';
 	    let distancePrefix = 'Distance: ';
 
-	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX || glyphType == GLYPH_POLYGON || glyphType == GLYPH_TRIANGLE || glyphType == GLYPH_FREEHAND_CLOSED || glyphType==GLYPH_IMAGE) {
+	    if(glyphType == GLYPH_CIRCLE ||
+	       glyphType == GLYPH_BOX ||
+	       glyphType == GLYPH_POLYGON ||
+	       glyphType == GLYPH_TRIANGLE ||
+	       glyphType == GLYPH_FREEHAND_CLOSED ||
+	       glyphType==GLYPH_IMAGE) {
 		sqft = MapUtils.calculateArea(pts);
 		acres = sqft/43560;
 	    }
@@ -50474,8 +50556,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		msg = '';
 		let w = MapUtils.distance(pts[0].y,pts[0].x,pts[1].y,pts[1].x);
 		let h = MapUtils.distance(pts[1].y,pts[1].x,pts[2].y,pts[2].x);		
-		feet = w*2+h*2;
 		let unit = UNIT_FT;
+		feet = w*2+h*2;
 		if(w>5280 || h>5280) {
 		    unit = UNIT_MILES;
 		    w = w/5280;
@@ -50484,7 +50566,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		msg= 'W: ' + Utils.formatNumberComma(w,1) + ' ' + unit +
 		    ' H: ' + Utils.formatNumberComma(h,1) + ' ' + unit;
 	    } else {
-		let segments = '';
 		let total = 0;
 		for(let i=0;i<pts.length-1;i++) {
 		    let pt1 = pts[i];
@@ -50494,42 +50575,38 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			feet+=d;
 		    }
 		    total+=d;
-		    let unit = UNIT_FT;
-		    if(d>5280) {
-			unit = UNIT_MILES;
-			d = d/5280;
-		    }
-		    d = Utils.formatNumberComma(d);
-		    segments+= d +' ' + unit +' ';
 		}
 		let unit = UNIT_FT;
-		if(total>3500) {
+		if(opts.unit) {
+		    total  = UnitConverter.convert(total,unit,opts.unit);
+		    unit = opts.unit;
+		} else if(total>3500) {
 		    unit = UNIT_MILES;
-		    total = total/5280;
+		    total = MapUtils.feetToMiles(total);
 		}
 		msg = distancePrefix + Utils.formatNumberComma(total) +' ' + unit;
-		if(pts.length>2 && pts.length<6)  {
-		}
 		if(pts.length<=1) msg='';
 	    }
-	    if(!justDistance&&sqft>0) {
-		unit=UNIT_FT;
+
+	    if(!opts.justDistance&&sqft>0) {
 		if(sqft>MapUtils.squareFeetInASquareMile) {
 		    unit = UNIT_MILES;
 		    let sqmiles  = sqft/MapUtils.squareFeetInASquareMile;
 		    msg+=   HU.br() +
 			'Area: ' + Utils.formatNumber(sqmiles) +' sq ' + unit;
-		    if(forceAcres) {
+		    if(opts.forceAcres) {
 			msg+=   SPACE + Utils.formatNumber(acres) +' acres';
 		    }
 		} else {
+		    let unit=opts.areaUnit ?? UNIT_ACRES;
+		    let displayValue = UnitConverter.convert(acres,UNIT_ACRES,unit);
 		    msg+=   HU.br() +
-			'Area: ' + Utils.formatNumber(acres) +' acres';
+			Utils.msgLabel('Area') + Utils.formatNumber(displayValue) +
+			HU.space(1) +unit;
 		}
 	    }
 
-
-	    if(asObject) {
+	    if(opts.asObject) {
 		return {
 		    label:msg,
 		    feet:feet,
@@ -54232,7 +54309,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(mapGlyph.getType()!=GLYPH_ROUTE && mapGlyph.getType()!=GLYPH_FREEHAND) return;
 		let feature = mapGlyph.getFeature();
 		if(!feature) return;
-		let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType(),true);
+		let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType(),{justDistance:true});
 		let id = HU.getUniqueId('feature_');
 		feature.legendId = id;
 		map[id] = mapGlyph;
@@ -56162,6 +56239,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(!mapGlyph) return;
 		    if(!mapGlyph.isSelected()) mapGlyph.select();
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
+		    mapGlyph.handleDragEvent(this.feature);
 		    if(!this.feature.image &&
 		       mapGlyph.getType()!=GLYPH_BOX &&
 		       !mapGlyph.isPolygon() && 
@@ -56246,7 +56324,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
 		createVertices:false,
-		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
+		mode:OpenLayers.Control.ModifyFeature.RESHAPE,
+//		onDrag: function(feature, pixel) {console.log('drag');}
+	    });
 	    let rotator = new MyMover(this.myLayer, {
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
@@ -56679,6 +56759,7 @@ var ID_LEGEND_TEXT = 'legendText';
 var ID_MAPFILTERS = 'mapfilters';
 var ID_MAPFILTERS_OUTER = 'mapfiltersouter';
 var ID_MAPLEGEND = 'maplegend';
+var ID_LEGEND_DISTANCE = 'legend_distance';
 
 
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
@@ -57262,11 +57343,9 @@ MapGlyph.prototype = {
 	let level = this.getVisibleLevelRange(true)??{};
 	let visHtml =
 	    HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible');
-	
-	if(this.isRings() ||
-	   this.getMapLayer() ||
-	   this.imageLayers ||
-	   this.isImage()) {
+
+	/*this.isRings() ||   this.getMapLayer() ||   this.imageLayers ||	   this.isImage()) */
+	if(!this.isGroup() &&this.hasChildren()) {
 	    visHtml+= HU.space(4)+HU.checkbox(this.domId(ID_CANSELECT),[],this.getCanSelect(),'Can Select');
 	}
 	visHtml+=HU.br();	
@@ -59450,9 +59529,9 @@ MapGlyph.prototype = {
 
 	let distances;
 	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
-	    //getDistances:function(geometry,glyphType,justDistance,forceAcres,asObject) {
 	    distances = this.getDistances();
-	    item(distances?.label,true,true);
+	    let distanceDiv = HU.div([ATTR_ID,this.domId(ID_LEGEND_DISTANCE)], distances?.label);
+	    item(distanceDiv,true,true);
 	}
 	this.updateLineLabels(distances);
 	if(this.isMultiEntry()) {
@@ -59526,6 +59605,17 @@ MapGlyph.prototype = {
 
 	return body;
     },
+    handleDragEvent:function(feature) {
+	this.updateDistances();
+    },
+
+    updateDistances:function() {
+	if(this.getProperty('showMeasures',true) && !this.isIsoline()) {
+	    distances = this.getDistances();
+	    this.jq(ID_LEGEND_DISTANCE).html(distances?.label);
+	}
+    },
+
     getDistances: function() {
 	if(this.isMapServer() || this.isMap())  {
 	    if(!this.getProperty('showDistance',false)) {
@@ -59536,7 +59626,10 @@ MapGlyph.prototype = {
 	let distances=
 	    this.display.getDistances(this.getGeometry(),
 				      this.getType(),
-				      false,false,true);
+				      {unit:this.getProperty('unit'),
+				       areaUnit:this.getProperty('area.unit',
+								 this.getProperty('unit')),
+				       asObject:true});
 	return distances;
     },
     updateLineLabels:function(distance) {
@@ -60121,6 +60214,7 @@ MapGlyph.prototype = {
 	}	
 	this.applyChildren(mapGlyph=>{mapGlyph.initLegend();});
     },
+
 
     convertPopupText:function(text) {
 	if(this.getImage()) {
@@ -61500,7 +61594,7 @@ MapGlyph.prototype = {
 		this.indexToFeature[idx] = feature;
 		//		if(idx>10) return
 		if(idx>limit) return;
-		let distance = this.display.getDistances(feature.geometry,GLYPH_POLYGON,false,true,true);
+		let distance = this.display.getDistances(feature.geometry,GLYPH_POLYGON,{forceAcres:true,asObject:true});
 		let name=this.getFeatureName(feature.attributes);
 		if(!name) {
 		    name = 'Polygon ' + (idx+1)
@@ -61602,6 +61696,12 @@ MapGlyph.prototype = {
     },
     getExampleFeatures: function() {
 	return this.getExampleMapLayer()?.features;
+    },
+
+    hasChildren:function() {
+	let children = 	this.getChildren();
+	if(!children || children.length==0) return false;
+	return true;
     },
 
     getMapFeatures: function() {
