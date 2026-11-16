@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Nov 16 05:49:43 MST 2026";
+var build_date="RAMADDA build date: Mon Nov 16 07:52:25 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -46045,7 +46045,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		colorBy.setRange(minValue,maxValue, true);
 	    }
 	    this.lastColorBy = colorBy;
-	    let textGetter = this.getTextGetter(fields,true);
+	    let textGetter = this.getTextGetter(fields,{showCount:true});
 	    let style = {
 		strokeColor:this.getHexmapStrokeColor(),
 		strokeDashstyle:this.getHexmapStrokeDashstyle(),
@@ -46494,7 +46494,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    	highlightSize = MapUtils.createSize(highlightWidth,highlightHeight);
 	    }
 	    let addedPoints = [];
-	    let textGetter = this.getTextGetter(fields);
+	    let textGetter = this.getTextGetter(fields,
+						{showCount:true});
 
 	    let highlightGetter = f=>{
 		if(f.record) {
@@ -46507,6 +46508,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.haveAddPoints = true;
 	    this.recordToInfo = {};
 	    let dummyUpLocation = this.fakeLocations();
+	    let latLonToRecords={};
 	    let recordInfos = records.map((record,idx)=>{
 		let recordInfo =  {
 		    record:record,
@@ -46525,11 +46527,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    recordInfo.y = record.point.y;
 		}
 
-
+		recordInfo.latLonKey = recordInfo.x+'_'+ recordInfo.y;
+		recordInfo.recordsAtLocation = latLonToRecords[recordInfo.latLonKey];
+		if(!recordInfo.recordsAtLocation)  {
+		    latLonToRecords[recordInfo.latLonKey]=recordInfo.recordsAtLocation=[];
+		} else {
+//		    console.log('duplicate location:',recordInfo.latLonKey);
+		}
+		recordInfo.recordsAtLocation.push(record);
 		this.recordToInfo[record.getId()]  =recordInfo;
 		return recordInfo;
 	    });
-
+	    
 
 
 
@@ -46768,12 +46777,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let didMarker = false;
 	    let times=[new Date()];
 
-
+	    let onlyShowDuplicateLocations
+		= this.getProperty('onlyShowDuplicateLocations');
 
 	    //main loop
 	    recordInfos.forEach((recordInfo,idx)=>{
 		if(recordInfo.dontShow) return;
-
+		if(onlyShowDuplicateLocations && recordInfo.recordsAtLocation.length<=1) {
+		    return;
+		}
 		featureCnt++;
 		let record = recordInfo.record;
 		let point  = recordInfo;
@@ -47019,6 +47031,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			mapPoint = this.map.createMarker("pt-" + featureCnt, point, icon, "pt-" + featureCnt,null,null,size);
 			mapPoint.isMarker = true;
+			mapPoint.textGetter= textGetter;
 			recordFeatures.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
 			pointsToAdd.push(mapPoint);
@@ -47121,17 +47134,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    recordFeatures.forEach(f=>{features.push(f);});
 		}
                 let date = record.getDate();
-		if(props.pointRadius>50)
-		    console.log(props.pointRadius);
-
+		//make points
 		recordFeatures.forEach(mapPoint=>{
-
-
 		    if(highlight) {
 			mapPoint.highlightTextGetter = highlightGetter;
 			mapPoint.highlightSize = highlightSize;
 		    }
+	    
+		    mapPoint.recordInfo  = recordInfo;
 		    mapPoint.record = record;
+
 		    mapPoint.textGetter = textGetter;
 		    mapPoint.hasColorByValue = hasColorByValue;
 		    mapPoint.colorByValue= colorByValue;
@@ -47267,37 +47279,57 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         },
 
-	getTextGetter:function(fields,showCount) {
+	getTextGetter:function(fields,args) {
+	    let opts = {
+		showCount:false,
+		multipleRecordsThreshold:this.getProperty('tooltipMultipleRecordsThreshold',2)
+	    };
+	    if(args) $.extend(opts,args);
 	    let tooltip = this.getTooltip('${default}');
 	    return  this.textGetter = f=>{
 		if(!Utils.stringDefined(tooltip)) {
 		    if(debugPopup) console.log("No tooltip");
 		    return null;
 		}
-
+		let recordInfo = f.recordInfo;
 		let records;
-		if(f.record) records = [f.record];
-		else records = f.records;
+		if(recordInfo) {
+		    if(this.getProperty('tooltipShowMultipleRecords',true)) {
+			records = recordInfo.recordsAtLocation;
+		    }
+		}
+		if(!records) {
+		    if(f.record) records = [f.record];
+		    else records = f.records;
+		}
+
 		if(!records || records.length==0) return null;
 		if(this.properties.myTextGetter) {
 		    let popup= this.properties.myTextGetter(this,records);
 		    if(popup) return popup;
 		}
 
+		let showCountHeader = opts.showCount && records.length>=opts.multipleRecordsThreshold;
 		let text ='';
 		let tooltipTemplate=this.getProperty('tooltipTemplate');
 		let tooltipHeader=this.getProperty('tooltipHeader');		
 		if(tooltipHeader) {
 		    text+=tooltipHeader.replace("${count}",records.length);
-		} else if(showCount && records.length>0) {
-		    text+=HU.boldLabel('Count') + records.length+HU.br();
+		} else if(showCountHeader) {
+		    let label = this.getProperty('tooltipRecordCountTemplate',
+						 '<b>Record count: </b>${count}');
+		    label = label.replace('${count}',records.length);
+		    text+=HU.div([ATTR_CLASS,'display-map-popup-records-header'],label);
 		}
 
 		records.forEach((record,idx)=>{
 		    let v = this.getRecordHtml(record, fields, tooltip);
-		    if(tooltipTemplate)
-			v = tooltipTemplate.replace('${value}',v);
-		    else   if(idx>0) text+=HU.thinLine();
+		    if(tooltipTemplate)v = tooltipTemplate.replace('${value}',v);
+		    else {
+			if(showCountHeader) {
+			    v = HU.div([ATTR_CLASS,'display-map-popup-records-record'],'Record #:' + (idx+1)) + v;
+			}
+		    }
 		    text +=   v;
 		});
 		if(debugPopup) console.log("textGetter: getRecordHtml:"  + text);
