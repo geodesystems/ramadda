@@ -252,6 +252,10 @@ class Mapper {
 	this.gamma = options.gamma ?? 1;
 	this.epsilon = options.epsilon ?? 1e-9;
 
+	// Linear region for log mappings that include zero or negative values.
+	// Conventional log mapping for strictly positive datasets is unchanged.
+	this.linearThreshold = options.linearThreshold ?? 1000;
+
 	this.clipMin = options.clipMin ?? stats.p5Value ?? stats.min;
 	this.clipMax = options.clipMax ?? stats.p95Value ?? stats.max;
 
@@ -347,36 +351,67 @@ class Mapper {
 	return this._logTransform(value);
     }
 
+    // Transform values for log mapping:
+    // - strictly positive data: conventional natural logarithm
+    // - data including zero: log1p(value / linearThreshold)
+    // - data containing negatives: symmetric log (symlog)
+    _logTransformValue(value) {
+	const min = this.stats.min;
+
+	if (min > 0) {
+	    return Math.log(value);
+	}
+
+	const L = this.linearThreshold;
+	if (!(L > 0) || !Number.isFinite(L)) {
+	    throw new RangeError("linearThreshold must be a finite number greater than zero");
+	}
+
+	if (min < 0) {
+	    return Math.sign(value) * Math.log1p(Math.abs(value) / L);
+	}
+
+	// The dataset starts at zero and contains no negative values.
+	return Math.log1p(value / L);
+    }
+
+    _logInverseValue(transformedValue) {
+	const min = this.stats.min;
+
+	if (min > 0) {
+	    return Math.exp(transformedValue);
+	}
+
+	const L = this.linearThreshold;
+	if (min < 0) {
+	    return Math.sign(transformedValue) * L * Math.expm1(Math.abs(transformedValue));
+	}
+
+	return L * Math.expm1(transformedValue);
+    }
+
     invertLog(p) {
 	const min = this.stats.min;
 	const max = this.stats.max;
+	if (min === max) return min;
 
-	let offset = 0;
-	if (min <= 0) {
-	    offset = Math.abs(min) + this.epsilon;
-	}
-
-	const lmin = Math.log(min + offset);
-	const lmax = Math.log(max + offset);
+	const lmin = this._logTransformValue(min);
+	const lmax = this._logTransformValue(max);
 	const lv = lmin + p * (lmax - lmin);
 
-	return Math.exp(lv) - offset;
+	return this._logInverseValue(lv);
     }
 
     _logTransform(value) {
 	const min = this.stats.min;
 	const max = this.stats.max;
+	if (min === max) return 0;
 
-	let offset = 0;
-	if (min <= 0) {
-	    offset = Math.abs(min) + this.epsilon;
-	}
+	const logValue = this._logTransformValue(value);
+	const lmin = this._logTransformValue(min);
+	const lmax = this._logTransformValue(max);
 
-	const lv = Math.log(value + offset);
-	const lmin = Math.log(min + offset);
-	const lmax = Math.log(max + offset);
-
-	return Stats.normalize(lv, lmin, lmax, false);
+	return Stats.normalize(logValue, lmin, lmax, false);
     }
 
     percentile(value) {
