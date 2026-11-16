@@ -119,6 +119,7 @@ ValueMapper.prototype = {
 	let method =this.getProperty('Method',this.getProperty('Function', MAPPER_METHOD.LINEAR));
 	this.mapper = new Mapper(this.stats,
 				 {method: method,
+				  linearThreshold: 1000,
 				  clipMin:clipMin,
 				  clipMax:clipMax,
 				  // boosts low values
@@ -173,8 +174,32 @@ ValueMapper.prototype = {
 	if(this.inverse) percent = 1-percent;
 	return percent;
     }
+
     
 }
+
+
+
+
+/****
+var debugValueMapping = false;
+var debugCalls =0;
+var debugBuffer='value,log_value,log_min,log_max,percent\n';
+function DebugCallout(mapper,value,offset, logValue,		    lmin,lmax,result,stats) {
+    if(debugValueMapping) {
+	debugCalls++;
+	debugBuffer+=value+','+logValue+','+lmin+','+lmax+','+result+'\n';
+//	console.log(debugCalls,'value:',value,'logValue:',logValue,   lmin,'-',lmax,'result:',result);
+	if(debugCalls==5432) {
+	    console.log('range:',mapper.stats.min,mapper.stats.max);
+	    console.log('value:',value,'logValue:',logValue,   lmin,'-',lmax,'result:',result);
+	    Utils.makeDownloadFile('debug.csv',debugBuffer);
+	}
+
+    }
+
+    }
+*/
 
 function ColorByInfo(display, fields, records,
 		     fieldProperty,colorByMapProp, defaultColorTable,
@@ -777,6 +802,7 @@ ColorByInfo.prototype = {
 
 
     getColorInner: function(value, pointRecord,debug) {
+
 	if(this.colorTableSteps) {
 	    for(let i=0;i<this.colorTableSteps.length;i++) {
 		let step = this.colorTableSteps[i];
@@ -841,7 +867,9 @@ ColorByInfo.prototype = {
 	    if(isNaN(v)) {
 		return this.nullColor;
 	    }	    
+	    debugValueMapping = true;
 	    percent = this.getValuePercent(v);
+	    debugValueMapping=false;
         }
 
 	let index=0;
