@@ -1845,6 +1845,18 @@ display-text-edit {
 .display-map {
 }
 
+.display-map-popup-records-header {
+    text-align:center;
+    padding:2px;
+}
+
+.display-map-popup-records-record {
+    background:var(--theme-background-highlight);
+    padding:2px;
+    padding-left:4px;
+}
+
+
 .display-map-message {
     position:relative;
     border-radius: var(--default-radius);
