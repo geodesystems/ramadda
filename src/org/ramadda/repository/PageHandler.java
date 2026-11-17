@@ -702,8 +702,9 @@ public class PageHandler extends RepositoryManager {
 	    }
 	}
 
+
 	if(recentContents.length()>0) {
-	    String link  = HU.span(HU.faIcon("fa fa-list"),
+	    String link  = HU.span(HU.faIcon("fa-regular fa-rectangle-list"),
 				   HU.attrs("title","Entries"));
 	    String popup = HU.makePopup(null, link,recentContents.toString(),
 					arg("closeOnClick", "true"),
