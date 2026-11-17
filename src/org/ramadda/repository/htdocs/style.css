@@ -4734,6 +4734,10 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
     margin-top:4px;
 }
 
+
+
+
+
 .ramadda-user-profile {
     margin:2px;
     padding:5px;
@@ -4867,30 +4871,31 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
     padding-right: 0px;
 }
 
-
 .ramadda-breadcrumbs-menu-button {
     display:inline-block;
-    padding:3px;
-    padding-left: 0px;
-    padding-right: 0px;
-    margin-left:0px;
-    margin-right:4px;
-    margin-bottom: 2px;
+    margin-right:2px;
     background-color:#fff;    
-    transition: transform .3s ease-in-out;
 }
 
 
-.ramadda-breadcrumbs-menu-button i {
+/** color the FA icons the same*/
+.ramadda-breadcrumbs-menu-button i, .ramadda-user-menu i {
+    color:#AAAAAA;
+    color:#bbb;
     font-size:12pt;
     line-height:8px;
-    color:#aaa;
+    transition: transform .3s ease-in-out;    
 }
 
-.ramadda-breadcrumbs-menu-button:hover {
-    transform: scale(1.5);
+
+
+.ramadda-breadcrumbs-menu-button:hover,.ramadda-user-menu i:hover {
+    transform: scale(1.2);
     border-color: var(--nav-hover-color);
 }
+
+
+
 
 .ramadda-plugin-row td {
     padding: 5px;
