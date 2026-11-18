@@ -3435,7 +3435,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let template = this.getTocTemplate();
 	    let html='';
 	    let title = this.getTocTitle(this.getProperty('tableOfContentsTitle',''));
-	    html+=HU.div([ATTR_ID,searchId]);
 	    if(template) {
 		let clazz = HU.classes(CLASS_RECORD,CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
 		records.forEach((record,idx)=>{
@@ -3514,7 +3513,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    if(html) {
+	    if(Utils.stringDefined(html)) {
+		let searchDiv = HU.div([ATTR_ID,searchId]);
 		let height = this.getProperty('height', this.getProperty('mapHeight', 300));
 		height='calc(' +HU.getDimension(height)+' - 1em)';
 		let style = HU.css(CSS_HEIGHT,height,CSS_MAX_HEIGHT,height,CSS_OVERFLOW_Y,OVERFLOW_AUTO);
@@ -3524,10 +3524,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		html = HU.div([ATTR_CLASS, "display-map-toc",
 			       ATTR_STYLE,style,
 			       ATTR_ID, this.domId("toc")],html);
+		html = searchDiv + html;
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
 		HU.initPageSearch(this.jq(ID_LEFT).find(HU.dotClass(CLASS_RECORD)),
-				  null,'Search',false,{target:'#'+ searchId}); 
+				  null,'Filter Records',
+				  false,{target:'#'+ searchId}); 
 
 
 
