@@ -625,23 +625,25 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
 		this.map.popupListener = (id,text) =>{
 		    let fields = jqid(id).find('[' + ATTR_FIELD_ID+']');
-		    fields.addClass(CLASS_CLICKABLE);
-		    fields.click(function() {
-			let field = $(this).attr(ATTR_FIELD_ID);
-			let value = $(this).attr(ATTR_FIELD_VALUE);			
-			//A hack because for some reason clicking on an href isn't doing anything
-			if(value && value.toLowerCase().startsWith('http')) {
-			    window.open(value,'_link');
-			    return;
-			}
-			let args = {
-			    id:field,
-			    fieldId: field,
-			    value: value
-			};
-			_this.propagateEvent(DisplayEvent.filterChanged, args,true);
-		    });
-		};
+		    if(this.getProperty("propagateValueClick",false)) {
+			fields.addClass(CLASS_CLICKABLE);
+			fields.click(function() {
+			    let field = $(this).attr(ATTR_FIELD_ID);
+			    let value = $(this).attr(ATTR_FIELD_VALUE);			
+			    //A hack because for some reason clicking on an href isn't doing anything
+			    if(value && value.toLowerCase().startsWith('http')) {
+				window.open(value,'_link');
+				return;
+			    }
+			    let args = {
+				id:field,
+				fieldId: field,
+				value: value
+			    };
+			    _this.propagateEvent(DisplayEvent.filterChanged, args,true);
+			});
+		    };
+		}
 		if(this.getShowOverviewMap()) {
 		    let opts = {size:{}};
 		    let layer = this.getOverviewMapLayer();
@@ -1831,59 +1833,61 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 	    for(let markerIdx=1;true;markerIdx++) {
-		let marker = this.getProperty("marker" + markerIdx);
+		let marker = this.getProperty('marker' + markerIdx);
 		if(!marker) break;
 		this.map.addMarkerEmbed(marker);
 	    }
         },
-	registerEvents:function() {
-            this.getMap().getMap().events.register("zoomend", this, this.zoomendFunc = ()=>{
-		if(this.callingUpdateUI) return;
-		if(this.lastUpdateTime) {
-		    let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
-		    if(diff<2000) {
-			return
-		    }
+	handleEventZoomEnd:function() {
+	    if(this.callingUpdateUI) return;
+	    if(this.lastUpdateTime) {
+		let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
+		if(diff<2000) {
+		    return
 		}
-		if(this.debugZoom) {
-		    console.log("level:" + this.getMap().getMap().getZoom());
-		}
-		//		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
-		if(this.pointLevelRange || this.glyphLevelRange) {
-		    this.checkLevelRange([this.myFeatureLayer],true);
-		}		
+	    }
+	    if(this.debugZoom) {
+		console.log("level:" + this.getMap().getMap().getZoom());
+	    }
+	    //		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
+	    if(this.pointLevelRange || this.glyphLevelRange) {
+		this.checkLevelRange([this.myFeatureLayer],true);
+	    }		
+	    this.mapBoundsChanged();
+	    this.checkHeatmapReload();
+	    this.updateHtmlLayers();
+	    if(!this.haveAddPoints) {
+		return;
+	    }
 
-                this.mapBoundsChanged();
-		this.checkHeatmapReload();
-		this.updateHtmlLayers();
-		if(!this.haveAddPoints) {
+	    if(this.getHandleCollisions()) {
+		if(this.lastZoom == this.map.getZoom()) {
 		    return;
 		}
-
-		if(this.getHandleCollisions()) {
-		    if(this.lastZoom == this.map.getZoom()) {
-			return;
-		    }
-		    //Wait a bit
-		    if(this.lastCollisionTimeout) {
-			clearTimeout(this.lastCollisionTimeout);
-		    }
-
-		    //		    console.log(this.getLogLabel()+" setting up collision timeout");
-		    this.lastTimeout = setTimeout(()=>{
-			this.haveCalledUpdateUI = false;
-			//			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
-			this.updateUI();
-			this.lastCollisionTimeout = null;
-		    },1000);
+		//Wait a bit
+		if(this.lastCollisionTimeout) {
+		    clearTimeout(this.lastCollisionTimeout);
 		}
-		//		console.log(this.getLogLabel()+" finished zoomend");
-            });
-            this.map.getMap().events.register("moveend", this, this.moveendFunc = ()=> {
+
+		//		    console.log(this.getLogLabel()+" setting up collision timeout");
+		this.lastTimeout = setTimeout(()=>{
+		    this.haveCalledUpdateUI = false;
+		    //			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
+		    this.updateUI();
+		    this.lastCollisionTimeout = null;
+		},1000);
+	    }
+	},
+	registerEvents:function() {
+	    let events = this.getMap().getMap().events;
+	    this.zoomendFunc = ()=>{this.handleEventZoomEnd();}
+	    this.moveendFunc = ()=> {
 		if(this.map.doingPopup) return;
                 this.mapBoundsChanged();
 		this.checkHeatmapReload();
-            });
+            }
+	    events.register('zoomend', this, this.zoomendFunc);
+            events.register('moveend', this, this.moveendFunc);
 	},
         getBounds: function() {
 	    if(this.map)
@@ -3418,6 +3422,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
 	},
 	makeToc:function(records) {
+	    let searchId = this.getUniqueId('');
 	    let urlField  =  this.getFieldById(null,this.getProperty("urlField"));
 	    let iconField  =  this.getFieldById(null,this.getProperty("iconField"));
 	    let fields = this.getFieldsByIds(null,this.getTocFields(this.getProperty("labelField","name")));
@@ -3425,8 +3430,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let template = this.getTocTemplate();
 	    let html='';
 	    let title = this.getTocTitle(this.getProperty('tableOfContentsTitle',''));
+	    html+=HU.div([ATTR_ID,searchId]);
 	    if(template) {
-		let clazz = HU.classes(CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
+		let clazz = HU.classes(CLASS_RECORD,CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
 		records.forEach((record,idx)=>{
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, template);
 		    html+=HU.div([ATTR_CLASS,clazz,ATTR_RECORD_INDEX,idx], label);
@@ -3475,7 +3481,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						      [ATTR_TARGET,'_link']))+value;
 			    }
 			}
-			html+=HU.tag(TAG_TR,[], value);
+			html+=HU.tag(TAG_TR,[ATTR_CLASS,CLASS_RECORD], value);
 		    } else {
 			value = Utils.join(values,' ');
 			if(!iconField) {
@@ -3493,7 +3499,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    }
 			}
 			html+= HU.span([ATTR_TITLE, title,
-					ATTR_CLASS,clazz,
+					ATTR_CLASS,CLASS_RECORD+' ' +clazz,
 					ATTR_RECORD_ID,record.getId(),
 					ATTR_RECORD_INDEX,idx], value);
 		    }
@@ -3515,6 +3521,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			       ATTR_ID, this.domId("toc")],html);
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
+		HU.initPageSearch(this.jq(ID_LEFT).find(HU.dotClass(CLASS_RECORD)),
+				  null,'Search',false,{target:'#'+ searchId}); 
+
+
+
 		let _this = this;
 		let items = this.jq(ID_LEFT).find(".display-map-toc-item");
 		if(this.getProperty('showTableOfContentsTooltip')) 
@@ -4974,9 +4985,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    
 
-
-
 	    if(this.getHandleCollisions()) {
+		//clear out the old state
+		records.forEach(record=>{record.collisionInfo=null;});
+
 		let collisionTooltip = this.getCollisionTooltip('${default}');
 		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
 		    let html = records.length+" records"+ HU.thinLine();
@@ -5028,12 +5040,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 
-
-
-
 		//First get the rounded point for each RecordInfo
 		CH.initPoints(recordInfos);
-
 		recordInfos.forEach((recordInfo,idx)=>{
 		    let collisionPoint = recordInfo.collisionPoint;
 		    if(collisionPoint ==null) return;
@@ -5043,7 +5051,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } 
 		    let record = recordInfo.record;
 		    let info = CH.getCollisionInfo(collisionPoint);
+
 		    info.addRecord(record);
+		    record.collisionInfo = info;
 		    recordInfo.collisionInfo = info;
 		    recordInfo.visible = info.visible;		    
 		    if(!collisionArgs.fixed) {
@@ -5808,6 +5818,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addLabels:function(records, fields) {
 	    let cbx =this.jq(ID_SHOWLABELSTOGGLE);
 	    if(cbx.length>0 && !HU.isChecked(cbx)) return;
+	    
+	    records = records.filter(record=>{
+
+		return record.collisionInfo==null;
+	    });
 
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
