@@ -1,0 +1,26 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_geo_psicat_project.xml"/>
+into some types.xml file
+-->
+<types>
+<type  name="type_geo_psicat_project" 
+ description="PSICAT Project" 
+ handler="org.ramadda.repository.type.LocalFileTypeHandler" 
+ supercategory="Geoscience" 
+ category="Core Data" 
+>
+
+<!-- Columns-->
+<column  name="localfilepath"  label="PSICAT File Path"  type="string"  columns="80"  showinhtml="false" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/psicat.png" />
+<property  name="search.tabs"  value="list,map,display" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="date.nullok"  value="true" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.time.show"  value="false" />
+</type>
+</types>
