@@ -137,6 +137,9 @@ var CLASS_HEADER_SPAN = "display-header-span";
 var CLASS_HEADER_LABEL = "display-header-label";
 var CLASS_DISPLAY_BUTTON='display-button';
 
+var CLASS_RECORD='display-record';
+
+
 var DisplayEvent = {
 };
 
@@ -1151,7 +1154,11 @@ function DisplayThing(argId, argProperties) {
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
 	    if(!Utils.stringDefined(value)) return '';
-	    if(!value.startsWith('http')) value = 'https://' + value;
+	    value = String(value);
+	    
+	    //Don't do this for now as some urls are relative to this RAMADDA
+	    //	    if(!value.startsWith('http')) value = 'https://' + value;
+
 	    let linkLabel = value||"Link";
 	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
 	    linkLabel = linkLabel.replace(/\?.*/,"");
