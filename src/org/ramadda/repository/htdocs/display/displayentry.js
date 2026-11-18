@@ -3204,6 +3204,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			labelTemplate:	pf('map.labelTemplate','${name maxLength=20 maxLengthSuffix=...}'),
 			labelBackground:pf('map.labelBackground', 'rgba(250,250,250,0.75)'),
 			labelStrokeColor:pf('map.labelStrokeColor','#aaa'),				 
+			showLabelsToggle:pf('map.showLabelsToggle',false),
 			labelYOffset:15,
 			showTableOfContents:pf('map.showTableOfContents',true),
 			showTableOfContentsTooltip:pf('map.showTableOfContentsTooltip',false),
