@@ -3111,15 +3111,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
+	    let showsBar='';
 	    if(shows.length>1) {
 		let inner=Utils.wrap(shows,'<div class=ramadda-menu-item>','</div>');
-		html+=HU.div([ATTR_ID,this.domId('showmenubutton_contents'),
+		showsBar+=HU.div([ATTR_ID,this.domId('showmenubutton_contents'),
 			      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],inner);
-		html+=HU.span([ATTR_ID,this.domId('showmenubutton'),ATTR_CLASS,CLASS_BUTTON],'Toggle...')+SPACE2;
+		showsBar+=HU.span([ATTR_ID,this.domId('showmenubutton'),ATTR_CLASS,CLASS_BUTTON],'Toggle...')+SPACE2;
 	    } else    if(shows.length>0) {
-		html+=Utils.wrap(shows,SPACE,SPACE2);
+		showsBar+=Utils.wrap(shows,SPACE,SPACE2);
+	    }
+	    if(Utils.stringDefined(showsBar)) {
+		showsBar = HU.div([ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.em(1))],showsBar);
 	    }
 
+	    html+=showsBar;
 	    if(this.getShowBaseLayersSelect()) {
 		html+=this.getBaseLayersSelect();
 	    }
