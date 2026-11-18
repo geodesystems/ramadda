@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Nov 18 06:31:02 MST 2026";
+var build_date="RAMADDA build date: Wed Nov 18 06:51:25 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -39263,6 +39263,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			labelTemplate:	pf('map.labelTemplate','${name maxLength=20 maxLengthSuffix=...}'),
 			labelBackground:pf('map.labelBackground', 'rgba(250,250,250,0.75)'),
 			labelStrokeColor:pf('map.labelStrokeColor','#aaa'),				 
+			showLabelsToggle:pf('map.showLabelsToggle',false),
 			labelYOffset:15,
 			showTableOfContents:pf('map.showTableOfContents',true),
 			showTableOfContentsTooltip:pf('map.showTableOfContentsTooltip',false),
@@ -44686,15 +44687,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
+	    let showsBar='';
 	    if(shows.length>1) {
 		let inner=Utils.wrap(shows,'<div class=ramadda-menu-item>','</div>');
-		html+=HU.div([ATTR_ID,this.domId('showmenubutton_contents'),
+		showsBar+=HU.div([ATTR_ID,this.domId('showmenubutton_contents'),
 			      ATTR_STYLE,HU.css(CSS_DISPLAY,DISPLAY_NONE)],inner);
-		html+=HU.span([ATTR_ID,this.domId('showmenubutton'),ATTR_CLASS,CLASS_BUTTON],'Toggle...')+SPACE2;
+		showsBar+=HU.span([ATTR_ID,this.domId('showmenubutton'),ATTR_CLASS,CLASS_BUTTON],'Toggle...')+SPACE2;
 	    } else    if(shows.length>0) {
-		html+=Utils.wrap(shows,SPACE,SPACE2);
+		showsBar+=Utils.wrap(shows,SPACE,SPACE2);
+	    }
+	    if(Utils.stringDefined(showsBar)) {
+		showsBar = HU.div([ATTR_STYLE,HU.css(CSS_LINE_HEIGHT,HU.em(1))],showsBar);
 	    }
 
+	    html+=showsBar;
 	    if(this.getShowBaseLayersSelect()) {
 		html+=this.getBaseLayersSelect();
 	    }
