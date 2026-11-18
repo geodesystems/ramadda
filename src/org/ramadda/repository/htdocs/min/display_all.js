@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Nov 18 06:51:25 MST 2026";
+var build_date="RAMADDA build date: Wed Nov 18 07:20:29 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -37115,17 +37115,37 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 
+	    let entryType;
             if (this.haveTypes) {
-                settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
+                entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
 							settings.entryType);
-		if(settings.entryType && (this.typeList==null || this.typeList.length>1) ) {
-		    this.addToDocumentUrl(ID_TYPE_FIELD,settings.entryType);
+		if(entryType && (this.typeList==null || this.typeList.length>1) ) {
+		    this.addToDocumentUrl(ID_TYPE_FIELD,entryType);
 		} else {
 		    this.addToDocumentUrl(ID_TYPE_FIELD,null);
 		}
             } else if(this.typeList && this.typeList.length==1) {
-		settings.entryType = this.typeList[0];
+		entryType = this.typeList[0];
 	    }
+
+	    if(Array.isArray(entryType)) {
+		let newEntryType = [];
+		entryType.forEach(type=>{
+		    if(type==VALUE_THESE_TYPES) {
+			if(this.entryTypes) {
+			    this.entryTypes.forEach(t=>{
+				newEntryType.push(t.getId());
+			    });
+
+			}
+		    } else {
+			newEntryType.push(type);
+		    }
+		});
+		entryType = newEntryType;
+	    }
+	    settings.entryType = entryType;
+
 	    if(!Utils.stringDefined(settings.entryType) && this.getEntryTypes()) { 
 		settings.entryType = this.getEntryTypes();
 	    }
@@ -38242,25 +38262,25 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    let select = HU.openTag(TAG_SELECT, typeSelectAttributes);
 	    if(this.getAddAllTypes()) {
-		let icon = RamaddaUtil.getCdnUrl("/icons/file.png");
+		let icon = RamaddaUtil.getCdnUrl('/icons/asterisk.png');
                 let optionAttrs = [ATTR_TITLE, '',
 				   ATTR_VALUE, VALUE_ANY_TYPE,
 				   ATTR_CLASS, 'display-typelist-type',
 				   'data-icon', icon
 				  ];
-		select += HU.tag(TAG_OPTION, optionAttrs,'Any type');
+		select += HU.tag(TAG_OPTION, optionAttrs,'All types');
 		select +='\n';
 	    }
 	    if(this.getAddAnyType() && this.entryTypes.length>1) {
-		let icon = RamaddaUtil.getCdnUrl("/icons/file.png");
+		let icon = RamaddaUtil.getCdnUrl("/icons/page.png");
                 let optionAttrs = [ATTR_TITLE, '',
-				   ATTR_VALUE, VALUE_ANY_TYPE,
+				   ATTR_VALUE, VALUE_THESE_TYPES,
 				   ATTR_CLASS, 'display-typelist-type',
 				   'data-icon', icon
 				  ];
 
 		select += HU.tag(TAG_OPTION, optionAttrs,
-				 this.getEntryTypes()?'Any of these types':'Any type');
+				 this.getEntryTypes()?'Any of these types':'Any of these types');
 		select +='\n';
 	    }
 	    let hadSelected = false;
@@ -45011,7 +45031,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let template = this.getTocTemplate();
 	    let html='';
 	    let title = this.getTocTitle(this.getProperty('tableOfContentsTitle',''));
-	    html+=HU.div([ATTR_ID,searchId]);
 	    if(template) {
 		let clazz = HU.classes(CLASS_RECORD,CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
 		records.forEach((record,idx)=>{
@@ -45090,7 +45109,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    if(html) {
+	    if(Utils.stringDefined(html)) {
+		let searchDiv = HU.div([ATTR_ID,searchId]);
 		let height = this.getProperty('height', this.getProperty('mapHeight', 300));
 		height='calc(' +HU.getDimension(height)+' - 1em)';
 		let style = HU.css(CSS_HEIGHT,height,CSS_MAX_HEIGHT,height,CSS_OVERFLOW_Y,OVERFLOW_AUTO);
@@ -45100,10 +45120,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		html = HU.div([ATTR_CLASS, "display-map-toc",
 			       ATTR_STYLE,style,
 			       ATTR_ID, this.domId("toc")],html);
+		html = searchDiv + html;
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
 		HU.initPageSearch(this.jq(ID_LEFT).find(HU.dotClass(CLASS_RECORD)),
-				  null,'Search',false,{target:'#'+ searchId}); 
+				  null,'Filter Records',
+				  false,{target:'#'+ searchId}); 
 
 
 
