@@ -10,6 +10,7 @@ var OUTPUT_CHOOSE = "default.ids";
 var OUTPUT_ZIP = "zip.tree";
 var OUTPUT_EXPORT = "zip.export";
 var VALUE_ANY_TYPE="_any_";
+var VALUE_THESE_TYPES="_thesetypes_";
 var DEFAULT_MAX = 100;
 var ENTRY_NONGEO = -9999;
 
