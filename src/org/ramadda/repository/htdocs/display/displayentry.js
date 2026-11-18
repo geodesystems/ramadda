@@ -1056,17 +1056,37 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 
+	    let entryType;
             if (this.haveTypes) {
-                settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
+                entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
 							settings.entryType);
-		if(settings.entryType && (this.typeList==null || this.typeList.length>1) ) {
-		    this.addToDocumentUrl(ID_TYPE_FIELD,settings.entryType);
+		if(entryType && (this.typeList==null || this.typeList.length>1) ) {
+		    this.addToDocumentUrl(ID_TYPE_FIELD,entryType);
 		} else {
 		    this.addToDocumentUrl(ID_TYPE_FIELD,null);
 		}
             } else if(this.typeList && this.typeList.length==1) {
-		settings.entryType = this.typeList[0];
+		entryType = this.typeList[0];
 	    }
+
+	    if(Array.isArray(entryType)) {
+		let newEntryType = [];
+		entryType.forEach(type=>{
+		    if(type==VALUE_THESE_TYPES) {
+			if(this.entryTypes) {
+			    this.entryTypes.forEach(t=>{
+				newEntryType.push(t.getId());
+			    });
+
+			}
+		    } else {
+			newEntryType.push(type);
+		    }
+		});
+		entryType = newEntryType;
+	    }
+	    settings.entryType = entryType;
+
 	    if(!Utils.stringDefined(settings.entryType) && this.getEntryTypes()) { 
 		settings.entryType = this.getEntryTypes();
 	    }
@@ -2183,25 +2203,25 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    let select = HU.openTag(TAG_SELECT, typeSelectAttributes);
 	    if(this.getAddAllTypes()) {
-		let icon = RamaddaUtil.getCdnUrl("/icons/file.png");
+		let icon = RamaddaUtil.getCdnUrl('/icons/asterisk.png');
                 let optionAttrs = [ATTR_TITLE, '',
 				   ATTR_VALUE, VALUE_ANY_TYPE,
 				   ATTR_CLASS, 'display-typelist-type',
 				   'data-icon', icon
 				  ];
-		select += HU.tag(TAG_OPTION, optionAttrs,'Any type');
+		select += HU.tag(TAG_OPTION, optionAttrs,'All types');
 		select +='\n';
 	    }
 	    if(this.getAddAnyType() && this.entryTypes.length>1) {
-		let icon = RamaddaUtil.getCdnUrl("/icons/file.png");
+		let icon = RamaddaUtil.getCdnUrl("/icons/page.png");
                 let optionAttrs = [ATTR_TITLE, '',
-				   ATTR_VALUE, VALUE_ANY_TYPE,
+				   ATTR_VALUE, VALUE_THESE_TYPES,
 				   ATTR_CLASS, 'display-typelist-type',
 				   'data-icon', icon
 				  ];
 
 		select += HU.tag(TAG_OPTION, optionAttrs,
-				 this.getEntryTypes()?'Any of these types':'Any type');
+				 this.getEntryTypes()?'Any of these types':'Any of these types');
 		select +='\n';
 	    }
 	    let hadSelected = false;
