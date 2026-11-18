@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 17 06:11:07 MST 2026";
+var build_date="RAMADDA build date: Wed Nov 18 06:31:02 MST 2026";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -4828,6 +4828,9 @@ var CLASS_HEADER_SPAN = "display-header-span";
 var CLASS_HEADER_LABEL = "display-header-label";
 var CLASS_DISPLAY_BUTTON='display-button';
 
+var CLASS_RECORD='display-record';
+
+
 var DisplayEvent = {
 };
 
@@ -5842,7 +5845,11 @@ function DisplayThing(argId, argProperties) {
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
 	    if(!Utils.stringDefined(value)) return '';
-	    if(!value.startsWith('http')) value = 'https://' + value;
+	    value = String(value);
+	    
+	    //Don't do this for now as some urls are relative to this RAMADDA
+	    //	    if(!value.startsWith('http')) value = 'https://' + value;
+
 	    let linkLabel = value||"Link";
 	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
 	    linkLabel = linkLabel.replace(/\?.*/,"");
@@ -39123,30 +39130,30 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 	    }	
 	    if(this.myDisplays && this.myDisplays.length) {
 		let index=0;
-		let fields = [new RecordField({type: "string", index: (index++),
-					       id: "name",label: "Name"}),
-			      new RecordField({type: "string", index: (index++),
-					       id: "description",label: "Description"}),
-			      new RecordField({type: "date", index: (index++),
-					       id: "date",label: "Date"}),
-			      new RecordField({type: "date", index: (index++),
-					       id: "create_date",label: "Create Date"}),			      			      
-			      new RecordField({type: "url", index: (index++),
-					       id: "url",label: "URL"}),
-			      new RecordField({type: "image", index: (index++),
-					       id: "image",label: "Image"}),
-			      new RecordField({type: "url", index: (index++),
-					       id: "iconUrl",label: "Icon"}),
-			      new RecordField({type: "string", index: (index++),
-					       id: "tags",label: "Tags"}),
-			      new RecordField({type: "string", index: (index++),
-					       id: "display_html",label: "Display Html"}),
-			      new RecordField({type: "string", index: (index++),
-					       id: 'id', label: "Entry ID"}),			      
+		let fields = [new RecordField({type: 'string', index: (index++),
+					       id: 'name',label: 'Name'}),
+			      new RecordField({type: 'string', index: (index++),
+					       id: 'description',label: 'Description'}),
+			      new RecordField({type: 'date', index: (index++),
+					       id: 'date',label: 'Date'}),
+			      new RecordField({type: 'date', index: (index++),
+					       id: 'create_date',label: 'Create Date'}),			      			      
+			      new RecordField({type: 'url', index: (index++),
+					       id: 'url',label: 'URL'}),
+			      new RecordField({type: 'image', index: (index++),
+					       id: 'image',label: 'Image'}),
+			      new RecordField({type: 'url', index: (index++),
+					       id: 'iconUrl',label: 'Icon'}),
+			      new RecordField({type: 'string', index: (index++),
+					       id: 'tags',label: 'Tags'}),
+			      new RecordField({type: 'string', index: (index++),
+					       id: 'display_html',label: 'Display Html'}),
+			      new RecordField({type: 'string', index: (index++),
+					       id: 'id', label: 'Entry ID'}),			      
 			      new RecordField({index: (index++),
-					       id: "latitude",label: "Latitude"}),
+					       id: 'latitude',label: 'Latitude'}),
 			      new RecordField({index: (index++),
-					       id: "longitude",label: "Longitude"}),			      			      					     ]
+					       id: 'longitude',label: 'Longitude'}),			      			      					     ]
 		let entryType = null;
 		if(this.entryTypes && this.entryTypes.length) {
 		    entryType = this.entryTypes[0];
@@ -39214,57 +39221,59 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 							     [ATTR_WIDTH,HU.px(80)])));
 			};
 		    }
-		    let props = {centerOnMarkersAfterUpdate:true,
-				 entries:info.entries,
-				 dialogListener: dialogListener,
-				 highlightColor:"#436EEE",
-				 blockStyle:this.getProperty("blockStyle",""),
-				 doPopup:this.getProperty("doPopup",true),
-				 'recordSelection.share':false,
-				 labelTemplate:
-				 this.getProperty('map.labelTemplate',
-						  '${name maxLength=20 maxLengthSuffix=...}'),
-				 labelBackground:
-				 this.getProperty('map.labelBackground',
-						  'rgba(250,250,250,0.75)'),
-				 labelStrokeColor:
-				 this.getProperty('map.labelStrokeColor',
-						  '#aaa'),				 
-				 labelYOffset:15,
-				 tooltip:tooltip,
-				 tooltipClick:tooltip,
-				 myTextGetter:myTextGetter,
-				 descriptionField:"description",
-				 imageWidth:HU.perc(95),
-				 blockWidth:HU.px(150),
-				 numberOfImages:500,
-				 includeNonImages:this.getProperty('includeNonImages',true),
-				 showTableOfContents:true,
+		    let pf = (key,dflt) =>{return this.getProperty(key,dflt);};
+		    let props = {
+			entries:info.entries,
+			dialogListener: dialogListener,
+			tooltip:tooltip,
+			tooltipClick:tooltip,
+			myTextGetter:myTextGetter,
+			descriptionField:"description",
+			imageWidth:HU.perc(95),
+			blockWidth:HU.px(150),
+			numberOfImages:500,
+			includeNonImages:pf('includeNonImages',true),
+			highlightColor:'#436EEE',
+			blockStyle:pf('blockStyle',''),
+			doPopup:pf('doPopup',true),
+			'recordSelection.share':false,
 
-				 showTableOfContentsTooltip:false,
-				 addMapLocationToUrl:false,
-				 canMove:true,
-				 iconField:"iconUrl",
-				 iconSize:16,
-				 displayEntries:false,
-				 imageField:"image",
-				 urlField:"url",
-				 iconField:'iconUrl',
-				 titleField:"name",
-				 labelField:"name",
-				 labelFields:"name",
-				 showBottomLabel:false,
-				 bottomLabelTemplate:"",
-				 topLabelTemplate:"${name}",
-				 textTemplate:"${description}",
-				 displayId:info.id,
-				 divid:info.id,
-				 showMenu:false,
-				 showDateMenu:true,
-				 theData:data,
-				 displayStyle:"",
-				 mapHeight:'400',
-				 loadingMessage:''};
+			displayEntries:false,
+			imageField:"image",
+			urlField:'url',
+			iconField:'iconUrl',
+			titleField:"name",
+			labelField:"name",
+			labelFields:"name",
+			showBottomLabel:false,
+			bottomLabelTemplate:"",
+			topLabelTemplate:"${name}",
+			textTemplate:"${description}",
+			displayId:info.id,
+			divid:info.id,
+			showMenu:false,
+			showDateMenu:true,
+			theData:data,
+			displayStyle:"",
+			mapHeight:this.getProperty('map.height','400'),
+			loadingMessage:'',
+
+			comment:'***** Map Properties *****',
+			centerOnMarkersAfterUpdate:pf('map.centerOnMarkersAfterUpdate',true),
+			labelTemplate:	pf('map.labelTemplate','${name maxLength=20 maxLengthSuffix=...}'),
+			labelBackground:pf('map.labelBackground', 'rgba(250,250,250,0.75)'),
+			labelStrokeColor:pf('map.labelStrokeColor','#aaa'),				 
+			labelYOffset:15,
+			showTableOfContents:pf('map.showTableOfContents',true),
+			showTableOfContentsTooltip:pf('map.showTableOfContentsTooltip',false),
+			tocWidth:pf('map.tocWidth',null),
+			addMapLocationToUrl:false,
+			canMove:true,
+			iconField:'iconUrl',
+			iconSize:pf('map.iconSize',16),
+			collisionFixed:pf('map.collisionFixed',true),
+			handleCollisions:this.getProperty('map.handleCollisions',false),
+		    };
 
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
 		});
@@ -42191,23 +42200,25 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
 		this.map.popupListener = (id,text) =>{
 		    let fields = jqid(id).find('[' + ATTR_FIELD_ID+']');
-		    fields.addClass(CLASS_CLICKABLE);
-		    fields.click(function() {
-			let field = $(this).attr(ATTR_FIELD_ID);
-			let value = $(this).attr(ATTR_FIELD_VALUE);			
-			//A hack because for some reason clicking on an href isn't doing anything
-			if(value && value.toLowerCase().startsWith('http')) {
-			    window.open(value,'_link');
-			    return;
-			}
-			let args = {
-			    id:field,
-			    fieldId: field,
-			    value: value
-			};
-			_this.propagateEvent(DisplayEvent.filterChanged, args,true);
-		    });
-		};
+		    if(this.getProperty("propagateValueClick",false)) {
+			fields.addClass(CLASS_CLICKABLE);
+			fields.click(function() {
+			    let field = $(this).attr(ATTR_FIELD_ID);
+			    let value = $(this).attr(ATTR_FIELD_VALUE);			
+			    //A hack because for some reason clicking on an href isn't doing anything
+			    if(value && value.toLowerCase().startsWith('http')) {
+				window.open(value,'_link');
+				return;
+			    }
+			    let args = {
+				id:field,
+				fieldId: field,
+				value: value
+			    };
+			    _this.propagateEvent(DisplayEvent.filterChanged, args,true);
+			});
+		    };
+		}
 		if(this.getShowOverviewMap()) {
 		    let opts = {size:{}};
 		    let layer = this.getOverviewMapLayer();
@@ -43397,59 +43408,61 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 	    for(let markerIdx=1;true;markerIdx++) {
-		let marker = this.getProperty("marker" + markerIdx);
+		let marker = this.getProperty('marker' + markerIdx);
 		if(!marker) break;
 		this.map.addMarkerEmbed(marker);
 	    }
         },
-	registerEvents:function() {
-            this.getMap().getMap().events.register("zoomend", this, this.zoomendFunc = ()=>{
-		if(this.callingUpdateUI) return;
-		if(this.lastUpdateTime) {
-		    let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
-		    if(diff<2000) {
-			return
-		    }
+	handleEventZoomEnd:function() {
+	    if(this.callingUpdateUI) return;
+	    if(this.lastUpdateTime) {
+		let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
+		if(diff<2000) {
+		    return
 		}
-		if(this.debugZoom) {
-		    console.log("level:" + this.getMap().getMap().getZoom());
-		}
-		//		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
-		if(this.pointLevelRange || this.glyphLevelRange) {
-		    this.checkLevelRange([this.myFeatureLayer],true);
-		}		
+	    }
+	    if(this.debugZoom) {
+		console.log("level:" + this.getMap().getMap().getZoom());
+	    }
+	    //		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
+	    if(this.pointLevelRange || this.glyphLevelRange) {
+		this.checkLevelRange([this.myFeatureLayer],true);
+	    }		
+	    this.mapBoundsChanged();
+	    this.checkHeatmapReload();
+	    this.updateHtmlLayers();
+	    if(!this.haveAddPoints) {
+		return;
+	    }
 
-                this.mapBoundsChanged();
-		this.checkHeatmapReload();
-		this.updateHtmlLayers();
-		if(!this.haveAddPoints) {
+	    if(this.getHandleCollisions()) {
+		if(this.lastZoom == this.map.getZoom()) {
 		    return;
 		}
-
-		if(this.getHandleCollisions()) {
-		    if(this.lastZoom == this.map.getZoom()) {
-			return;
-		    }
-		    //Wait a bit
-		    if(this.lastCollisionTimeout) {
-			clearTimeout(this.lastCollisionTimeout);
-		    }
-
-		    //		    console.log(this.getLogLabel()+" setting up collision timeout");
-		    this.lastTimeout = setTimeout(()=>{
-			this.haveCalledUpdateUI = false;
-			//			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
-			this.updateUI();
-			this.lastCollisionTimeout = null;
-		    },1000);
+		//Wait a bit
+		if(this.lastCollisionTimeout) {
+		    clearTimeout(this.lastCollisionTimeout);
 		}
-		//		console.log(this.getLogLabel()+" finished zoomend");
-            });
-            this.map.getMap().events.register("moveend", this, this.moveendFunc = ()=> {
+
+		//		    console.log(this.getLogLabel()+" setting up collision timeout");
+		this.lastTimeout = setTimeout(()=>{
+		    this.haveCalledUpdateUI = false;
+		    //			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
+		    this.updateUI();
+		    this.lastCollisionTimeout = null;
+		},1000);
+	    }
+	},
+	registerEvents:function() {
+	    let events = this.getMap().getMap().events;
+	    this.zoomendFunc = ()=>{this.handleEventZoomEnd();}
+	    this.moveendFunc = ()=> {
 		if(this.map.doingPopup) return;
                 this.mapBoundsChanged();
 		this.checkHeatmapReload();
-            });
+            }
+	    events.register('zoomend', this, this.zoomendFunc);
+            events.register('moveend', this, this.moveendFunc);
 	},
         getBounds: function() {
 	    if(this.map)
@@ -44984,6 +44997,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
 	},
 	makeToc:function(records) {
+	    let searchId = this.getUniqueId('');
 	    let urlField  =  this.getFieldById(null,this.getProperty("urlField"));
 	    let iconField  =  this.getFieldById(null,this.getProperty("iconField"));
 	    let fields = this.getFieldsByIds(null,this.getTocFields(this.getProperty("labelField","name")));
@@ -44991,8 +45005,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let template = this.getTocTemplate();
 	    let html='';
 	    let title = this.getTocTitle(this.getProperty('tableOfContentsTitle',''));
+	    html+=HU.div([ATTR_ID,searchId]);
 	    if(template) {
-		let clazz = HU.classes(CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
+		let clazz = HU.classes(CLASS_RECORD,CLASS_CLICKABLE,'display-map-toc-item ramadda-noselect');
 		records.forEach((record,idx)=>{
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, template);
 		    html+=HU.div([ATTR_CLASS,clazz,ATTR_RECORD_INDEX,idx], label);
@@ -45041,7 +45056,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						      [ATTR_TARGET,'_link']))+value;
 			    }
 			}
-			html+=HU.tag(TAG_TR,[], value);
+			html+=HU.tag(TAG_TR,[ATTR_CLASS,CLASS_RECORD], value);
 		    } else {
 			value = Utils.join(values,' ');
 			if(!iconField) {
@@ -45059,7 +45074,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    }
 			}
 			html+= HU.span([ATTR_TITLE, title,
-					ATTR_CLASS,clazz,
+					ATTR_CLASS,CLASS_RECORD+' ' +clazz,
 					ATTR_RECORD_ID,record.getId(),
 					ATTR_RECORD_INDEX,idx], value);
 		    }
@@ -45081,6 +45096,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			       ATTR_ID, this.domId("toc")],html);
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
+		HU.initPageSearch(this.jq(ID_LEFT).find(HU.dotClass(CLASS_RECORD)),
+				  null,'Search',false,{target:'#'+ searchId}); 
+
+
+
 		let _this = this;
 		let items = this.jq(ID_LEFT).find(".display-map-toc-item");
 		if(this.getProperty('showTableOfContentsTooltip')) 
@@ -46540,9 +46560,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    
 
-
-
 	    if(this.getHandleCollisions()) {
+		//clear out the old state
+		records.forEach(record=>{record.collisionInfo=null;});
+
 		let collisionTooltip = this.getCollisionTooltip('${default}');
 		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
 		    let html = records.length+" records"+ HU.thinLine();
@@ -46594,12 +46615,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 
-
-
-
 		//First get the rounded point for each RecordInfo
 		CH.initPoints(recordInfos);
-
 		recordInfos.forEach((recordInfo,idx)=>{
 		    let collisionPoint = recordInfo.collisionPoint;
 		    if(collisionPoint ==null) return;
@@ -46609,7 +46626,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } 
 		    let record = recordInfo.record;
 		    let info = CH.getCollisionInfo(collisionPoint);
+
 		    info.addRecord(record);
+		    record.collisionInfo = info;
 		    recordInfo.collisionInfo = info;
 		    recordInfo.visible = info.visible;		    
 		    if(!collisionArgs.fixed) {
@@ -47374,6 +47393,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addLabels:function(records, fields) {
 	    let cbx =this.jq(ID_SHOWLABELSTOGGLE);
 	    if(cbx.length>0 && !HU.isChecked(cbx)) return;
+	    
+	    records = records.filter(record=>{
+
+		return record.collisionInfo==null;
+	    });
 
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
