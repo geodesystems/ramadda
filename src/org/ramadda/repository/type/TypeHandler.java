@@ -11,6 +11,7 @@ import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.map.*;
 
+import org.ramadda.util.FileWrapper;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
@@ -625,6 +626,9 @@ public class TypeHandler extends RepositoryManager {
 		}
 
 		WikiMacro m = new WikiMacro(macro);
+		if(m.isGlobal())  {
+		    getRepository().getWikiManager().putGlobalWikiMacro(m);
+		}
 		if(m.isOutput()) {
 		    List<String> types = new ArrayList<String>();
 		    types.add(getType());
@@ -1920,6 +1924,10 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
+    public void initializeGroupFromHarvest(Entry group,  FileWrapper dirFile) {
+    }
+
+
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
                                        Hashtable<String, File> files)
@@ -2157,6 +2165,8 @@ public class TypeHandler extends RepositoryManager {
     public void initializeEntryFromHarvester(Request request, Entry entry,
                                              boolean firstCall)
 	throws Exception {
+	//	System.err.println("initializeEntryFromHarvester:" + entry.getName() + " parent:" + entry.getParentEntry().getName()+" parent type:" + entry.getParentEntry().getTypeHandler());
+
         if (firstCall) {
             initializeNewEntry(request, entry, NewType.NEW);
         }
