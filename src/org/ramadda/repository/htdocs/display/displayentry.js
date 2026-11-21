@@ -3103,6 +3103,8 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 					       id: 'url',label: 'URL'}),
 			      new RecordField({type: 'image', index: (index++),
 					       id: 'image',label: 'Image'}),
+			      new RecordField({type: 'string', index: (index++),
+					       id: 'type',label: 'Entry Type'}),
 			      new RecordField({type: 'url', index: (index++),
 					       id: 'iconUrl',label: 'Icon'}),
 			      new RecordField({type: 'string', index: (index++),
@@ -3116,13 +3118,15 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			      new RecordField({index: (index++),
 					       id: 'longitude',label: 'Longitude'}),			      			      					     ]
 		let entryType = null;
+		/*
 		if(this.entryTypes && this.entryTypes.length) {
 		    entryType = this.entryTypes[0];
 		    entryType.getColumns().forEach(column=>{
 			fields.push(new RecordField({index: (index++),
 						     id: column.getName(),label: column.getLabel()}));
 		    });
-		}
+		}*/
+
 		let records = [];
 		let defaultImage = this.getDefaultImage();
 		if(defaultImage) {
@@ -3140,6 +3144,7 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 				    entry.getCreateDate(),				    
 				    entry.getEntryUrl(),
 				    entry.getImageUrl(true)||defaultImage||"",
+				    entry.getType().getLabel(),
 				    entry.getIconUrl(),
 				    tags,
 				    displayHtml,
@@ -3182,7 +3187,11 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 							     [ATTR_WIDTH,HU.px(80)])));
 			};
 		    }
-		    let pf = (key,dflt) =>{return this.getProperty(key,dflt);};
+		    let pf = (key,dflt) =>{
+//			if(key.startsWith("map.")) console.log(key+'=');
+			return this.getProperty(key,dflt);};
+		    let mapProp = (key,dflt) =>{return pf('map.' + key,dflt);};
+			
 		    let props = {
 			entries:info.entries,
 			dialogListener: dialogListener,
@@ -3216,25 +3225,27 @@ function RamaddaSearchDisplay(displayManager, id, properties, theType) {
 			showDateMenu:true,
 			theData:data,
 			displayStyle:"",
-			mapHeight:this.getProperty('map.height','400'),
 			loadingMessage:'',
 
 			comment:'***** Map Properties *****',
-			centerOnMarkersAfterUpdate:pf('map.centerOnMarkersAfterUpdate',true),
-			labelTemplate:	pf('map.labelTemplate','${name maxLength=20 maxLengthSuffix=...}'),
-			labelBackground:pf('map.labelBackground', 'rgba(250,250,250,0.75)'),
-			labelStrokeColor:pf('map.labelStrokeColor','#aaa'),				 
-			showLabelsToggle:pf('map.showLabelsToggle',false),
-			labelYOffset:15,
-			showTableOfContents:pf('map.showTableOfContents',true),
-			showTableOfContentsTooltip:pf('map.showTableOfContentsTooltip',false),
-			tocWidth:pf('map.tocWidth',null),
+			mapHeight:mapProp('height','400'),
+			centerOnMarkersAfterUpdate:mapProp('centerOnMarkersAfterUpdate',true),
+
+			labelTemplate:	mapProp('labelTemplate','${name maxLength=20 maxLengthSuffix=...}'),
+			labelBackground:mapProp('labelBackground', 'rgba(250,250,250,0.75)'),
+			labelStrokeColor:mapProp('labelStrokeColor','#aaa'),				 
+			showLabelsToggle:mapProp('showLabelsToggle',false),
+			labelYOffset:mapProp('labelYOffset',15),
+			showTableOfContents:mapProp('showTableOfContents',true),
+			showTableOfContentsTooltip:mapProp('showTableOfContentsTooltip',false),
+			tocWidth:mapProp('tocWidth',null),
+			iconSize:mapProp('iconSize',16),
+			collisionFixed:mapProp('collisionFixed',true),
+			handleCollisions:mapProp('handleCollisions',false),
+
 			addMapLocationToUrl:false,
 			canMove:true,
 			iconField:'iconUrl',
-			iconSize:pf('map.iconSize',16),
-			collisionFixed:pf('map.collisionFixed',true),
-			handleCollisions:this.getProperty('map.handleCollisions',false),
 		    };
 
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
