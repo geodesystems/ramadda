@@ -94,9 +94,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private List<PatternHolder> notfilePatterns;
 
     private String dirPatternString="";
-    private List<PatternHolder> dirPattern;
+    private List<PatternHolder> dirPatterns;
     private String notdirPatternString = "";
-    private List<PatternHolder> notdirPattern;    
+    private List<PatternHolder> notdirPatterns;    
 
     private boolean skipTimeCheck = false;
     private double sizeLimit = -1;
@@ -214,8 +214,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         topPattern     = null;
         filePatterns    = null;
         notfilePatterns = null;
-        dirPattern    = null;
-        notdirPattern = null;	
+        dirPatterns    = null;
+        notdirPatterns = null;	
 
         sdf            = null;
         init();
@@ -276,9 +276,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,  notfilePatternString).trim();
         notfilePatterns = null;
         dirPatternString = request.getUnsafeString(ATTR_DIRPATTERN, dirPatternString);
-        dirPattern = null;
+        dirPatterns = null;
         notdirPatternString = request.getUnsafeString(ATTR_NOTDIRPATTERN,  notdirPatternString).trim();
-        notdirPattern = null;	
+        notdirPatterns = null;	
 
 
         topPatternString = request.getUnsafeString(ATTR_TOPPATTERN,  topPatternString);
@@ -625,10 +625,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         if (stringDefined(notdirPatternString)) {
-	    notdirPattern = PatternHolder.parseLines(convertPattern(notdirPatternString));
+	    notdirPatterns = PatternHolder.parseLines(convertPattern(notdirPatternString));
         }
         if (stringDefined(dirPatternString)) {
-	    dirPattern = PatternHolder.parseLines(convertPattern(dirPatternString));
+	    dirPatterns = PatternHolder.parseLines(convertPattern(dirPatternString));
         }		
 
 
@@ -855,15 +855,15 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			return DO_DONTRECURSE;
 		    }
 
-		    if (Utils.listNotEmpty(dirPattern)) {
-			if(!PatternHolder.checkPatterns(dirPattern,f.toString())) {
+		    if (Utils.listNotEmpty(dirPatterns)) {
+			if(!PatternHolder.checkPatterns(dirPatterns,f.toString())) {
 			    skipDirBuff.append("dir not in include list:" + f+"\n");
 			    return DO_DONTRECURSE;
 			}
 		    }
 
-		    if (Utils.listNotEmpty(notdirPattern)) {
-			if(PatternHolder.checkPatterns(notdirPattern,f.toString())) {
+		    if (Utils.listNotEmpty(notdirPatterns)) {
+			if(PatternHolder.checkPatterns(notdirPatterns,f.toString())) {
 			    skipDirBuff.append("dir is in exclude list:" + f+"\n");
 			    return DO_DONTRECURSE;
 			}
@@ -1392,10 +1392,18 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     }
                 }
 
+
+		boolean isTopGroup =     getBaseGroup().equals(parentGroup);
                 if (group == null) {
 		    boolean lastDir = i==dirToks.size()-1;
 		    String theGroupType = null;
 		    TypeHandler groupTypeHandler=getEntryManager().findTypeFromPatterns(folderPatterns,name);
+		    if(groupTypeHandler==null && isTopGroup) {
+			if(isTopGroup) {
+			    groupTypeHandler=getEntryManager().findTypeFromPatterns(folderPatterns,"<top>");
+			}
+		    }
+		    //		    System.err.println("making group:"  + name +" type:" + groupTypeHandler);
 		    if(groupTypeHandler!=null) theGroupType = groupTypeHandler.getType();
 		    if(theGroupType==null) {
 			theGroupType = lastDir?getLastGroupType():TypeHandler.TYPE_GROUP;
@@ -1767,9 +1775,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
         if (group == null) {
-            logHarvesterInfo("Could not create group:" + groupName,debugHarvestFile);
-            return null;
+	    return null;
         }
+	if(getEntryManager().isSynthEntry(group)) {
+	    if(debugHarvestFile)    System.err.println("\tgroup is synth entry. Stopping subtree harvest:" + group);
+	    return null;
+	}
+
+
 
         //If its just a placeholder then all we need to do is create the group and return
         if (isPlaceholder) {
@@ -1853,7 +1866,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if (entry.hasCreateDate()) {
                 createTime = entry.getCreateDate();
             }
-	    System.err.println("new entry:"  +name  +" parent:" + group);
+
             entry.initEntry(name, desc, group, getUser(), resource, "",
                             Entry.DEFAULT_ORDER, createTime,
                             changeDate.getTime(), fromDate.getTime(),
