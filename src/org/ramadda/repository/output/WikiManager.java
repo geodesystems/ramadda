@@ -125,6 +125,7 @@ public class WikiManager extends RepositoryManager
     private String displayInits;
     private boolean defaultTableFormOpen = false;
     private Hashtable<String, String> wikiMacros;
+    private Hashtable<String, WikiMacro> globalWikiMacros=new Hashtable<String,WikiMacro>();
     private WikiUtil dummyWikiUtil = new WikiUtil();
     private Hashtable<String,WikiTagHandler> tagHandlersMap =  new Hashtable<String,WikiTagHandler>();
     private List<WikiTagHandler> tagHandlers =  new ArrayList<WikiTagHandler>();    
@@ -177,6 +178,11 @@ public class WikiManager extends RepositoryManager
 	} catch(Exception exc) {
             getLogManager().logError("WikiManager.creating tagHandlers", exc);
 	}
+    }
+
+    public void putGlobalWikiMacro(WikiMacro macro) {
+	//	System.err.println("global wiki macro:" + macro);
+	globalWikiMacros.put(macro.getName(),macro);
     }
 
     public boolean getShowIcon(WikiUtil wikiUtil, Hashtable props, boolean dflt) {
@@ -3118,6 +3124,11 @@ public class WikiManager extends RepositoryManager
 	    if(entry==null) return "Null entry for macro";
 	    String name = getProperty(wikiUtil,props,"name",getProperty(wikiUtil,props,"id",""));
 	    WikiMacro macro = entry.getTypeHandler().getWikiMacro(entry,name);
+	    if(macro==null) {
+		macro = globalWikiMacros.get(name);
+	    }
+
+
 	    if(macro==null) return "Could not find macro:" + name;
 	    String text=macro.getWikiText().trim();
 	    if(stringDefined(macro.getProperties())) {
