@@ -48,6 +48,9 @@ import java.util.regex.*;
  */
 @SuppressWarnings("unchecked")
 public class PatternHarvester extends Harvester /*implements EntryInitializer*/ {
+    public static final boolean debugHarvestFile = false;
+
+
     public static final String ATTR_TYPE = "type";
     public static final String ATTR_LASTGROUPTYPE = "lastgrouptype";    
     public static final String ATTR_DATEFORMAT = "dateformat";
@@ -86,9 +89,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private boolean noTree = false;
 
     private String filePatternString = ".*";
-    private List<PatternHolder> filePattern;
+    private List<PatternHolder> filePatterns;
     private String notfilePatternString = "";
-    private List<PatternHolder> notfilePattern;
+    private List<PatternHolder> notfilePatterns;
 
     private String dirPatternString="";
     private List<PatternHolder> dirPattern;
@@ -209,8 +212,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	maxLevel = XU.getAttribute(element,ATTR_MAXLEVEL, maxLevel);	
 
         topPattern     = null;
-        filePattern    = null;
-        notfilePattern = null;
+        filePatterns    = null;
+        notfilePatterns = null;
         dirPattern    = null;
         notdirPattern = null;	
 
@@ -269,9 +272,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         lastRunTime = 0;
 
         filePatternString = request.getUnsafeString(ATTR_FILEPATTERN, filePatternString);
-        filePattern = null;
+        filePatterns = null;
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,  notfilePatternString).trim();
-        notfilePattern = null;
+        notfilePatterns = null;
         dirPatternString = request.getUnsafeString(ATTR_DIRPATTERN, dirPatternString);
         dirPattern = null;
         notdirPatternString = request.getUnsafeString(ATTR_NOTDIRPATTERN,  notdirPatternString).trim();
@@ -618,7 +621,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
         if (stringDefined(notfilePatternString)) {
-	    notfilePattern = PatternHolder.parseLines(convertPattern(notfilePatternString));
+	    notfilePatterns = PatternHolder.parseLines(convertPattern(notfilePatternString));
         }
 
         if (stringDefined(notdirPatternString)) {
@@ -629,11 +632,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }		
 
 
-        if ((filePattern == null) && stringDefined(filePatternString)) {
+        if ((filePatterns == null) && stringDefined(filePatternString)) {
             patternNames = new ArrayList<String>();
 	    String pattern = Utils.extractPatternNames(filePatternString,
 						       patternNames);
-            filePattern = PatternHolder.parseLines(convertPattern(pattern));
+            filePatterns = PatternHolder.parseLines(convertPattern(pattern));
         }
     }
 
@@ -1053,6 +1056,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     continue;
                 }
                 if (entry == null) {
+		    if(debugHarvestFile) {
+			System.err.println("No entry created for file: " + theFile);
+		    }
 		    //                    logHarvesterInfo("No entry created for file: " + theFile);
                     continue;
                 }
@@ -1314,9 +1320,16 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		new EntryInitializer() {
 		    @Override
 		    public void initEntry(Entry entry) {
-			//System.err.println("\tNEW GROUP:" + entry);
 			theHarvester.initEntry(entry);
 		    }
+		    /* don't do this for now
+		    @Override
+		    public boolean checkForSynthEntry() {
+			return false;
+		    }
+		    */
+
+
 		};
 	return groupInitializer;
     }
@@ -1362,6 +1375,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
 	    name = getName(name,true);
             if (makeGroup && (parentGroup != null)) {
+		if(getEntryManager().isSynthEntry(parentGroup)) {
+		    if(debugHarvestFile)
+			System.err.println("**** harvestFile:\n\tparentGroup is a synth entry. Skipping " + parentGroup);
+		    return null;
+		}
+
                 Entry group = getEntryManager().findEntryFromName(request,parentGroup, name,false,
 								  null,null,null,getGroupInitializer());
                 if ((group == null) && (name.indexOf("_") >= 0)) {
@@ -1390,8 +1409,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		    final PatternHarvester theHarvester = this;
                     EntryInitializer  initializer = new EntryInitializer() {
 			    @Override
-			    public void initEntry(Entry entry) {
-				theHarvester.initEntry(entry);
+			    public void initEntry(Entry group) {
+				theHarvester.initEntry(group);
+				//				System.err.println("Group 1: " +group.getName() +" type:" + group.getTypeHandler());
+				group.getTypeHandler().initializeGroupFromHarvest(group,  dirFile);
 			    }
 			    @Override
 			    public File getMetadataFile(Entry entry,
@@ -1403,8 +1424,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			    }
 			};
 
+
                     group = getEntryManager().makeNewGroup(request,parentGroup, name,
 							   getUser(), template, theGroupType, initializer);
+
+
+
+
 
                     String originalId = null;
                     if (template != null) {
@@ -1492,8 +1518,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
         relativeFilePath = relativeFilePath.replace("\\", "/");
 
-        if (Utils.listNotEmpty(filePattern)) {
-	    if(!PatternHolder.checkPatterns(filePattern,relativeFilePath)) {
+        if (Utils.listNotEmpty(filePatterns)) {
+	    if(!PatternHolder.checkPatterns(filePatterns,relativeFilePath)) {
                 debug("file:<i>" + relativeFilePath + "</i> does not match pattern");
                 logHarvesterInfo("file:" + relativeFilePath + " does not match pattern");
 		skipBuff.append("No patterns match:" + relativeFilePath+"\n");
@@ -1508,8 +1534,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    }
 	}
 
-        if (Utils.listNotEmpty(notfilePattern)) {
-	    if(PatternHolder.checkPatterns(notfilePattern,relativeFilePath)) {
+        if (Utils.listNotEmpty(notfilePatterns)) {
+	    if(PatternHolder.checkPatterns(notfilePatterns,relativeFilePath)) {
 		logHarvesterInfo("excluding file because it matches the NOT pattern:"
 				 + relativeFilePath);
                 skipBuff.append("file excluded from the NOT pattern:" + relativeFilePath+"\n");
@@ -1532,12 +1558,19 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                              Hashtable<String, Entry> entriesMap)
 	throws Exception {
         Request request = getRequest();
-	final boolean debug = false;
         Entry  baseGroup = getBaseGroup();
+	//Don't harvest under synth entries
+	if(getEntryManager().isSynthEntry(baseGroup)) {
+	    if(debugHarvestFile)
+		System.err.println("**** harvestFile:\n\tbaseGroup is a synth entry. Skipping " + baseGroup);
+	    return null;
+	}
+
 	String filePath      = fileWrapper.toString();
         filePath = filePath.replace("\\", "/");
         String fileName   = fileWrapper.getName();
-	if(debug)    System.err.println("**** harvestFile:\n\tbaseGroup:" + baseGroup +"\n\tfile:" + fileWrapper);
+	if(debugHarvestFile)
+	    System.err.println("**** harvestFile:\n\tbaseGroup:" + baseGroup +"\n\tfile:" + fileWrapper);
         boolean isPlaceholder = fileName.equals(FILE_PLACEHOLDER);
         TypeHandler typeHandler      = getTypeHandler(TypeHandler.TYPE_FINDMATCH);
         TypeHandler typeHandlerToUse = null;
@@ -1583,10 +1616,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         Entry dirTemplateEntry =
             getEntryManager().getTemplateEntry(theFile, entriesMap,idMap,filesMap);
 
-	if(debug)    System.err.println("\tdirPath 1:" + dirPath);
+	if(debugHarvestFile)    System.err.println("\tdirPath 1:" + dirPath);
         dirPath =
             dirPath.substring(fileInfo.getRootDir().toString().length()).replace("\\", "/");
-	if(debug)    System.err.println("\tdirPath 2:" + dirPath);
+	if(debugHarvestFile)    System.err.println("\tdirPath 2:" + dirPath);
 
         String dirGroup  = null;
         if (!noTree) {
@@ -1595,8 +1628,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                    !getTestMode()
                                    && (groupTemplate.indexOf("${dirgroup}")
                                        >= 0), entriesMap);
+	    //Might have been a synth entry down the chain
+	    if(dirGroup==null) {
+		return null;
+	    }
             dirGroup = dirGroup.replace("\\", "/");
-	    if(debug)    System.err.println("\tdirGroup:" + dirGroup);
+	    if(debugHarvestFile)    System.err.println("\tdirGroup:" + dirGroup);
         }
 
         Hashtable entryValues       = new Hashtable();
@@ -1691,7 +1728,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 	name = getName(name,false);
 
-	if(debug)    System.err.println("\tgroup name:" + groupName);
+	if(debugHarvestFile)    System.err.println("\tgroup name:" + groupName);
 
         if (getTestMode()) {
             debug("\tname: " + name + "\n\tgroup:" + groupName
@@ -1711,7 +1748,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	groupName = getName(groupName,true);
 	if(noTree) {
 	    group =  baseGroup;
-	    if(debug)    System.err.println("\tusing base group:" + group);
+	    if(debugHarvestFile)    System.err.println("\tusing base group:" + group);
 	} else {
 	    group= getEntryManager().findEntryFromName(request,baseGroup,
 						       groupName, createIfNeeded,
@@ -1719,18 +1756,24 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						       getLastGroupType(),
 						       dirTemplateEntry,
 						       getGroupInitializer());
-	    if(debug)
+	    if(group!=null) {
+		if(debugHarvestFile)
+		    System.err.println("Group 2: " +group.getName() +" type:" + group.getTypeHandler());
+	    }
+
+	    if(debugHarvestFile)
 		System.err.println("\tgroup from findEntry:" + group);
 	}
 
+
         if (group == null) {
-            logHarvesterInfo("Could not create group:" + groupName);
+            logHarvesterInfo("Could not create group:" + groupName,debugHarvestFile);
             return null;
         }
 
         //If its just a placeholder then all we need to do is create the group and return
         if (isPlaceholder) {
-	    if(debug)    System.err.println("\twas a placeholder");
+	    if(debugHarvestFile)    System.err.println("\twas a placeholder");
             return null;
         }
         String tmpName = fileWrapper.getName().toLowerCase();
@@ -1810,13 +1853,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if (entry.hasCreateDate()) {
                 createTime = entry.getCreateDate();
             }
+	    System.err.println("new entry:"  +name  +" parent:" + group);
             entry.initEntry(name, desc, group, getUser(), resource, "",
                             Entry.DEFAULT_ORDER, createTime,
                             changeDate.getTime(), fromDate.getTime(),
                             toDate.getTime(), values);
 
 	    getEntryManager().parentageChanged(group,true);
-        }
+	}
 
 	if(pushGeo && !entry.isGeoreferenced(request)) {
 	    Entry ancestor = group;
