@@ -25,8 +25,6 @@ into some types.xml file
 <!-- Wiki text-->
 <wiki><![CDATA[
 +section title={{name}}
-{{link title="Zip and Download Project" button="true" output="zip.zipgroup"}}
-:br
 +row
 +col-9
 {{description wikify="true"}}
@@ -34,6 +32,8 @@ into some types.xml file
 {{information  showBase="true"  showDetails="true"}} 
 -col
 +col-3
+{{link title="Zip and Download Project" button="true" output="zip.zipgroup"}}
+:vspace 1em
 +if isgeoreferenced=true
 {{map  width="100%"  height="250px"  listEntries="false"  showBounds=true entries="this"}} 
 :p
