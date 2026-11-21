@@ -1,10 +1,10 @@
 <!-- 
 Since this is for import add a:
-<import resource="type_geo_psicat_project.xml"/>
+<import resource="type_core_psicat_project.xml"/>
 into some types.xml file
 -->
 <types>
-<type  name="type_geo_psicat_project" 
+<type  name="type_core_psicat_project" 
  description="PSICAT Project" 
  handler="org.ramadda.repository.type.LocalFileTypeHandler" 
  supercategory="Geoscience" 
@@ -17,10 +17,36 @@ into some types.xml file
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/psicat.png" />
 <property  name="search.tabs"  value="list,map,display" />
-<property  name="form.area.show"  value="false" />
-<property  name="form.location.show"  value="true" />
+<property  name="form.area.show"  value="true" />
 <property  name="date.nullok"  value="true" />
 <property  name="form.resource.show"  value="false" />
 <property  name="form.time.show"  value="false" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+{{link title="Zip and Download Project" button="true" output="zip.zipgroup"}}
+:br
++row
++col-9
+{{description wikify="true"}}
+:heading Information
+{{information  showBase="true"  showDetails="true"}} 
+-col
++col-3
++if isgeoreferenced=true
+{{map  width="100%"  height="250px"  listEntries="false"  showBounds=true entries="this"}} 
+:p
+-if
+{{macro name=geo_metadata}}
+-col
+
+
+:heading Files
+{{tabletree  message="No files available" }} 
+
+
+
+-section]]></wiki>
 </type>
 </types>

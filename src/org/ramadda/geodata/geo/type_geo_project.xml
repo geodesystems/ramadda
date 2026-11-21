@@ -19,6 +19,19 @@ metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecon
 <column  name="show_map"  label="Show Map"  type="boolean"   showinhtml="false" default="true"  group="Display" />
 <column  name="show_type_summary"  label="Show Type Summary"  type="boolean"   showinhtml="false" default="true" />
 <column  name="show_search"  label="Show Search"  type="boolean"   showinhtml="false" default="true" />
+ <wikimacro name="geo_metadata" isglobal="true"
+label="Geo Metadata"><![CDATA[
++div style="max-height:80vh;overflow-y:auto;"
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+{{properties message="" inherited="true" metadata.types="project_pi" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="geo_organization" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="project_funding" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="geo_discipline,geo_technique" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="dif.usecontraints,content.citation" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="project_person" includeTitle=true}}
+{{properties message="" inherited="true" metadata.types="enum_tag" includeTitle=true}}
+-div
+]]></wikimacro>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/project.png" />
@@ -71,16 +84,7 @@ message="No data available"  ancestor="${this}"  addAncestorToSearchLink=true ad
 {{image  inherited="false" showCaption=true multiples=true popup=true
 message="" width="80%"  useThumbnail="true" }}
 -center
-+div style="max-height:80vh;overflow-y:auto;"
-{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
-{{properties message="" inherited="true" metadata.types="project_pi" includeTitle=true}}
-{{properties message="" inherited="true" metadata.types="geo_organization" includeTitle=true}}
-{{properties message="" inherited="true" metadata.types="project_funding" includeTitle=true}}
-{{properties message="" inherited="true" metadata.types="geo_discipline,geo_technique" includeTitle=true}}
-{{properties message="" inherited="true" metadata.types="dif.usecontraints,content.citation" includeTitle=true}}
-{{properties message="" inherited="true" metadata.types="project_person" includeTitle=true}}
-{{properties message="" inherited="true" metadata.types="enum_tag" includeTitle=true}}
--div
+{{macro name=geo_metadata}}
 -center
 -col
 -row

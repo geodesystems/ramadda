@@ -37,6 +37,7 @@
 <import resource="type_core_cml.xml"/>
 <import resource="type_core_car.xml"/>
 <import resource="type_core_psicat_scheme.xml"/>
+<import resource="type_core_psicat_project.xml"/>
 
 
 <!-- Prediktera Breeze metadata -->
