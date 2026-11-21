@@ -1681,13 +1681,11 @@ public class EntryManager extends RepositoryManager {
 	String mime = result.getMimeType();
 	if(mime!=null && !mime.equals("text/html")) {
 	    if(debug) System.err.println("addEntryHeader don't need to write:" + entry +" " + request);
-	    //	    if(debug)  System.err.println(Utils.getStack(10));
 	    return result;
 	}
 	if(request.getExtraProperty("added entry header")!=null) {
 	    if(debug) {
 		System.err.println("addEntryHeader already added:" + entry);
-		//		System.err.println(Utils.getStack(10));
 	    }
 	    return result;
 	}
@@ -1695,7 +1693,6 @@ public class EntryManager extends RepositoryManager {
 
 	if(debug)
 	    System.err.println("addEntryHeader:" + entry +" mime:" + result.getMimeType() +" " + request);
-	//	if(debug)   System.err.println(Utils.getStack(10));
 
         if (Utils.stringUndefined(result.getTitle())) {
             result.setTitle(entry.getTypeHandler().getEntryName(entry));
@@ -7858,6 +7855,13 @@ public class EntryManager extends RepositoryManager {
 	return getAccessManager().filterEntries(request, allEntries);
     }
 
+    public boolean isSynthEntry(Entry entry) {
+	if(entry!=null && entry.getTypeHandler().isSynthType()) return true;
+	return isSynthEntry(entry.getId());
+    }
+
+
+
     public boolean isSynthEntry(String id) {
         return id.startsWith(ID_PREFIX_SYNTH);
     }
@@ -8927,10 +8931,6 @@ public class EntryManager extends RepositoryManager {
 	    for(Entry entry: children)	System.err.println("\t"+ entry.getName());
 	}
 
-	if(debug) {	
-	    System.err.println(Utils.getStack(15));
-	}
-
 	request.removeExtraProperty(key);
         return parentEntry.getTypeHandler().postProcessEntries(request,
 							       children);
@@ -8984,11 +8984,19 @@ public class EntryManager extends RepositoryManager {
                 }
 	    }
 
+
             //            System.err.println("****  Get synthids:" + mainEntry.getTypeHandler().getSynthIds(request, mainEntry,
-            //                                                                                              group, synthId));
+            //                                                                                              group, syn
             try {
                 ids =mainEntry.getMasterTypeHandler().getSynthIds(request,select,
 								  mainEntry, group, synthId);
+		//Important: we are also adding entries from the database
+		//maybe sometime check a property of the TypeHandler
+		List<String> fromDB = null;
+		fromDB = getChildIdsFromDatabase(request, group, select);
+		if(fromDB!=null) {
+		    ids.addAll(fromDB);
+		}
 		if(debug)
 		    getLogManager().logSpecial("EntryManager.getChildIds: got:" + ids);
 		return ids;
@@ -9593,8 +9601,12 @@ public class EntryManager extends RepositoryManager {
                                    EntryInitializer initializer)
 	throws Exception {
 	boolean debug = false;
+	//	debug=true;
 	if(debug)
-	    System.err.println("Find entry: " + "base entry:" + baseEntry +" name:" + name);	
+	    System.err.println("findEntryFromName: " +
+			       "base entry:" + baseEntry +
+			       " name:" + name+
+			       " create: "+ createIfNeeded);
 
         if (name == null) {
             return null;
@@ -9619,17 +9631,15 @@ public class EntryManager extends RepositoryManager {
 
 	//It might just be an ID?
 	if(!haveBase && name.indexOf(Entry.PATHDELIMITER)<0) {
+	    if(debug)   System.err.println("\tno path");
 	    return null;
 	}
         //split the list
         List<String> toks = (List<String>) Utils.split(name,
 						       Entry.PATHDELIMITER, true, true);
 
-	//	debug = true;
-	if(debug)
-	    System.err.println("\tname:" + name);
-	if(debug)
-	    System.err.println("\ttoks:" + toks);
+	//	if(debug)   System.err.println("\tname:" + name);
+	//	if(debug)    System.err.println("\ttoks:" + toks);
         //Now remove the top group if we didn't have a root entry passed in
 	if(!haveBase) {
 	    toks.remove(0);
@@ -9674,17 +9684,28 @@ public class EntryManager extends RepositoryManager {
                                             null, theGroupType, initializer);
             }
 
-            if (currentEntry.getTypeHandler().isSynthType()) {
+	    if(debug)   System.err.println("\tcurrentEntry:"+ currentEntry);
+
+	    boolean checkForSynthEntry = currentEntry.getTypeHandler().isSynthType();
+	    if(initializer!=null && !initializer.checkForSynthEntry()) {
+		checkForSynthEntry=false;
+	    }
+            if (checkForSynthEntry) {
                 List<String> subset = toks.subList(i + 1, toks.size());
                 if (subset.size() == 0) {
                     break;
                 }
 
-                return currentEntry.getTypeHandler().makeSynthEntry(request,
-								    currentEntry, subset);
+		Entry synthEntry =
+		    currentEntry.getTypeHandler().makeSynthEntry(request,
+								 currentEntry, subset);
+		if(debug)
+		    System.err.println("\tsynthEntry:" + synthEntry+" subset:" + subset);
+		return synthEntry;
             }
         }
         if (currentEntry == null) {
+	    if(debug)   System.err.println("\tno currentEntry");
             return null;
         }
 
