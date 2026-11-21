@@ -13,32 +13,24 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...
- */
 public class LocalFileInfo {
-
     private static int COL=0;
 
-    public static final int COL_PATH = COL++;
+    public static final String COL_PATH = "localfilepath";
 
-    public static final int COL_AGE = COL++;
+    public static final String COL_AGE = "timedelay";
 
-    public static final int COL_INCLUDES = COL++;
+    public static final String COL_INCLUDES = "includepattern";
 
-    public static final int COL_EXCLUDES = COL++;
+    public static final String COL_EXCLUDES = "excludepattern";
 
-    public static final int COL_DIRECTORY_TYPE = COL++;
+    public static final String COL_DIRECTORY_TYPE = "directory_type";
 
-    public static final int COL_DATE_OFFSET = COL++;
+    public static final String COL_DATE_OFFSET = "date_offset";
 
-    public static final int COL_DATE_PATTERNS = COL++;
+    public static final String COL_DATE_PATTERNS = "date_patterns";
 
-    public static final int COL_NAMES = COL++;
+    public static final String COL_NAMES = "naming";
 
     private File rootDir;
 
@@ -66,7 +58,7 @@ public class LocalFileInfo {
         includes = get(entry.getStringValue(request, COL_INCLUDES,null));
         excludes = get(entry.getStringValue(request, COL_EXCLUDES,null));
         ageLimit = entry.getDoubleValue(request, COL_AGE,0);
-	String rootPath = entry.getStringValue(request,0,"");
+	String rootPath = entry.getStringValue(request,COL_PATH,"");
 	if(!Utils.stringDefined(rootPath)) {
 	    return;
 	}
