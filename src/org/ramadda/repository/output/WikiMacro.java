@@ -17,6 +17,7 @@ public class WikiMacro {
     private String icon;
     private String wikiText;
     private String properties;
+    private boolean isGlobal = false;
     private List<String> tags;
     private boolean isOutput=false;
     private boolean forEditMenu = true;
@@ -25,7 +26,9 @@ public class WikiMacro {
 	tags  =Utils.split(MyXmlUtil.getAttribute(node,"tags",""),",",true,true);
 	icon = MyXmlUtil.getAttribute(node,"icon",(String)null);
 	label = MyXmlUtil.getAttribute(node,"label",name);
+	isGlobal = MyXmlUtil.getAttribute(node,"isglobal",false);
 	isOutput = MyXmlUtil.getAttribute(node,"isoutput",false);
+	
 	forEditMenu = MyXmlUtil.getAttribute(node,"foreditmenu",true);	
 	properties = MyXmlUtil.getAttribute(node,"properties","");
 	wikiText = MyXmlUtil.getChildText(node);
@@ -36,6 +39,10 @@ public class WikiMacro {
 	this.name  = name;
 	if(wikiText!=null) wikiText = wikiText.trim();
 	this.wikiText = wikiText;
+    }
+
+    public boolean isGlobal() {
+	return isGlobal;
     }
 
     public boolean hasTag(String tag) {
