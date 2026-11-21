@@ -20,5 +20,8 @@ public abstract class EntryInitializer {
     public File getMetadataFile(Entry entry, String fileArg) {
         return null;
     }
+    public boolean checkForSynthEntry() {
+	return true;
+    }	
 
 }
