@@ -45,7 +45,7 @@ import java.util.regex.*;
 
 @SuppressWarnings("unchecked")
 public abstract class Harvester extends RepositoryManager {
-    public static boolean debug = false;
+    public static boolean _debug = false;
     public static final String FILE_PLACEHOLDER = ".placeholder";
     private static final boolean PRINT_DEBUG = false;
     private static final LogManager.LogId LOGID =
@@ -753,7 +753,11 @@ public abstract class Harvester extends RepositoryManager {
     }
 
     public void logHarvesterInfo(String message) {
-        if (PRINT_DEBUG) {
+	logHarvesterInfo(message, false);
+    }
+	
+    public void logHarvesterInfo(String message,boolean printStdError) {	
+        if (PRINT_DEBUG || printStdError) {
             System.err.println(printTab + message);
         }
         getLogManager().logInfo(LOGID, getName() + ": " + printTab + message);
@@ -924,8 +928,8 @@ public abstract class Harvester extends RepositoryManager {
     }
 
     public void debug(String msg) {
-        if (debug || getTestMode()) {
-	    if(debug) System.err.println(msg);
+        if (_debug || getTestMode()) {
+	    if(_debug) System.err.println(msg);
             logHarvesterInfo(msg);
 	    msg = msg.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             msg = msg.replace("\n", "<br>");
