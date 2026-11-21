@@ -11,6 +11,8 @@ import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.FileWrapper;
+
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -313,6 +315,22 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return prefix + ":" + subId;
     }
 
+    public void initializeGroupFromHarvest(Entry group,  FileWrapper dirFile)  {
+	try {
+	    super.initializeGroupFromHarvest(group,  dirFile);
+	    Request request= getRepository().getAdminRequest();
+	    String rootPath = group.getStringValue(request,LocalFileInfo.COL_PATH,"");
+	    if(!Utils.stringDefined(rootPath)) {
+		rootPath = dirFile.getFile().toString();
+		group.setValue(LocalFileInfo.COL_PATH,rootPath);
+	    }
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+
+    }
+
+
     private String getPrefix(String parentId) {
         if (parentId.startsWith(Repository.ID_PREFIX_SYNTH)) {
             return parentId;
@@ -557,22 +575,12 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return new LocalFileInfo(getRepository(), entry);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param formBuffer _more_
-     * @param column _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addWidgetHelp(Request request, Entry entry,
                               Appendable formBuffer, Column column,
                               Object[] values)
             throws Exception {
-        if ((entry != null) && column.getName().equals("localfilepath")) {
+        if ((entry != null) && column.getName().equals(LocalFileInfo.COL_PATH)) {
             String path  = entry.getStringValue(request,column,null);
             String error = null;
             if (Utils.stringDefined(path)) {
