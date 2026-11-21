@@ -71,6 +71,11 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
+	if(entry.getTypeHandler().equals(this)) {
+	    //Check for a type property
+	    String icon = getIconProperty(null);
+	    if(icon!=null) return icon;
+	}
         if (entry.isGroup()) {
             return getIconUrl(ICON_SYNTH_FILE);
         }
