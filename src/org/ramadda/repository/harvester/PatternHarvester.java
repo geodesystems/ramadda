@@ -1400,7 +1400,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		    TypeHandler groupTypeHandler=getEntryManager().findTypeFromPatterns(folderPatterns,name);
 		    if(groupTypeHandler==null && isTopGroup) {
 			if(isTopGroup) {
-			    groupTypeHandler=getEntryManager().findTypeFromPatterns(folderPatterns,"<top>");
+			    groupTypeHandler=getEntryManager().findTypeFromPatterns(folderPatterns,"^ *top *$");
 			}
 		    }
 		    //		    System.err.println("making group:"  + name +" type:" + groupTypeHandler);
