@@ -3456,6 +3456,7 @@ table.dataTable tbody td {
 }
 
 .ramadda-form-help {
+    line-height: 1.2em;
     min-width:600px;
     padding:4px;
     padding-left:8px;
