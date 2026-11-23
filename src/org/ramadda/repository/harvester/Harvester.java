@@ -250,7 +250,7 @@ public abstract class Harvester extends RepositoryManager {
         }
 
         getRepository().getPageHandler().addEntrySelect(getRequest(),
-							baseGroup, ATTR_BASEGROUP, sb, "Base Group", extra);
+							baseGroup, ATTR_BASEGROUP, sb, "Base group", extra);
     }
 
     protected void init(Element element) throws Exception {
@@ -358,14 +358,28 @@ public abstract class Harvester extends RepositoryManager {
     }    
 
     public void addAliasesEditForm(Request request, Appendable sb) throws Exception {
+	formHelp(sb,"Entry name handling",null);
 	HU.formEntry(sb, msgLabel("Clean name"),
 			       HU.labeledCheckbox(ATTR_CLEANNAME, "true",
 							 cleanName, "Clean up name from filename, etc"));
-	sb.append(HU.formEntryTop(msgLabel("Aliases"),
+	sb.append(HU.formEntryTop(msgLabel("Name Aliases"),
 				  HU.hbox(HU.textArea(ATTR_ALIASES,
 						      aliases,
-						      10,60)," Format:<pre>name:Name to use\ne.g.:\nco:Colorado</pre>")));
+						      5,60)," Format:<pre>name:Name to use\ne.g.:\nco:Colorado</pre>")));
     }
+
+    public void formHelp(Appendable sb,String label, String link) throws Exception {
+	sb.append(HU.formEntry("",HU.formHelp(label+   makeHarvesterHelp(link))));
+    }
+
+    public String makeHarvesterHelp(String tag) {
+	if(tag==null) return "";
+	return  "&nbsp;" +
+	    HU.href(getPageHandler().makeHtdocsUrl("/userguide/harvesters.html" + tag),
+						   msg("Help"), " target=_HELP");
+    }
+
+
 
     public String getName(String name, boolean isDir) {
 	name = getAlias(name,name);
@@ -567,7 +581,7 @@ public abstract class Harvester extends RepositoryManager {
 
         String widgetText = runWidgets.toString();
         if (widgetCnt > 2) {
-            widgetText = HU.makeShowHideBlock(msg("Run Settings"),
+            widgetText = HU.makeShowHideBlock(msg("Run settings"),
                     widgetText, false);
         }
         sb.append(HU.formEntryTop("", widgetText));

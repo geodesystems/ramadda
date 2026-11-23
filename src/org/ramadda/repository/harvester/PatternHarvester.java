@@ -368,15 +368,21 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         }
 
-        formHelp(sb,"Should the harvest be continued when there are any errors harvesting a file",null);
+	StringBuilder errorSB = new StringBuilder();
+	errorSB.append(HU.formTable());
+        formHelp(errorSB,"Should the harvest be continued when there are any errors harvesting a file",null);
 
-        sb.append(HU.formEntry("",
-			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,   "true",
-						  ignoreErrors,"Ignore errors") + HU.space(2) +
-			       HU.labeledCheckbox(ATTR_MAKE_FILE_ON_ERROR, "true",
-						  makeFileOnError,"Make file entry on error")));
+        HU.formEntry(errorSB,"",
+		     HU.labeledCheckbox(ATTR_IGNORE_ERRORS,   "true",
+					ignoreErrors,"Ignore errors") + HU.space(2) +
+		     HU.labeledCheckbox(ATTR_MAKE_FILE_ON_ERROR, "true",
+					makeFileOnError,"Make file entry on error"));
+	errorSB.append(HU.formTableClose());
 
-
+	HU.formEntry(sb,"",
+		     HU.makeShowHideBlock("Error handling",
+					  errorSB.toString(),false));
+	
 
         sb.append(HU.colspan(formHeader("Look for files"), 2));
 
@@ -402,7 +408,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					HU.SIZE_60)));
 
 
-	String patternHelp = "<br>Macros: <span class=ramadda-hoverable title='regexp: (?i)'>No case: &lt;NOCASE&gt;</span> <span class=ramadda-hoverable title='regexp: ^.'>Root dir:&lt;ROOT&gt;</span>.  <span class=ramadda-hoverable title='regexp: .*'>Match all: &lt;ALL&gt;</span><br><span class=ramadda-hoverable title='regexp: [^/]+$'>Match on any file: &lt;FILES&GT;</span> <span class=ramadda-hoverable title='regexp: (?:[^/]+/)*'>Match any number of directories: &lt;DIRS&gt;</span><br>prefix:&lt;prefix for all patterns&gt;<br># comment<br>";
+	String patternHelp = "<br>" +
+	    "<table style='margin-left:1em;' width=100%><tr><td><span class=ramadda-hoverable title='regexp: (?i)'>No case: %NOCASE%</span></td>"+
+	    "<td><span class=ramadda-hoverable title='regexp: ^.'>Root dir:%ROOT%</span></td></tr>" +
+	    "<tr><td><span class=ramadda-hoverable title='regexp: .*'>Match all: %ALL%</span></td><td><span class=ramadda-hoverable title='regexp: [^/]+$'>Match on any file: %FILES%</span></td></tr>" +
+	    "<tr><td><span class=ramadda-hoverable title='regexp: (?:[^/]+/)*'>Match any number of directories: %DIRS%</span></td></td>" +
+	    "<tr><td>prefix:<i>prefix for all patterns</i></td><td># <i>comment</i></td></tr></table>";
 	int rows = 3;
 	int cols = 80;
 
@@ -410,7 +421,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	if(stringDefined(dirPatternString)) {
 	    rows  = Math.min(20,Math.max(rows,Utils.split(dirPatternString,"\n").size()));
 	}
-        sb.append(HU.formEntryTop(msgLabel("Directory Patterns"),
+        sb.append(HU.formEntryTop(msgLabel("Directory patterns"),
 				  HU.textArea(ATTR_DIRPATTERN,
 					      dirPatternString,
 					      rows,cols)));
@@ -431,7 +442,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	if(stringDefined(filePatternString)) {
 	    rows  = Math.min(20,Math.max(rows,Utils.split(filePatternString,"\n").size()));
 	}
-        sb.append(HU.formEntryTop(msgLabel("File Patterns"),
+        sb.append(HU.formEntryTop(msgLabel("File patterns"),
 				  HU.textArea(ATTR_FILEPATTERN,
 					      filePatternString,
 					      rows,cols)));
@@ -487,17 +498,18 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	getEntryManager().makeTypePatternsInput(request, "Folder type patterns",ATTR_FOLDERPATTERNS,sb,folderPatterns);
 
 
-	formHelp(sb,"The entry type for the entry type that holds the files. e.g., Photo Album",null);
+	formHelp(sb,"The entry type for the entries that hold the files. e.g., Photo Album",null);
         sb.append(HU.formEntry(msgLabel("Last folder type"),
 			       getRepository().makeTypeSelect(Utils.makeListFromValues(new TwoFacedObject("Default","")),
 							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
 							      false, null,true)));
 
+	formHelp(sb,"Don't make entry hierarchy from directory tree",null);
         sb.append(
 		  HU.formEntry(
 			       "",
 			       HU.labeledCheckbox(ATTR_NOTREE, "true", noTree,
-						  "Don't make entry hierarchy from directory tree")));
+						  "No folders")));
 
 	formHelp(sb,"Template to use for entry name.","#heading-name_template");
 
@@ -508,28 +520,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.input(ATTR_DESCTEMPLATE,
 					descTemplate, HU.SIZE_60)));
 
-        sb.append(HU.formEntry(msgLabel("Default Entry type"),
+	formHelp(sb,"Entry type",null);
+        sb.append(HU.formEntry(msgLabel("Default entry type"),
 			       makeEntryTypeSelector(request,
 						     getTypeHandler())));
 
 	formHelp(sb,"Patterns to match on files to define entry type.","#heading-type_patterns");
 	getEntryManager().makeTypePatternsInput(request, "Entry type patterns",ATTR_TYPEPATTERNS,sb,typePatterns);
-
-        sb.append(HU.formEntry(msgLabel("Date format"),
-			       HU.input(ATTR_DATEFORMAT,
-					dateFormat, HU.SIZE_60)));
-
-	formHelp(sb,"Note: This will move the files from their current location to RAMADDA's storage directory",null);
-        sb.append(HU.formEntry("",
-			       HU.labeledCheckbox(ATTR_MOVETOSTORAGE,
-					   "true",
-						  moveToStorage,"Move file to storage")));
-
-	formHelp(sb,"Note: If the file has already been harvested but has since changed it's size then delete the existing entry and re-harvest",null);
-        sb.append(HU.formEntry("",
-			       HU.labeledCheckbox(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
-						  "true",
-						  deleteWhenFileSizeDiffers,"Delete matching entry and re-add when file size differs")));
 
 
 
@@ -549,6 +546,27 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         sb.append(HU.colspan(formHeader("Etcetera"),2));
 
+        sb.append(HU.formEntry(msgLabel("Date format"),
+			       HU.input(ATTR_DATEFORMAT,
+					dateFormat, HU.SIZE_60)));
+
+	formHelp(sb,"Note: This will move the files from their current location to RAMADDA's storage directory",null);
+        sb.append(HU.formEntry("",
+			       HU.labeledCheckbox(ATTR_MOVETOSTORAGE,
+					   "true",
+						  moveToStorage,"Move file to storage")));
+
+	formHelp(sb,"Note: If the file has already been harvested but has since changed it's size then delete the existing entry and re-harvest",null);
+        sb.append(HU.formEntry("",
+			       HU.labeledCheckbox(ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS,
+						  "true",
+						  deleteWhenFileSizeDiffers,"Delete matching entry and re-add when file size differs")));
+
+	
+
+
+
+	formHelp(sb,"File processing",null);
 	HU.formEntry(sb, msgLabel("Metadata"),  Utils.join(mtds, HU.space(4)));
 	HU.formEntry(sb, msgLabel("Images"),  Utils.join(images, HU.space(4)));	
 
@@ -568,16 +586,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return getPageHandler().makeFileTypeSelector(request, typeHandler, false);
     }
 
-    private void formHelp(StringBuffer sb,String label, String link) {
-	sb.append(HU.formEntry("",HU.formHelp(label+   makeHarvesterHelp(link))));
-    }
-
-    private String makeHarvesterHelp(String tag) {
-	if(tag==null) return "";
-	return  "&nbsp;" +
-	    HU.href(getPageHandler().makeHtdocsUrl("/userguide/harvesters.html" + tag),
-						   msg("Help"), " target=_HELP");
-    }
 
     private List<SimpleDateFormat> getSDF() {
         if (sdf == null) {
@@ -607,6 +615,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	pattern = pattern.replace("<ROOT>","^");		
 	pattern = pattern.replace("<FILES>","[^/]+$");	
 	pattern = pattern.replace("<DIRS>","(?:[^/]+/)*");
+	pattern = pattern.replace("%ALL%",".*");
+	pattern = pattern.replace("%NOCASE%","(?i)");	
+	pattern = pattern.replace("%TOP%","^");
+	pattern = pattern.replace("%ROOT%","^");		
+	pattern = pattern.replace("%FILES%","[^/]+$");	
+	pattern = pattern.replace("%DIRS%","(?:[^/]+/)*");
 	return pattern;
     }
 
