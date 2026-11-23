@@ -9,7 +9,7 @@ into some types.xml file
  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
  supercategory="Geoscience" 
  category="Core Data" 
-childtypes="type_display_children,type_geo_core_images"
+childtypes="type_geo_borehole,type_map_folder,type_display_children,type_geo_core_images"
 >
 
 <!-- Columns-->

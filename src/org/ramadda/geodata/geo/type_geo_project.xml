@@ -10,6 +10,7 @@ into some types.xml file
  supercategory="Geoscience" 
  category="Core Data" 
 metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecontraints,content.citation"
+childtypes="type_geo_site,type_geo_borehole,type_map_folder"
 >
 
 <!-- Columns-->
