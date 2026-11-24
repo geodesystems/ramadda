@@ -218,19 +218,28 @@ function AreaWidget(display,arg) {
 }
 
 
-function DateRangeWidget(display, what,startLabel,endLabel) {
+function DateRangeWidget(display, what,args) {
+    this.opts = {
+	startLabel:null,
+	endLabel:null,
+	header:null
+    }
+    if(args) $.extend(this.opts,args);
     const ID_DATE_START = "date_start";
     const ID_DATE_END = "date_end";
     this.what = what??'date';
-    if(this.what == 'createdate') {
-	startLabel = 'Create start';
-	endLabel = 'Create end';
-    } else    if(this.what == 'changedate') {
-	startLabel = 'Change start';
-	endLabel = 'Change end';	
-    } else if(this.what=='date' || startLabel==null) {
-	startLabel = display.getProperty("date.start.label","Start date");
-	endLabel = display.getProperty("date.end.label","End date");	
+
+    if(!this.opts.startLabel) {
+	if(this.what == 'createdate') {
+	    this.opts.startLabel = 'Create start';
+	    this.opts.endLabel = 'Create end';
+	} else    if(this.what == 'changedate') {
+	    this.opts.startLabel = 'Change start';
+	    this.opts.endLabel = 'Change end';	
+	} else if(this.what=='date' || this.opts.startLabel==null) {
+	    this.opts.startLabel = display.getProperty("date.start.label","Start date");
+	    this.opts.endLabel = display.getProperty("date.end.label","End date");	
+	}
     }
 
 
@@ -264,16 +273,21 @@ function DateRangeWidget(display, what,startLabel,endLabel) {
         getHtml: function() {
 	    let start = HU.getSanitizedUrlArgument(this.baseId+ID_DATE_START);
 	    let end = HU.getSanitizedUrlArgument(this.baseId+ID_DATE_END);	    
-            let html = HU.input(this.baseId +ID_DATE_START, start||"",
+            let html = '';
+	    if(this.opts.header) {
+		html +=HU.div([ATTR_CLASS,'ramadda-date-range-header'],this.opts.header);
+	    }
+
+	    html += HU.input(this.baseId +ID_DATE_START, start||"",
 				[ATTR_CLASS, "display-date-input",
-				 ATTR_PLACEHOLDER, " " +startLabel,
-				 ATTR_TITLE, startLabel,
+				 ATTR_PLACEHOLDER, " " +this.opts.startLabel,
+				 ATTR_TITLE, this.opts.startLabel,
 				 ATTR_ID, this.baseId +ID_DATE_START, 
 				]) + " - " +
                 HU.input(this.baseId +ID_DATE_END, end||"",
 			 [ATTR_CLASS, "display-date-input",
-			  ATTR_PLACEHOLDER,  " " +endLabel,
-			  ATTR_TITLE,endLabel,
+			  ATTR_PLACEHOLDER,  " " +this.opts.endLabel,
+			  ATTR_TITLE,this.opts.endLabel,
 			  ATTR_ID, this.baseId +ID_DATE_END, 
 			 ]);
             return html;

@@ -3548,6 +3548,10 @@ table.dataTable tbody td {
     overflow: hidden;
 }
 
+.ramadda-date-range-header {
+    font-weight:bold;
+}
+
 .entry-table-date   {
     white-space: nowrap;
     overflow: hidden;

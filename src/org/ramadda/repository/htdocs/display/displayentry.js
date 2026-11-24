@@ -1772,7 +1772,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let name = HU.getSanitizedUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty('ancestorName');		
 		let aid = this.domId(ID_ANCESTOR);
 		let clear = HU.span([ATTR_TITLE,'Clear selection',
-				     ATTR_CLASS,CLASS_CLICKABLE,
+				     ATTR_CLASS,HU.classes('display-search-ancestor-clear',
+							   CLASS_CLICKABLE),
 				     ATTR_ID,this.domId(ID_ANCESTOR+'_clear')],HU.getIconImage(ICON_ERASER));
 		let input = HU.input('',name??'',[ATTR_READONLY,null,
 						  ATTR_PLACEHOLDER,'Select',
@@ -1818,7 +1819,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    let dateWidget='';
             if (this.getShowDate()) {
-                this.dateRangeWidget = new DateRangeWidget(this,'date');
+                this.dateRangeWidget = new DateRangeWidget(this,'date',
+							 	 {startLabel:'Start',
+								  endLabel:'End',
+								  header:'Date:'});
 		let label=this.getLabel(this.getStartDateLabel());
 		if(Utils.stringDefined(label))
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_RANGE)],
@@ -1828,7 +1832,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
             if (this.getShowCreateDate()) {
 		let label=this.getLabel(this.getCreateDateLabel());
-                this.createdateRangeWidget = new DateRangeWidget(this,'createdate');
+                this.createdateRangeWidget = new DateRangeWidget(this,'createdate',
+							 	 {startLabel:'Start',
+								  endLabel:'End',
+								  header:'Create Date:'});
 		if(Utils.stringDefined(label))
                     extra += this.addWidget(label,
 					    HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_CREATE)], this.createdateRangeWidget.getHtml()));
@@ -1837,7 +1844,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             if (this.getShowChangeDate()) {
 		let label=this.getLabel(this.getChangeDateLabel());
-                this.changedateRangeWidget = new DateRangeWidget(this,'changedate');
+                this.changedateRangeWidget = new DateRangeWidget(this,'changedate',
+								 {startLabel:'Start',
+								  endLabel:'End',
+								  header:'Change Date:'});
 		if(Utils.stringDefined(label))
                     extra += this.addWidget(label, HU.div([ATTR_ID,this.domId(ID_SEARCH_DATE_CHANGE)],
 							  this.changedateRangeWidget.getHtml()));
@@ -2554,8 +2564,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     widget =  field + ' ' + help;
 		} else if(col.isDate()) {
 		    label = col.getSearchLabel();
-                    let dateWidget =  new DateRangeWidget(this,col.getName(),label+' start',
-							  label+' end');
+                    let dateWidget =  new DateRangeWidget(this,col.getName(),
+							  {startLabel:label+' start',
+							   endLabel:label+' end'});
 		    this.dateWidgets.push({widget:dateWidget,column:col});
 		    widget=dateWidget.getHtml();
 		} else if(col.isEntry()) {
