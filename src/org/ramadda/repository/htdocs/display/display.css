@@ -909,6 +909,10 @@ table.dataTable {
 }
 
 
+.display-map-contents .ramadda-pagesearch-input {
+    margin-left:1em;
+}
+
 .display-search-header-enabled {
     cursor:pointer;
 }
@@ -1178,6 +1182,20 @@ svg > g > g:last-child { pointer-events: none }
     text-align:right;
 }
 
+
+.display-search-orderby {
+    color: rgb(85, 85, 85);
+    border:var(--basic-border);
+    border-radius:4px;
+    padding:4px;
+}
+
+.display-search-range {
+    min-width:180px;
+}
+
+
+
 .display-search-button {
     vertical-align:middle;
     margin-right:5px;
@@ -1308,9 +1326,17 @@ svg > g > g:last-child { pointer-events: none }
     margin-bottom:2px;
 }
 
+.display-search-header select {
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 .display-search-bar {
     min-height:2.5em;
     margin-left:24px;
+}
+
+.display-search-ancestor-clear {
+    margin-left:0.25em;
 }
 
 .display-search-bar-vertical {
