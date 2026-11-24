@@ -3210,16 +3210,6 @@ a.noline {
     color: var(--hover-color);
 }
 
-.display-search-orderby {
-    font-size:80%;
-    border:var(--basic-border);
-    border-radius:4px;
-    padding:4px;
-}
-
-.display-search-range {
-    min-width:180px;
-}
 
 
 .entry-type-search {
