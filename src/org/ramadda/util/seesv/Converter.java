@@ -2422,7 +2422,6 @@ public abstract class Converter extends Processor {
     public static class Changer extends Converter {
 
         boolean isRegex;
-
         List<String[]> patterns = new ArrayList<String[]>();
 
         public Changer(TextReader ctx, List<String> cols, String pattern,
@@ -2485,10 +2484,12 @@ public abstract class Converter extends Processor {
 
         String change(TextReader ctx, Row row, String s) {
             String os = s;
-            //      System.out.println("change:" + s);
             for (String[] tuple : patterns) {
                 String pattern = tuple[0];
                 String value   = tuple[1];
+		value = replaceMacros(value,headerRow,row);
+
+
                 if (pattern.startsWith("one:")) {
                     pattern = pattern.substring(4);
                     s       = s.replaceFirst(pattern, value);

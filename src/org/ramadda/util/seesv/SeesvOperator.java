@@ -51,6 +51,7 @@ public class SeesvOperator {
     public static final int UNDEFINED_INDEX = -1;
     public static final int INDEX_ALL = -9999;
     private int index = UNDEFINED_INDEX;
+    Row headerRow;
     protected List<String> sindices;
     List<Integer> indices;
     HashSet<Integer> indexMap;
@@ -77,9 +78,11 @@ public class SeesvOperator {
         this.sindices = cols;
     }
 
+
     public boolean isHeaderRow(TextReader ctx,Row row) {
 	if (rowCnt++ == 0) {
 	    if ( !ctx.getAllData()) {
+		if(headerRow==null) headerRow = row;
 		return true;
 	    }
 	}
@@ -94,11 +97,13 @@ public class SeesvOperator {
 
     public String replaceMacros(String v, Row header, Row row) {
 	for(int j=0;j<row.size();j++) {
+	    String value = row.getString(j);
 	    if(j<header.size()) {
-		v = v.replace("${" + Utils.makeID(header.getString(j))+"}", row.getString(j));
-		v = v.replace("${" + header.getString(j)+"}", row.getString(j));		
+		String id = Utils.makeID(header.getString(j));
+		v = v.replace("${" + id+"}", value);
+		v = v.replace("${" + header.getString(j)+"}", value);
 	    }
-	    v = v.replace("${" + j+"}", row.getString(j));
+	    v = v.replace("${" + j+"}", value);
 	    v = v.replace("${column_index}", ""+j);
 	}
 	return v;
