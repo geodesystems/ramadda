@@ -8788,6 +8788,9 @@ public class WikiManager extends RepositoryManager
 
         Utils.appendAll(tags4,
 			hdr.call("Miscellany:"),
+			l2.call( "Property", "Name value properties",
+				 "{{property name=value", "}}"),
+
 			l.call("If block", 
 			       plus("if"),minus("if")),
 			l.call("Navigation left",
@@ -8806,7 +8809,8 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Skip", "Skip a section of wiki text",
 				 plus("skip"), minus("skip")),
 			l2.call( "Inline comment","Inline commented",
-				 ":rem comment", "")						
+				 ":rem comment", "")
+
 			);			
 
 
@@ -8814,6 +8818,7 @@ public class WikiManager extends RepositoryManager
         StringBuilder misc2 = new StringBuilder();
         StringBuilder misc3 = new StringBuilder();
 	Utils.appendAll(misc3,
+			hdr.call("Templates"),
 			l.call( "Macro", ":macro name value\\n${name}\\n", ""),
 			l.call( "Template",
 				plus("template template_name\\n... ${var1} ... ${var2}"), minus("template")),
@@ -8821,22 +8826,26 @@ public class WikiManager extends RepositoryManager
 				plus("apply template_name\\n:var var1 Some value\\n+var var2\\nSome other value\\n...\\n-var"),
 				minus("apply")),
 			l.call( "Template inline", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
-			l2.call( "Javascript", "Include Javascript",
-				 plus("javascript"), minus("javascript")),
-			l.call( "CSS",
-				plus("css"), minus("css")),
-			l.call( "PRE",
-				plus("pre addCopy=false addDownload=false"), minus("pre")),
-                        l2.call( "Xml", "Include XML",
-				 plus("xml format=false addCopy=true addDownload=true downloadFile=download.xml"), minus("xml")),
-			l.call( "Code", "```\\n\\n", "```"),
-			l.call( "Markdown", "``` markdown\\n\\n", "```"),
-			l.call( "Format Javascript", "``` javascript\\n\\n", "```"),
-			l.call( "LaTeX", "``` latex\\n\\n", "```"),						
-			l2.call( "Property", "Name value properties",
-				 "{{property name=value", "}}"),
-			l.call( "Page search", ":pagesearch ", "")
+			hdr.call("Language"),
+			l2.call("Language Block", "Show/hide block based on user's language preference",
+				plus("lang one of es en fr etc."), minus("lang")),
+			l2.call("Language Switcher", "Add a widget to switch languages",":langswitcher en,es,fr, etc.\\n", ""),
+			l2.call("Set Language", "Set the language of the page",":setlanguage es\\n", ""),
+
+
+			hdr.call("Effects"),
+			l2.call("Reload", "Reload the page after some time",
+				"\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),			
+			l.call( "Page search", ":pagesearch ", ""),
+			l2.call("Draft", "Show a 'Draft' background",
+				plus("draft"), minus("draft")),
+
+			l2.call("After", "Fade in a block of content after some time",
+				plus("after pause=0 afterFade=5000"), minus("after")),
+			l2.call("Odometer", "Show a spinning counter",
+				"{{odometer initCount=0 count=100 immediate=true pause=1000}}", "")
 			);
+
 
         Utils.appendAll(misc1,
 			l.call( "Title", ":title {{name link=true}}", ""),
@@ -8851,6 +8860,9 @@ public class WikiManager extends RepositoryManager
 			l.call( "Heading-1", ":h1 your heading", ""),
 			l.call( "Heading-2", ":h2 your heading", ""),
 			l.call( "Heading-3", ":h3 your heading", ""),	    
+			l.call("Horizontal line", "\\n----\\n", ""),
+
+			hdr.call("Text"),
 			l.call("Break", ":br", ""),
 			l.call("Paragraph", ":p", ""),
 			l2.call("Vertical space", "Add vertical space","\\n:vspace 1em", ""),
@@ -8858,28 +8870,29 @@ public class WikiManager extends RepositoryManager
 			l.call("Italic text", "_squote__squote_", "_squote__squote_"),
 			l2.call("FA icon","Font Awesome icon","{{fa icon=\"fas fa-cog\" style=\"\"}}",""));
         Utils.appendAll(misc2,
+			hdr.call("Links"),
 			l2.call("Internal link", "Link to another entry","[[id|link text", "]]"),
 			l2.call("Internal link out", "Link to another entry in a new tab","[[id|&lt;target&gt;link text", "]]"),			
 			l2.call("External link", "Link to an external URL","[http://www.example.com link title", "]"),
 			l2.call("External link out", "Link to an external URL in a new tab",
 				"[&lt;target&gt;http://www.example.com link title", "]"),			
+			l2.call("Button", "Add a button with a URL",":button url label", ""),
 			l2.call("Embed YT, etc.","Embed content from YouTube, Wikipedia, etc",
 				"@(youtube URL, wikipedia, etc, URL #width=600 #height=800)",""),
-			l.call("Horizontal line", "\\n----\\n", ""),
-			l2.call("Button", "Add a button with a URL",":button url label", ""),
-			l2.call("Language Block", "Show/hide block based on user's language preference",
-				plus("lang one of es en fr etc."), minus("lang")),
-			l2.call("Language Switcher", "Add a widget to switch languages",":langswitcher en,es,fr, etc.\\n", ""),
-			l2.call("Set Language", "Set the language of the page",":setlanguage es\\n", ""),
-			l2.call("Draft", "Show a 'Draft' background",
-				plus("draft"), minus("draft")),
-			l2.call("Remark", "One line comment","\\n:rem ", ""),
-			l2.call("Reload", "Reload the page after some time",
-				"\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),
-			l2.call("After", "Fade in a block of content after some time",
-				plus("after pause=0 afterFade=5000"), minus("after")),
-			l2.call("Odometer", "Show a spinning counter",
-				"{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
+
+			hdr.call("Code"),
+			l2.call( "Javascript", "Include Javascript",
+				 plus("javascript"), minus("javascript")),
+			l.call( "CSS",
+				plus("css"), minus("css")),
+			l.call( "PRE",
+				plus("pre addCopy=false addDownload=false"), minus("pre")),
+                        l2.call( "Xml", "Include XML",
+				 plus("xml format=false addCopy=true addDownload=true downloadFile=download.xml"), minus("xml")),
+			l.call( "Insert Code", "```\\n\\n", "```"),
+			l.call( "Markdown", "``` markdown\\n\\n", "```"),
+			l.call( "Format Javascript", "``` javascript\\n\\n", "```"),
+			l.call( "LaTeX", "``` latex\\n\\n", "```"));
 
         wikiMenuTagsButton = makeMenuButton("Tags",
 					    HU.span(HU.hbox(misc1, misc2,misc3),
@@ -8991,6 +9004,7 @@ public class WikiManager extends RepositoryManager
 			    new NamedValue("inPlace",""+(!showSearch)),
 			    new NamedValue("searchSelector",showSearch?".wiki-editor-popup-link":null),
 			    new NamedValue("closeOnClick","true"),			    
+			    new NamedValue("addHighlight","true"),
 			    new NamedValue("header",showSearch+""),
 			    new NamedValue("draggable",showSearch+""),
 			    new NamedValue("linkAttributes", BUTTONCLASS));

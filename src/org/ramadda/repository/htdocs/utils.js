@@ -3825,12 +3825,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     doPageSearch:function(value,select,parentSelect,hideAll,args) {
 	args = args??{}
 	if(args.urlparam) args.urlparam='pagesearch';
-
 //	args.highlight = true;
+//	args.highlightPhrase = true;	
 	if(args.handler) {
 	    args.handler(value,args);
 	    return
 	}
+	let resetHighlight = element => {
+	    let orig = element.attr('original-background');
+	    if (orig == null) {
+		orig = element.css(CSS_BACKGROUND);
+		element.attr('original-background', orig);
+	    } else {
+		element.css(CSS_BACKGROUND, orig);
+	    }
+	};
+
 
 	let linksDiv;
 	let linkNames=[];
@@ -3870,7 +3880,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		$(hideAll).show();
 	    }
 	}
-
 	let search=(v,element) =>{
 	    let values = v.value;
 //	    if(!Utils.stringDefined(value)) return true;
@@ -3919,7 +3928,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	};
 	let totalCount=0;
 	let visibleCount=0;	
+	let first = null;
+	s.each(function() {resetHighlight($(this));});
 	s.each(function() {
+	    if(args.highlightPhrase) {
+		$(this).attr('isvisible',true);
+		$(this).show();
+	    }		
 	    totalCount++;
 	    let textOk = true;
 	    values.every((v,idx)=>{
@@ -3944,13 +3959,32 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		textNodes = HU.getTextNodes($(this));
 	    }
 
+
+	    if(textOk && !hasValue && args.highlightPhrase) {
+		textOk = false;
+	    }
+	    
 	    if(!textOk) {
-		$(this).attr('isvisible','false');
-		$(this).fadeOut();
+		if(args.highlightPhrase) {
+		    if(!first) first=$(this);
+		    resetHighlight($(this));
+		} else {
+		    $(this).attr('isvisible','false');
+		    $(this).fadeOut();
+		}
 	    } else {
 		visibleCount++;
 		$(this).attr('isvisible','true');
 		$(this).show();
+		if(args.highlightPhrase) {
+		    if(!first) first=$(this);
+		    let orig = $(this).attr('original-background');
+		    if(!orig) {
+			orig = $(this).css(CSS_BACKGROUND);
+			$(this).attr('original-background',orig);
+		    }
+		    $(this).css(CSS_BACKGROUND,'yellow');
+		}
 		if(textNodes) {
 		    textNodes.each(function() {
 			let parent = $(this.parentNode);
@@ -3979,6 +4013,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	    }
 	});
+	if(first) {
+	    //TODO: scroll to
+	}
 	if(parentSelect) {
 	    let subSelect = select;
 	    let parentSelector = parentSelect;
@@ -5243,6 +5280,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    HU.initPageSearch(popup.find(opts.searchSelector),
 			      null,null,null,
 			      {addToUrl:false,
+			       addHighlight:args.addHighlight,
+			       highlightPhrase:args.highlightPhrase,
 			       target:'#'+searchDivId});
 	}
 

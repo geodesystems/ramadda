@@ -2874,6 +2874,7 @@ function toggleVisibilityOnObject(obj, display) {
 
 
 function PageSearch(select,parentSelect,label,hideAll,args) {
+    args = args??{};
     let _this = this;
     let opts = {
 	addToUrl:true,
@@ -2881,6 +2882,8 @@ function PageSearch(select,parentSelect,label,hideAll,args) {
 	inputSize:'15',
 	target:null,
 	hideAll:hideAll,
+	addHighlight:false,	
+	highlightPhrase:false,
 	linkSelector:null,
 	widgets:[],
 	style:'',
@@ -2889,10 +2892,12 @@ function PageSearch(select,parentSelect,label,hideAll,args) {
     if(args) {
 	$.extend(opts,args);
 	if(args.buttons) opts.widgets=args.buttons;
+
     }
     this.opts =opts;
 
     let id = HU.getUniqueId('search_');
+    let highlightId = HU.getUniqueId('highlight_');
     if(opts.width) opts.style+=HU.css(CSS_WIDTH,opts.width);
     
     let input = HU.input('','',[ATTR_CLASS,'ramadda-pagesearch-input',
@@ -2900,6 +2905,15 @@ function PageSearch(select,parentSelect,label,hideAll,args) {
 				ATTR_ID,id,
 				ATTR_PLACEHOLDER,label??'Search',
 				ATTR_SIZE,opts.inputSize]);
+
+    if(opts.addHighlight) {
+	input +=HU.space(1) +
+	    HU.checkbox(highlightId,
+			[ATTR_ID,highlightId],false,'Highlight');
+			
+//				  HU.getIconImage('fas fa-folder-tree')));
+
+    }
     let activeClass='ramadda-button-active';
     let widgetMap ={};
     opts.widgets.forEach(widget=>{
@@ -2948,8 +2962,17 @@ function PageSearch(select,parentSelect,label,hideAll,args) {
 	    }
 	});
 
+	if(opts.addHighlight) {
+	    args.highlightPhrase = HU.isChecked(jqid(highlightId));
+	    args.addHighlight=true;
+	}
 	HU.doPageSearch(values,select,parentSelect,opts.hideAll,args);
     };
+    if(opts.addHighlight) {
+	jqid(highlightId).change(function (){
+	    doSearch();
+	});
+    }
     let buttons =[];
     opts.widgets.forEach(widget=>{
 	widget.element= jqid(widget.id).button();	
