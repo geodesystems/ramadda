@@ -535,7 +535,10 @@
     <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
     <unjar src="${lib_dir}/ij.jar" dest="${tmpjar_dir}"/>
 
-    <unjar src="${lib_dir}/postgresql-42.2.5.jre7.jar" dest="${tmpjar_dir}"/>
+    <!--
+	<unjar src="${lib_dir}/postgresql-42.2.5.jre7.jar" dest="${tmpjar_dir}"/>
+    -->
+    <unjar src="${lib_dir}/postgresql-42.7.14.jar" dest="${tmpjar_dir}"/>
     <!--
         <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
     -->
