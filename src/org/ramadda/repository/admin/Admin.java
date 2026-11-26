@@ -1410,6 +1410,12 @@ public class Admin extends RepositoryManager {
 				     msgLabel("Java Version"),
 				     getRepository().getProperty(PROP_JAVA_VERSION, "N/A")));
 
+        statusSB.append(
+			HU.formEntry(
+				     msgLabel("Database"),
+				     getRepository().getDatabaseManager().getDatabase()));
+
+
         if (request.get("gc", false)) {
             Misc.gc();
         }

@@ -1516,6 +1516,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         closeAndReleaseConnection(pstatement);
     }
 
+    public String getDatabase() {
+	return db;
+    }
+
     public boolean supportsRegexp() {
         return db.equals(SqlUtil.DB_MYSQL) || db.equals(SqlUtil.DB_POSTGRES);
     }
